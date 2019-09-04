@@ -45,16 +45,29 @@ func Closure(node Node) []Node {
 
 func auxClosure(node Node, acc []Node) []Node {
 	if ap, ok := node.(AP); ok {
+		acc = addNegation(ap, acc)
 		return append(acc, ap)
 	} else if unary, ok := node.(UnaryNode); ok {
 		acc = append(acc, unary)
+		acc = addNegation(unary, acc)
 		return auxClosure(unary.ChildNode(), acc)
 	} else if binary, ok := node.(BinaryNode); ok {
 		acc = append(acc, binary)
+		acc = addNegation(binary, acc)
 		acc = auxClosure(binary.LHSNode(), acc)
 		return auxClosure(binary.RHSNode(), acc)
 	}
 	panic("Unknown ltl node")
+}
+
+// Function will add the negation of a node to an array, if the node
+// ifself is not already a negation.
+func addNegation(node Node, nodes []Node) []Node {
+	if _, ok := node.(Not); !ok {
+		return append(nodes, Not{node})
+	}
+
+	return nodes
 }
 
 func removeDuplicates(nodes []Node) []Node {
