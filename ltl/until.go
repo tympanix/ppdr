@@ -1,5 +1,9 @@
 package ltl
 
+import (
+	"fmt"
+)
+
 type Until struct {
 	LHS, RHS Node
 }
@@ -17,4 +21,8 @@ func (until Until) LHSNode() Node {
 
 func (until Until) RHSNode() Node {
 	return until.RHS
+}
+
+func (until Until) String() string {
+	return fmt.Sprintf("%v U %v", until.LHSNode(), until.RHSNode())
 }
