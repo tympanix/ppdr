@@ -59,14 +59,14 @@ func auxClosure(node Node, acc []Node) []Node {
 
 func removeDuplicates(nodes []Node) []Node {
 	seen := make(map[Node]struct{}, len(nodes))
-	j := 0
-	for _, v := range nodes {
-		if _, ok := seen[v]; ok {
+	i := 0
+	for _, node := range nodes {
+		if _, ok := seen[node]; ok {
 			continue
 		}
-		seen[v] = struct{}{}
-		nodes[j] = v
-		j++
+		seen[node] = struct{}{}
+		nodes[i] = node
+		i++
 	}
-	return nodes[:j]
+	return nodes[:i]
 }
