@@ -6,14 +6,14 @@ type Node interface {
 }
 
 type BinaryNode interface {
+	Node
 	LHSNode() Node
 	RHSNode() Node
-	SameAs(Node) bool
 }
 
 type UnaryNode interface {
+	Node
 	ChildNode() Node
-	SameAs(Node) bool
 }
 
 // FindAtomicPropositions returns a list of all atomic propositions
