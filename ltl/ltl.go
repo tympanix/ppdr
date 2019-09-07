@@ -37,13 +37,13 @@ func auxFindAtomicPropositions(node Node, acc []Node) []Node {
 
 // Closure returns a list of all sub-nodes of a given node and the
 // node itself.
-func Closure(node Node) []Node {
-	closureTemp := make([]Node, 0)
+func Closure(node Node) Set {
+	closureTemp := make(Set, 0)
 	closureWithDuplicates := auxClosure(node, closureTemp)
 	return removeDuplicates(closureWithDuplicates)
 }
 
-func auxClosure(node Node, acc []Node) []Node {
+func auxClosure(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		acc = addNegation(ap, acc)
 		return append(acc, ap)
@@ -62,7 +62,7 @@ func auxClosure(node Node, acc []Node) []Node {
 
 // Function will add the negation of a node to an array, if the node
 // ifself is not already a negation.
-func addNegation(node Node, nodes []Node) []Node {
+func addNegation(node Node, nodes Set) Set {
 	if _, ok := node.(Not); !ok {
 		return append(nodes, Not{node})
 	}
@@ -70,7 +70,7 @@ func addNegation(node Node, nodes []Node) []Node {
 	return nodes
 }
 
-func removeDuplicates(nodes []Node) []Node {
+func removeDuplicates(nodes Set) Set {
 	seen := make(map[Node]struct{}, len(nodes))
 	i := 0
 	for _, node := range nodes {
