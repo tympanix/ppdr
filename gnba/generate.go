@@ -11,7 +11,10 @@ func GenerateGNBA(phi ltl.Node) []*Node {
 	// - Find closure of phi (all subformulas of phi)
 	// - Find AP (all tomic propositions of phi)
 	// - Find elementary set from closure of phi
+	closure := ltl.Closure(phi)
+
 	elemSets := generateSets(phi)
+	elemSets := ltl.FindElementarySets(closure)
 	aps := ltl.FindAtomicPropositions(phi)
 
 	states := make([]*Node, len(elemSets))

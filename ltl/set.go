@@ -72,18 +72,64 @@ func (s Set) PowerSet() []Set {
 }
 
 // IsElementary returns true if the set is elementary.
-func (s Set) IsElementary() bool {
-	return s.isConsistent() && s.isLocallyConsistent() && s.isMaximal()
+func (s Set) IsElementary(closure Set) bool {
+	return s.isConsistent(closure) && s.isLocallyConsistent(closure) && s.isMaximal(closure)
 }
 
-func (s Set) isConsistent() bool {
-	return false
+func (s Set) isConsistent(closure Set) bool {
+	// Case 1
+	// Todo: Missing support for conjunction.
+
+	// Case 2
+	for _, psi := range closure {
+		if s.Contains(psi) {
+			if s.Contains(Not{psi}) {
+				return false
+			}
+		}
+	}
+
+	// Case 3
+	// TODO: Not completely sure how to handle this one.
+
+	return true
 }
 
-func (s Set) isLocallyConsistent() bool {
-	return false
+func (s Set) isLocallyConsistent(closure Set) bool {
+	// Case 1
+	for _, psi := range closure {
+		if until, ok := psi.(Until); ok {
+			if s.Contains(until.RHSNode()) {
+				if !s.Contains(until) {
+					return false
+				}
+			}
+		}
+	}
+
+	// Case 2
+	for _, psi := range closure {
+		if until, ok := psi.(Until); ok {
+			if s.Contains(until) && !s.Contains(until.RHSNode()) {
+				if !s.Contains(until.LHSNode()) {
+					return false
+				}
+			}
+		}
+	}
+
+	return true
 }
 
-func (s Set) isMaximal() bool {
-	return false
+func (s Set) isMaximal(closure Set) bool {
+	// Case 1
+	for _, psi := range closure {
+		if !s.Contains(psi) {
+			if !s.Contains(Not{psi}) {
+				return false
+			}
+		}
+	}
+
+	return true
 }

@@ -83,3 +83,18 @@ func removeDuplicates(nodes Set) Set {
 	}
 	return nodes[:i]
 }
+
+// FindElementarySets finds all the elementary sets for a
+// closure(phi).
+func FindElementarySets(closure Set) []Set {
+	elementarySets := make([]Set, 0)
+	powerSet := closure.PowerSet()
+
+	for _, set := range powerSet {
+		if set.IsElementary(closure) {
+			elementarySets = append(elementarySets, set)
+		}
+	}
+
+	return elementarySets
+}
