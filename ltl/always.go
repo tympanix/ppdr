@@ -27,3 +27,7 @@ func (a Always) SameAs(node Node) bool {
 	}
 	return false
 }
+
+func (a Always) Normalize() Node {
+	return Not{Eventually{Negate(a.ChildNode().Normalize())}.Normalize()}
+}

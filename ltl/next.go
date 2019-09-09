@@ -26,3 +26,7 @@ func (next Next) ChildNode() Node {
 func (next Next) String() string {
 	return fmt.Sprintf("O%v", next.ChildNode())
 }
+
+func (next Next) Normalize() Node {
+	return Next{next.ChildNode().Normalize()}
+}

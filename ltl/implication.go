@@ -24,3 +24,7 @@ func (i Implication) RHSNode() Node {
 func (i Implication) String() string {
 	return binaryNodeString(i, "->")
 }
+
+func (i Implication) Normalize() Node {
+	return Disjunction{Negate(i.LHSNode().Normalize()), i.RHSNode().Normalize()}.Normalize()
+}

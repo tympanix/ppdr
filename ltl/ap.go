@@ -20,3 +20,7 @@ func (ap AP) SameAs(node Node) bool {
 func (ap AP) String() string {
 	return fmt.Sprintf("%v", ap.Name)
 }
+
+func (ap AP) Normalize() Node {
+	return ap
+}

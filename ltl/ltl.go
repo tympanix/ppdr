@@ -8,6 +8,7 @@ import (
 // Node is any node of an LTL formula
 type Node interface {
 	SameAs(Node) bool
+	Normalize() Node
 }
 
 // BinaryNode is an ltl node which has two child nodes

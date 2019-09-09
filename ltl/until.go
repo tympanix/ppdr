@@ -4,21 +4,25 @@ type Until struct {
 	LHS, RHS Node
 }
 
-func (until Until) SameAs(node Node) bool {
-	if until2, ok := node.(Until); ok {
-		return until.LHS.SameAs(until2.LHS) && until.RHS.SameAs(until2.RHS)
+func (u Until) SameAs(node Node) bool {
+	if u2, ok := node.(Until); ok {
+		return u.LHS.SameAs(u2.LHS) && u.RHS.SameAs(u2.RHS)
 	}
 	return false
 }
 
-func (until Until) LHSNode() Node {
-	return until.LHS
+func (u Until) LHSNode() Node {
+	return u.LHS
 }
 
-func (until Until) RHSNode() Node {
-	return until.RHS
+func (u Until) RHSNode() Node {
+	return u.RHS
 }
 
-func (until Until) String() string {
-	return binaryNodeString(until, "U")
+func (u Until) String() string {
+	return binaryNodeString(u, "U")
+}
+
+func (u Until) Normalize() Node {
+	return Until{u.LHSNode().Normalize(), u.RHSNode().Normalize()}
 }

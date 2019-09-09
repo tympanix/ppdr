@@ -24,3 +24,7 @@ func (c Conjunction) RHSNode() Node {
 func (c Conjunction) String() string {
 	return binaryNodeString(c, "&")
 }
+
+func (c Conjunction) Normalize() Node {
+	return Conjunction{c.LHSNode().Normalize(), c.RHSNode().Normalize()}
+}

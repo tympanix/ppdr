@@ -24,3 +24,8 @@ func (d Disjunction) RHSNode() Node {
 func (d Disjunction) String() string {
 	return binaryNodeString(d, "|")
 }
+
+// Normalize rewrites the disjunctions to a conjunction
+func (d Disjunction) Normalize() Node {
+	return Not{Conjunction{Negate(d.LHSNode().Normalize()), Negate(d.RHSNode().Normalize())}}
+}

@@ -27,3 +27,7 @@ func (e Eventually) SameAs(node Node) bool {
 	}
 	return false
 }
+
+func (e Eventually) Normalize() Node {
+	return Until{True{}, e.ChildNode().Normalize()}
+}

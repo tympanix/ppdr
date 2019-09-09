@@ -26,3 +26,7 @@ func (not Not) String() string {
 	}
 	return fmt.Sprintf("!%v", not.ChildNode())
 }
+
+func (not Not) Normalize() Node {
+	return Negate(not.ChildNode().Normalize())
+}
