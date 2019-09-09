@@ -23,6 +23,7 @@ func (s Set) Size() int {
 }
 
 // Add adds an element to a set.
+// TODO: possible to add event every time Add(node) is called to remove possible duplicates
 func (s Set) Add(node Node) Set {
 	return append(s, node)
 }
@@ -60,7 +61,7 @@ func (s Set) PowerSet() []Set {
 	for i := 0; i < powerSetSize; i++ {
 		subset := make(Set, 0)
 		for j := range s {
-			if (i & (1 << j)) > 0 {
+			if (i & (1 << uint(j))) > 0 {
 				subset = subset.Add(s[j])
 			}
 		}
