@@ -5,13 +5,13 @@ import (
 )
 
 // GenerateGNBA generates an GNBA from an LTL formula phi
-func GenerateGNBA(phi ltl.Node) []*Node {
+func GenerateGNBA(phi ltl.Node) GNBA {
 
 	closure := ltl.Closure(phi)
 	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(closure)
 
-	states := make([]*Node, len(elemSets))
+	states := make([]*Node, 0, len(elemSets))
 
 	for _, s := range elemSets {
 		n := Node{
@@ -30,11 +30,11 @@ func GenerateGNBA(phi ltl.Node) []*Node {
 		intersec := s.ElementarySet.Intersection(aps)
 
 		for _, s2 := range states {
-			if s.shouldHaveEdgeTo(s2) {
-				// TODO: add an edge here!
+			if s.shouldHaveEdgeTo(*s2, closure) {
+				s.addTransition(s2, intersec)
 			}
 		}
 	}
 
-	return nil
+	return states
 }
