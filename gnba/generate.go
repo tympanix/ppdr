@@ -5,17 +5,13 @@ import (
 )
 
 // GenerateGNBA generates an GNBA from an LTL formula phi
-func GenerateGNBA(phi ltl.Node) []*Node {
+func GenerateGNBA(phi ltl.Node) GNBA {
 
-	// TODO:
-	// - Find closure of phi (all subformulas of phi)
-	// - Find AP (all tomic propositions of phi)
-	// - Find elementary set from closure of phi
 	closure := ltl.Closure(phi)
 	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(closure)
 
-	states := make([]*Node, len(elemSets))
+	states := make([]*Node, 0, len(elemSets))
 
 	for _, s := range elemSets {
 		n := Node{
@@ -34,38 +30,11 @@ func GenerateGNBA(phi ltl.Node) []*Node {
 		intersec := s.ElementarySet.Intersection(aps)
 
 		for _, s2 := range states {
-			if s.shouldHaveEdgeTo(s2) {
-				// TODO: add an edge here!
+			if s.shouldHaveEdgeTo(*s2, closure) {
+				s.addTransition(s2, intersec)
 			}
 		}
 	}
 
-	return nil
-}
-
-func generateSets(phi ltl.Node) []ltl.Set {
-
-	sets := make([]ltl.Set, 0)
-
-	b1 := ltl.Set{
-		ltl.AP{"a"},
-		ltl.Next{ltl.AP{"a"}},
-	}
-
-	b2 := ltl.Set{
-		ltl.AP{"a"},
-		ltl.Not{ltl.Next{ltl.AP{"a"}}},
-	}
-
-	b3 := ltl.Set{
-		ltl.Not{ltl.AP{"a"}},
-		ltl.Next{ltl.AP{"a"}},
-	}
-
-	b4 := ltl.Set{
-		ltl.Not{ltl.AP{"a"}},
-		ltl.Not{ltl.Next{ltl.AP{"a"}}},
-	}
-
-	return append(sets, b1, b2, b3, b4)
+	return states
 }
