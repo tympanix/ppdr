@@ -19,9 +19,9 @@ func TestClosure(t *testing.T) {
 func TestNormalize(t *testing.T) {
 
 	tests := map[Node]Node{
-		Always{AP{"a"}}:               Not{Until{True{}, Not{AP{"a"}}}},
-		Implication{AP{"a"}, AP{"b"}}: Not{Conjunction{AP{"a"}, Not{AP{"b"}}}},
-		Conjunction{Not{AP{"a"}}, Implication{Not{AP{"a"}}, AP{"b"}}}: Conjunction{Not{AP{"a"}}, Not{Conjunction{Not{AP{"a"}}, Not{AP{"b"}}}}},
+		Always{AP{"a"}}:        Not{Until{True{}, Not{AP{"a"}}}},
+		Impl{AP{"a"}, AP{"b"}}: Not{And{AP{"a"}, Not{AP{"b"}}}},
+		And{Not{AP{"a"}}, Impl{Not{AP{"a"}}, AP{"b"}}}: And{Not{AP{"a"}}, Not{And{Not{AP{"a"}}, Not{AP{"b"}}}}},
 	}
 
 	i := 0
