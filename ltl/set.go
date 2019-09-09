@@ -98,7 +98,13 @@ func (s Set) IsElementary(closure Set) bool {
 
 func (s Set) isConsistent(closure Set) bool {
 	// Case 1
-	// Todo: Missing support for conjunction.
+	for _, psi := range closure {
+		if a, ok := psi.(And); ok {
+			if s.Contains(a) != (s.Contains(a.LHSNode()) && s.Contains(a.RHSNode())) {
+				return false
+			}
+		}
+	}
 
 	// Case 2
 	for _, psi := range closure {
@@ -110,7 +116,11 @@ func (s Set) isConsistent(closure Set) bool {
 	}
 
 	// Case 3
-	// Todo: Missing support for true.
+	if closure.Contains(True{}) {
+		if !s.Contains(True{}) {
+			return false
+		}
+	}
 
 	return true
 }
