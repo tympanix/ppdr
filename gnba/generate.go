@@ -42,30 +42,3 @@ func GenerateGNBA(phi ltl.Node) []*Node {
 
 	return nil
 }
-
-func generateSets(phi ltl.Node) []ltl.Set {
-
-	sets := make([]ltl.Set, 0)
-
-	b1 := ltl.Set{
-		ltl.AP{"a"},
-		ltl.Next{ltl.AP{"a"}},
-	}
-
-	b2 := ltl.Set{
-		ltl.AP{"a"},
-		ltl.Not{ltl.Next{ltl.AP{"a"}}},
-	}
-
-	b3 := ltl.Set{
-		ltl.Not{ltl.AP{"a"}},
-		ltl.Next{ltl.AP{"a"}},
-	}
-
-	b4 := ltl.Set{
-		ltl.Not{ltl.AP{"a"}},
-		ltl.Not{ltl.Next{ltl.AP{"a"}}},
-	}
-
-	return append(sets, b1, b2, b3, b4)
-}
