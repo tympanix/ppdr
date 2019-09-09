@@ -1,5 +1,10 @@
 package ltl
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Node is any node of an LTL formula
 type Node interface {
 	SameAs(Node) bool
@@ -16,6 +21,23 @@ type BinaryNode interface {
 type UnaryNode interface {
 	Node
 	ChildNode() Node
+}
+
+func binaryNodeString(b BinaryNode, op string) string {
+	var sb strings.Builder
+
+	if _, ok := b.LHSNode().(BinaryNode); ok {
+		fmt.Fprintf(&sb, "(%v)", b.LHSNode())
+	} else {
+		fmt.Fprint(&sb, b.LHSNode())
+	}
+	fmt.Fprintf(&sb, " %s ", op)
+	if _, ok := b.RHSNode().(BinaryNode); ok {
+		fmt.Fprintf(&sb, "(%v)", b.RHSNode())
+	} else {
+		fmt.Fprint(&sb, b.RHSNode())
+	}
+	return sb.String()
 }
 
 // Negate negates the ltl formula and removes double negations
