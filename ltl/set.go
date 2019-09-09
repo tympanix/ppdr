@@ -1,11 +1,31 @@
 package ltl
 
 import (
+	"fmt"
 	"math"
+	"strings"
 )
 
 // Set is a set of formulas in LTL.
 type Set []Node
+
+func (s Set) String() string {
+	var sb strings.Builder
+
+	sb.WriteString("[")
+
+	for i, e := range s {
+		fmt.Fprint(&sb, e)
+
+		if i < len(s)-1 {
+			sb.WriteString(", ")
+		}
+	}
+
+	sb.WriteString("]")
+
+	return sb.String()
+}
 
 // Contains returns true if the elementary sets contains phi.
 func (s Set) Contains(phi Node) bool {

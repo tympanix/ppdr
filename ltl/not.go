@@ -21,5 +21,8 @@ func (not Not) ChildNode() Node {
 }
 
 func (not Not) String() string {
+	if _, ok := not.Child.(BinaryNode); ok {
+		return fmt.Sprintf("!(%v)", not.ChildNode())
+	}
 	return fmt.Sprintf("!%v", not.ChildNode())
 }

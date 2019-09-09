@@ -31,6 +31,11 @@ type Node struct {
 	IsFinishState bool
 }
 
+// Has returns true if the gnba node has formula psi in the elementary set
+func (n *Node) Has(psi ltl.Node) bool {
+	return n.ElementarySet.Contains(psi)
+}
+
 func (n *Node) addTransition(node *Node, label ltl.Set) {
 	n.Transitions = append(n.Transitions, Transition{
 		Node:  node,
@@ -43,17 +48,18 @@ func (n Node) shouldHaveEdgeTo(node Node, closure ltl.Set) bool {
 	// n = B, node = B'
 	for _, psi := range closure {
 		if next, ok := psi.(ltl.Next); ok {
-			if n.ElementarySet.Contains(next) != node.ElementarySet.Contains(next.ChildNode()) {
+			if n.Has(next) != node.Has(next.ChildNode()) {
 				return false
 			}
 		}
 	}
 
 	// case 2
-	for _, e := range n.ElementarySet {
-		if _, ok := e.(ltl.Until); ok {
-			panic("TODO: implement ltl until rule for transitions")
-			// TODO: implement ltl until rule for transitions
+	for _, psi := range closure {
+		if until, ok := psi.(ltl.Until); ok {
+			if n.Has(until) != (n.Has(until.RHSNode()) || (n.Has(until.LHSNode()) && node.Has(until))) {
+				return false
+			}
 		}
 	}
 
