@@ -24,8 +24,8 @@ func (s Set) Size() int {
 
 // Add adds an element to a set.
 // TODO: possible to add event every time Add(node) is called to remove possible duplicates
-func (s Set) Add(node Node) Set {
-	return append(s, node)
+func (s *Set) Add(node Node) {
+	*s = append(*s, node)
 }
 
 // ContainsAll return true if all elements are contained in the set.
@@ -62,7 +62,7 @@ func (s Set) PowerSet() []Set {
 		subset := make(Set, 0)
 		for j := range s {
 			if (i & (1 << uint(j))) > 0 {
-				subset = subset.Add(s[j])
+				subset.Add(s[j])
 			}
 		}
 		powerSet = append(powerSet, subset)
@@ -91,7 +91,7 @@ func (s Set) isConsistent(closure Set) bool {
 	}
 
 	// Case 3
-	// TODO: Not completely sure how to handle this one.
+	// Todo: Missing support for true.
 
 	return true
 }
@@ -126,7 +126,7 @@ func (s Set) isMaximal(closure Set) bool {
 	// Case 1
 	for _, psi := range closure {
 		if !s.Contains(psi) {
-			if !s.Contains(Not{psi}) {
+			if !s.Contains(Negate(psi)) {
 				return false
 			}
 		}

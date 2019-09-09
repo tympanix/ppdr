@@ -16,6 +16,14 @@ type UnaryNode interface {
 	ChildNode() Node
 }
 
+func Negate(node Node) Node {
+	if n, ok := node.(Not); ok {
+		return n.ChildNode()
+	}
+
+	return Not{node}
+}
+
 // FindAtomicPropositions returns a list of all atomic propositions
 // in the LTL formula starting from the node
 func FindAtomicPropositions(node Node) []Node {

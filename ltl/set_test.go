@@ -46,7 +46,7 @@ func TestAdd(t *testing.T) {
 		t.Errorf("Set do contain %+v; expected not to do", apA)
 	}
 
-	set = set.Add(apA)
+	set.Add(apA)
 
 	if !set.Contains(apA) {
 		t.Errorf("Set did not contain %+v; expected to do", apA)
