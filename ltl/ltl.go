@@ -5,17 +5,20 @@ type Node interface {
 	SameAs(Node) bool
 }
 
+// BinaryNode is an ltl node which has two child nodes
 type BinaryNode interface {
 	Node
 	LHSNode() Node
 	RHSNode() Node
 }
 
+// UnaryNode is an ltl node which only has one child
 type UnaryNode interface {
 	Node
 	ChildNode() Node
 }
 
+// Negate negates the ltl formula and removes double negations
 func Negate(node Node) Node {
 	if n, ok := node.(Not); ok {
 		return n.ChildNode()
