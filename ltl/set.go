@@ -43,7 +43,6 @@ func (s Set) Size() int {
 }
 
 // Add adds an element to a set.
-// TODO: possible to add event every time Add(node) is called to remove possible duplicates
 func (s *Set) Add(node Node) {
 	*s = append(*s, node)
 }
