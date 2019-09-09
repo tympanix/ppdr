@@ -6,6 +6,6 @@ import (
 
 // Transition is a transition in a GNBA
 type Transition struct {
-	Node  *Node
+	State *State
 	Label ltl.Set
 }

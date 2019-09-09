@@ -8,7 +8,7 @@ import (
 )
 
 // GNBA is a list of nodes
-type GNBA []*Node
+type GNBA []*State
 
 func (g GNBA) String() string {
 	var sb strings.Builder
@@ -16,15 +16,15 @@ func (g GNBA) String() string {
 		fmt.Fprintf(&sb, "%s\n", s.ElementarySet)
 
 		for _, t := range s.Transitions {
-			fmt.Fprintf(&sb, "\t%s\t->\t%s\n", t.Label, t.Node.ElementarySet)
+			fmt.Fprintf(&sb, "\t%s\t->\t%s\n", t.Label, t.State.ElementarySet)
 		}
 	}
 
 	return sb.String()
 }
 
-// Node is a node in a GNBA
-type Node struct {
+// State is a node in a GNBA
+type State struct {
 	ElementarySet ltl.Set
 	Transitions   []Transition
 	IsStartState  bool
@@ -32,18 +32,18 @@ type Node struct {
 }
 
 // Has returns true if the gnba node has formula psi in the elementary set
-func (n *Node) Has(psi ltl.Node) bool {
+func (n *State) Has(psi ltl.Node) bool {
 	return n.ElementarySet.Contains(psi)
 }
 
-func (n *Node) addTransition(node *Node, label ltl.Set) {
+func (n *State) addTransition(node *State, label ltl.Set) {
 	n.Transitions = append(n.Transitions, Transition{
-		Node:  node,
+		State: node,
 		Label: label,
 	})
 }
 
-func (n Node) shouldHaveEdgeTo(node Node, closure ltl.Set) bool {
+func (n State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
 	// case 1
 	// n = B, node = B'
 	for _, psi := range closure {

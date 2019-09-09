@@ -11,10 +11,10 @@ func GenerateGNBA(phi ltl.Node) GNBA {
 	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(closure)
 
-	states := make([]*Node, 0, len(elemSets))
+	states := make([]*State, 0, len(elemSets))
 
 	for _, s := range elemSets {
-		n := Node{
+		n := State{
 			ElementarySet: s,
 			Transitions:   make([]Transition, 0),
 		}
