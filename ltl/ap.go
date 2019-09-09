@@ -1,5 +1,9 @@
 package ltl
 
+import (
+	"fmt"
+)
+
 // AP is an atomic poropostion in LTL
 type AP struct {
 	Name string
@@ -11,4 +15,8 @@ func (ap AP) SameAs(node Node) bool {
 		return ap.Name == ap2.Name
 	}
 	return false
+}
+
+func (ap AP) String() string {
+	return fmt.Sprintf("%v", ap.Name)
 }

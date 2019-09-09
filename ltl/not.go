@@ -1,5 +1,9 @@
 package ltl
 
+import (
+	"fmt"
+)
+
 // Not is negation in LTL
 type Not struct {
 	Child Node
@@ -14,4 +18,8 @@ func (not Not) SameAs(node Node) bool {
 
 func (not Not) ChildNode() Node {
 	return not.Child
+}
+
+func (not Not) String() string {
+	return fmt.Sprintf("!%v", not.ChildNode())
 }
