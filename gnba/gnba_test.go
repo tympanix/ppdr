@@ -73,52 +73,63 @@ func TestCopyGNBA(t *testing.T) {
 		name := fmt.Sprintf("test:%d", i)
 
 		t.Run(name, func(t *testing.T) {
-
-			g1 := GenerateGNBA(phi)
-			g2 := g1.Copy()
-
-			if g1.String() != g2.String() {
-				t.Error("gnba copy is not equal to original one")
-			}
-
-			// Check transitions are disjoint
-			for _, s := range g2.States {
-				for _, tr := range s.Transitions {
-					if tr.State == nil {
-						t.Error("gnba copy has nil transition")
-					}
-					if g1.HasState(tr.State) {
-						t.Error("gnba copies are not disjoint")
-					}
-				}
-			}
-
-			// Check starting states
-			if g1.StartingStates.Size() != g2.StartingStates.Size() {
-				t.Error("gnba copies do not have equal number of starting states")
-			}
-			for s := range g2.StartingStates {
-				if g1.StartingStates.Contains(s) || g1.HasState(s) {
-					t.Error("gnba copy starting states are not disjoint")
-				}
-			}
-
-			// Check acceptance sets
-			if len(g2.FinalStates) != len(g1.FinalStates) {
-				t.Error("gnba copy number of acceptance sets not equal")
-			}
-			for _, set := range g2.FinalStates {
-				for s := range set {
-					if _, ok := g1.IsAcceptanceState(s); ok {
-						t.Error("gnba acceptance sets are not disjoint")
-					}
-					if g1.HasState(s) {
-						t.Error("gnba acceptence sets are not disjoint")
-					}
-				}
-
-			}
+			checkGNBAEquality(t, phi)
 		})
+
+	}
+}
+
+func checkGNBAEquality(t *testing.T, phi ltl.Node) {
+	g1 := GenerateGNBA(phi)
+	g2 := g1.Copy()
+
+	// Check string representation is the same
+	if g1.String() != g2.String() {
+		t.Error("gnba copy is not equal to original one")
+	}
+
+	// Check states are disjoint
+	for _, s := range g2.States {
+		if g1.HasState(s) {
+			t.Error("gnba copy states are not disjoint")
+		}
+	}
+
+	// Check transitions are disjoint
+	for _, s := range g2.States {
+		for _, tr := range s.Transitions {
+			if tr.State == nil {
+				t.Error("gnba copy has nil transition")
+			}
+			if g1.HasState(tr.State) {
+				t.Error("gnba copies are not disjoint")
+			}
+		}
+	}
+
+	// Check starting states
+	if g1.StartingStates.Size() != g2.StartingStates.Size() {
+		t.Error("gnba copies do not have equal number of starting states")
+	}
+	for s := range g2.StartingStates {
+		if g1.StartingStates.Contains(s) || g1.HasState(s) {
+			t.Error("gnba copy starting states are not disjoint")
+		}
+	}
+
+	// Check acceptance sets
+	if len(g2.FinalStates) != len(g1.FinalStates) {
+		t.Error("gnba copy number of acceptance sets not equal")
+	}
+	for _, set := range g2.FinalStates {
+		for s := range set {
+			if _, ok := g1.IsAcceptanceState(s); ok {
+				t.Error("gnba acceptance sets are not disjoint")
+			}
+			if g1.HasState(s) {
+				t.Error("gnba acceptence sets are not disjoint")
+			}
+		}
 
 	}
 }
