@@ -76,6 +76,11 @@ func (s *Set) Add(node ...Node) Set {
 	return *s
 }
 
+// Copy returns a new set which is identical to the original one
+func (s *Set) Copy() Set {
+	return NewSet(s.AsSlice()...)
+}
+
 // ContainsAll return true if all elements are contained in the set.
 func (s Set) ContainsAll(set Set) bool {
 	for e := range set {

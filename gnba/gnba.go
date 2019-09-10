@@ -3,8 +3,6 @@ package gnba
 import (
 	"fmt"
 	"strings"
-
-	"github.com/tympanix/master-2019/ltl"
 )
 
 // GNBA is a structure of a generalized non-deterministic Büchi automaton
@@ -38,6 +36,49 @@ func (g *GNBA) IsStartingState(state *State) bool {
 	return g.StartingStates.Contains(state)
 }
 
+// HasState returns true of the state is part of this GNBA
+func (g *GNBA) HasState(state *State) bool {
+	for _, s := range g.States {
+		if s == state {
+			return true
+		}
+	}
+	return false
+}
+
+// Copy creates a copy of the GNBA
+func (g *GNBA) Copy() *GNBA {
+	gnba := NewGNBA()
+
+	var rt = make(renameTable)
+
+	// Create a copy of each state and add to rename table
+	for _, s := range g.States {
+		copy := s.Copy()
+		rt[s] = copy
+		gnba.States = append(gnba.States, copy)
+	}
+
+	// Translate state transitions with renaming table
+	for _, s := range gnba.States {
+		s.Rename(rt)
+	}
+
+	// Copy and rename starting states
+	for s := range g.StartingStates {
+		gnba.StartingStates.Add(rt[s])
+	}
+
+	// Copy and rename acceptance set
+	accSet := make([]StateSet, 0)
+	for _, s := range g.FinalStates {
+		accSet = append(accSet, s.Copy(rt))
+	}
+	gnba.FinalStates = accSet
+
+	return gnba
+}
+
 func (g GNBA) String() string {
 	var sb strings.Builder
 	for _, s := range g.States {
@@ -59,45 +100,4 @@ func (g GNBA) String() string {
 	}
 
 	return sb.String()
-}
-
-// State is a node in a GNBA
-type State struct {
-	ElementarySet ltl.Set
-	Transitions   []Transition
-}
-
-// Has returns true if the gnba node has formula psi in the elementary set
-func (n *State) Has(psi ltl.Node) bool {
-	return n.ElementarySet.Contains(psi)
-}
-
-func (n *State) addTransition(node *State, label ltl.Set) {
-	n.Transitions = append(n.Transitions, Transition{
-		State: node,
-		Label: label,
-	})
-}
-
-func (n State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
-	// case 1
-	// n = B, node = B'
-	for psi := range closure {
-		if next, ok := psi.(ltl.Next); ok {
-			if n.Has(next) != node.Has(next.ChildNode()) {
-				return false
-			}
-		}
-	}
-
-	// case 2
-	for psi := range closure {
-		if until, ok := psi.(ltl.Until); ok {
-			if n.Has(until) != (n.Has(until.RHSNode()) || (n.Has(until.LHSNode()) && node.Has(until))) {
-				return false
-			}
-		}
-	}
-
-	return true
 }
