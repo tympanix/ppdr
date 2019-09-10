@@ -24,13 +24,13 @@ func NewGNBA() *GNBA {
 }
 
 // IsAcceptanceState return true if state is in any of the acceptance sets
-func (g *GNBA) IsAcceptanceState(state *State) bool {
-	for _, s := range g.FinalStates {
+func (g *GNBA) IsAcceptanceState(state *State) (int, bool) {
+	for i, s := range g.FinalStates {
 		if s.Contains(state) {
-			return true
+			return i, true
 		}
 	}
-	return false
+	return -1, false
 }
 
 // IsStartingState returns true if state is a starting state for the GNBA
@@ -41,17 +41,17 @@ func (g *GNBA) IsStartingState(state *State) bool {
 func (g GNBA) String() string {
 	var sb strings.Builder
 	for _, s := range g.States {
-		var id string
-
+		var prefix string
 		if g.IsStartingState(s) {
-			id = id + ">"
+			prefix = ">"
 		}
 
-		if g.IsAcceptanceState(s) {
-			id = id + "*"
+		var suffix string
+		if i, ok := g.IsAcceptanceState(s); ok {
+			suffix = fmt.Sprintf("{%d}", i)
 		}
 
-		fmt.Fprintf(&sb, "%s%s\n", id, s.ElementarySet)
+		fmt.Fprintf(&sb, "%s%s%s\n", prefix, s.ElementarySet, suffix)
 
 		for _, t := range s.Transitions {
 			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, t.State.ElementarySet)

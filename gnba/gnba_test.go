@@ -34,13 +34,13 @@ func ExampleGenerateGNBA_second() {
 	fmt.Println(g)
 
 	//Output:
-	// >*[a, a U b, b]
+	// >[a, a U b, b]{0}
 	// 	[a, b]	-->	[a, a U b, b]
 	// 	[a, b]	-->	[!a, a U b, b]
 	// 	[a, b]	-->	[!b, a, a U b]
 	// 	[a, b]	-->	[!(a U b), !b, a]
 	// 	[a, b]	-->	[!(a U b), !a, !b]
-	// >*[!a, a U b, b]
+	// >[!a, a U b, b]{0}
 	// 	[b]	-->	[a, a U b, b]
 	// 	[b]	-->	[!a, a U b, b]
 	// 	[b]	-->	[!b, a, a U b]
@@ -50,10 +50,10 @@ func ExampleGenerateGNBA_second() {
 	// 	[a]	-->	[a, a U b, b]
 	// 	[a]	-->	[!a, a U b, b]
 	// 	[a]	-->	[!b, a, a U b]
-	// *[!(a U b), !b, a]
+	// [!(a U b), !b, a]{0}
 	// 	[a]	-->	[!(a U b), !b, a]
 	// 	[a]	-->	[!(a U b), !a, !b]
-	// *[!(a U b), !a, !b]
+	// [!(a U b), !a, !b]{0}
 	// 	[]	-->	[a, a U b, b]
 	// 	[]	-->	[!a, a U b, b]
 	// 	[]	-->	[!b, a, a U b]
