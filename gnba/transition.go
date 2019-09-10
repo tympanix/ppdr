@@ -25,3 +25,12 @@ func (t Transition) Rename(rt renameTable) Transition {
 		Label: t.Label,
 	}
 }
+
+// RenameTo returns a new transitions where the destination state of the transition
+// is changed to new one
+func (t Transition) RenameTo(state *State) Transition {
+	return Transition{
+		State: state,
+		Label: t.Label,
+	}
+}
