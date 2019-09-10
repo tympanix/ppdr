@@ -108,7 +108,7 @@ func addNegation(node Node, nodes Set) Set {
 // closure(phi).
 func FindElementarySets(closure Set) []Set {
 	elementarySets := make([]Set, 0)
-	powerSet := closure.PowerSet()
+	powerSet := closure.SortedPowerSet()
 
 	for _, set := range powerSet {
 		if set.IsElementary(closure) {
