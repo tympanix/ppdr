@@ -9,6 +9,7 @@ import (
 type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
+	String() string
 }
 
 // BinaryNode is an ltl node which has two child nodes
@@ -52,14 +53,14 @@ func Negate(node Node) Node {
 
 // FindAtomicPropositions returns a list of all atomic propositions
 // in the LTL formula starting from the node
-func FindAtomicPropositions(node Node) []Node {
-	ap := make([]Node, 0)
+func FindAtomicPropositions(node Node) Set {
+	ap := make(Set, 0)
 	return auxFindAtomicPropositions(node, ap)
 }
 
-func auxFindAtomicPropositions(node Node, acc []Node) []Node {
+func auxFindAtomicPropositions(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
-		return append(acc, ap)
+		return acc.Add(ap)
 	} else if unary, ok := node.(UnaryNode); ok {
 		return auxFindAtomicPropositions(unary.ChildNode(), acc)
 	} else if binary, ok := node.(BinaryNode); ok {
@@ -73,21 +74,20 @@ func auxFindAtomicPropositions(node Node, acc []Node) []Node {
 // node itself.
 func Closure(node Node) Set {
 	closureTemp := make(Set, 0)
-	closureWithDuplicates := auxClosure(node, closureTemp)
-	return removeDuplicates(closureWithDuplicates)
+	return auxClosure(node, closureTemp)
 }
 
 func auxClosure(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		acc = addNegation(ap, acc)
-		return append(acc, ap)
+		return acc.Add(ap)
 	} else if unary, ok := node.(UnaryNode); ok {
-		acc = append(acc, unary)
-		acc = addNegation(unary, acc)
+		acc.Add(unary)
+		addNegation(unary, acc)
 		return auxClosure(unary.ChildNode(), acc)
 	} else if binary, ok := node.(BinaryNode); ok {
-		acc = append(acc, binary)
-		acc = addNegation(binary, acc)
+		acc.Add(binary)
+		addNegation(binary, acc)
 		acc = auxClosure(binary.LHSNode(), acc)
 		return auxClosure(binary.RHSNode(), acc)
 	}
@@ -98,31 +98,17 @@ func auxClosure(node Node, acc Set) Set {
 // ifself is not already a negation.
 func addNegation(node Node, nodes Set) Set {
 	if _, ok := node.(Not); !ok {
-		return append(nodes, Not{node})
+		nodes.Add(Not{node})
 	}
 
 	return nodes
-}
-
-func removeDuplicates(nodes Set) Set {
-	seen := make(map[Node]struct{}, len(nodes))
-	i := 0
-	for _, node := range nodes {
-		if _, ok := seen[node]; ok {
-			continue
-		}
-		seen[node] = struct{}{}
-		nodes[i] = node
-		i++
-	}
-	return nodes[:i]
 }
 
 // FindElementarySets finds all the elementary sets for a
 // closure(phi).
 func FindElementarySets(closure Set) []Set {
 	elementarySets := make([]Set, 0)
-	powerSet := closure.PowerSet()
+	powerSet := closure.SortedPowerSet()
 
 	for _, set := range powerSet {
 		if set.IsElementary(closure) {

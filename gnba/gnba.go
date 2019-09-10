@@ -16,7 +16,7 @@ func (g GNBA) String() string {
 		fmt.Fprintf(&sb, "%s\n", s.ElementarySet)
 
 		for _, t := range s.Transitions {
-			fmt.Fprintf(&sb, "\t%s\t->\t%s\n", t.Label, t.State.ElementarySet)
+			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, t.State.ElementarySet)
 		}
 	}
 
@@ -46,7 +46,7 @@ func (n *State) addTransition(node *State, label ltl.Set) {
 func (n State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
 	// case 1
 	// n = B, node = B'
-	for _, psi := range closure {
+	for psi := range closure {
 		if next, ok := psi.(ltl.Next); ok {
 			if n.Has(next) != node.Has(next.ChildNode()) {
 				return false
@@ -55,7 +55,7 @@ func (n State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
 	}
 
 	// case 2
-	for _, psi := range closure {
+	for psi := range closure {
 		if until, ok := psi.(ltl.Until); ok {
 			if n.Has(until) != (n.Has(until.RHSNode()) || (n.Has(until.LHSNode()) && node.Has(until))) {
 				return false

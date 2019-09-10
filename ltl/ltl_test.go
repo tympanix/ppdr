@@ -47,8 +47,8 @@ func ExampleFindElementarySets() {
 	}
 
 	// Output:
-	// [OA, !A]
-	// [!OA, !A]
-	// [OA, A]
+	// [A, OA]
+	// [!A, OA]
 	// [!OA, A]
+	// [!A, !OA]
 }
