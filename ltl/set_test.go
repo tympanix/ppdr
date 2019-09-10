@@ -10,7 +10,7 @@ func TestContains(t *testing.T) {
 	apB := AP{"B"}
 	notAPC := Not{AP{"C"}}
 	aUntilB := Until{apA, apB}
-	set := Set{apA, apB, notAPC, aUntilB}
+	set := NewSet(apA, apB, notAPC, aUntilB)
 
 	if !set.Contains(apA) {
 		t.Errorf("Set did not contain %+v; expected to do", apA)
@@ -31,7 +31,7 @@ func TestSize(t *testing.T) {
 	apB := AP{"B"}
 	notAPC := Not{AP{"C"}}
 	aUntilB := Until{apA, apB}
-	set := Set{apA, apB, notAPC, aUntilB}
+	set := NewSet(apA, apB, notAPC, aUntilB)
 
 	if set.Size() != 4 {
 		t.Errorf("set.Size() = %d; want 4", set.Size())
@@ -40,7 +40,7 @@ func TestSize(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	apA := AP{"A"}
-	set := Set{}
+	set := NewSet()
 
 	if set.Contains(apA) {
 		t.Errorf("Set do contain %+v; expected not to do", apA)
@@ -54,7 +54,7 @@ func TestAdd(t *testing.T) {
 }
 
 func TestPowerSet(t *testing.T) {
-	set := Set{AP{"A"}, AP{"B"}, AP{"C"}}
+	set := NewSet(AP{"A"}, AP{"B"}, AP{"C"})
 
 	powerSet := set.PowerSet()
 
@@ -63,10 +63,10 @@ func TestPowerSet(t *testing.T) {
 	}
 }
 
-func ExamplePowerSet() {
-	set := Set{AP{"A"}, AP{"B"}, AP{"C"}, Until{AP{"A"}, AP{"C"}}}
+func ExampleSet_PowerSet() {
+	set := NewSet(AP{"A"}, AP{"B"}, AP{"C"}, Until{AP{"A"}, AP{"C"}})
 
-	powerSet := set.PowerSet()
+	powerSet := set.SortedPowerSet()
 
 	for _, e := range powerSet {
 		fmt.Println(e)
@@ -76,17 +76,17 @@ func ExamplePowerSet() {
 	// []
 	// [A]
 	// [B]
-	// [A, B]
 	// [C]
+	// [A, B]
 	// [A, C]
 	// [B, C]
-	// [A, B, C]
 	// [A U C]
+	// [A, B, C]
+	// [A U C, B]
+	// [A U C, C]
 	// [A, A U C]
-	// [B, A U C]
-	// [A, B, A U C]
-	// [C, A U C]
-	// [A, C, A U C]
-	// [B, C, A U C]
-	// [A, B, C, A U C]
+	// [A U C, B, C]
+	// [A, A U C, B]
+	// [A, A U C, C]
+	// [A, A U C, B, C]
 }
