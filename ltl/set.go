@@ -59,12 +59,8 @@ func (s Set) String() string {
 
 // Contains returns true if the elementary sets contains phi.
 func (s Set) Contains(phi Node) bool {
-	for f := range s {
-		if f.SameAs(phi) {
-			return true
-		}
-	}
-	return false
+	_, ok := s[phi]
+	return ok
 }
 
 // Size returns the size of a set.

@@ -7,13 +7,51 @@ import (
 	"github.com/tympanix/master-2019/ltl"
 )
 
-// GNBA is a list of nodes
-type GNBA []*State
+// GNBA is a structure of a generalized non-deterministic Büchi automaton
+type GNBA struct {
+	States         []*State
+	StartingStates StateSet
+	FinalStates    []StateSet
+}
+
+// NewGNBA return a new empty GNBA
+func NewGNBA() *GNBA {
+	return &GNBA{
+		States:         make([]*State, 0),
+		StartingStates: NewStateSet(),
+		FinalStates:    make([]StateSet, 0),
+	}
+}
+
+// IsAcceptanceState return true if state is in any of the acceptance sets
+func (g *GNBA) IsAcceptanceState(state *State) bool {
+	for _, s := range g.FinalStates {
+		if s.Contains(state) {
+			return true
+		}
+	}
+	return false
+}
+
+// IsStartingState returns true if state is a starting state for the GNBA
+func (g *GNBA) IsStartingState(state *State) bool {
+	return g.StartingStates.Contains(state)
+}
 
 func (g GNBA) String() string {
 	var sb strings.Builder
-	for _, s := range g {
-		fmt.Fprintf(&sb, "%s\n", s.ElementarySet)
+	for _, s := range g.States {
+		var id string
+
+		if g.IsStartingState(s) {
+			id = id + ">"
+		}
+
+		if g.IsAcceptanceState(s) {
+			id = id + "*"
+		}
+
+		fmt.Fprintf(&sb, "%s%s\n", id, s.ElementarySet)
 
 		for _, t := range s.Transitions {
 			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, t.State.ElementarySet)
@@ -27,8 +65,6 @@ func (g GNBA) String() string {
 type State struct {
 	ElementarySet ltl.Set
 	Transitions   []Transition
-	IsStartState  bool
-	IsFinishState bool
 }
 
 // Has returns true if the gnba node has formula psi in the elementary set
