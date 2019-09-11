@@ -2,7 +2,10 @@ package ltl
 
 import (
 	"fmt"
+	"sort"
 	"strings"
+
+	"github.com/tympanix/master-2019/debug"
 )
 
 // Node is any node of an LTL formula
@@ -112,14 +115,31 @@ func addNegation(node Node, nodes Set) Set {
 // FindElementarySets finds all the elementary sets for a
 // closure(phi).
 func FindElementarySets(closure Set) []Set {
+	t := debug.NewTimer("elemsets")
+
+	defer func() {
+		t.Stop()
+	}()
+
 	elementarySets := make([]Set, 0)
-	powerSet := closure.SortedPowerSet()
+	powerSet := closure.PowerSet()
 
 	for _, set := range powerSet {
 		if set.IsElementary(closure) {
 			elementarySets = append(elementarySets, set)
 		}
 	}
+
+	sort.SliceStable(elementarySets, func(i, j int) bool {
+		a := elementarySets[i].String()
+		b := elementarySets[j].String()
+
+		if len(a) != len(b) {
+			return len(a) < len(b)
+		}
+
+		return strings.Compare(a, b) < 0
+	})
 
 	return elementarySets
 }

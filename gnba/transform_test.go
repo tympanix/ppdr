@@ -7,11 +7,11 @@ import (
 )
 
 func TestTransformGNBAToNBA(t *testing.T) {
-	phi := ltl.And{ltl.Until{ltl.AP{"a"}, ltl.AP{"b"}}, ltl.Until{ltl.AP{"b"}, ltl.AP{"a"}}}
-	g := GenerateGNBA(phi)dd
+	phi := ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"crit1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"crit2"}}}}
+	g := GenerateGNBA(phi)
 	nba := TransformGNBAtoNBA(g)
 
-	if 2*len(g.States) != len(nba.States) {
+	if 4*len(g.States) != len(nba.States) {
 		t.Error("nba does not have the right amount of states")
 	}
 

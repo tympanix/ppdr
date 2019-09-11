@@ -1,7 +1,15 @@
 package gnba
 
+import "github.com/tympanix/master-2019/debug"
+
 // TransformGNBAtoNBA takes a GNBA and transforms it into an NBA
 func TransformGNBAtoNBA(gnba *GNBA) *NBA {
+
+	t := debug.NewTimer("transform")
+
+	defer func() {
+		t.Stop()
+	}()
 
 	// If final states is the empty set, all states are accepting
 	if len(gnba.FinalStates) == 0 {
