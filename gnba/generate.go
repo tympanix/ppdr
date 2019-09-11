@@ -1,12 +1,20 @@
 package gnba
 
 import (
+	"github.com/tympanix/master-2019/debug"
 	"github.com/tympanix/master-2019/ltl"
 )
 
 // GenerateGNBA generates an GNBA from an LTL formula phi
 func GenerateGNBA(phi ltl.Node) *GNBA {
 
+	t := debug.NewTimer("gnba")
+
+	defer func() {
+		t.Stop()
+	}()
+
+	phi = phi.Normalize()
 	closure := ltl.Closure(phi)
 	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(closure)

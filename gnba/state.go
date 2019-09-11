@@ -8,6 +8,14 @@ type State struct {
 	Transitions   []Transition
 }
 
+// NewState returns a new state with no transitions with the given elementary set
+func NewState(es ltl.Set) *State {
+	return &State{
+		ElementarySet: es,
+		Transitions:   make([]Transition, 0),
+	}
+}
+
 // Has returns true if the gnba node has formula psi in the elementary set
 func (n *State) Has(psi ltl.Node) bool {
 	return n.ElementarySet.Contains(psi)
@@ -41,7 +49,7 @@ func (n *State) addTransition(node *State, label ltl.Set) {
 	})
 }
 
-func (n State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
+func (n *State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
 	// case 1
 	// n = B, node = B'
 	for psi := range closure {

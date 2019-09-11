@@ -36,7 +36,7 @@ func (g *GNBA) IsStartingState(state *State) bool {
 	return g.StartingStates.Contains(state)
 }
 
-// HasState returns true of the state is part of this GNBA
+// HasState returns true if state is a part of the GNBA
 func (g *GNBA) HasState(state *State) bool {
 	for _, s := range g.States {
 		if s == state {
@@ -44,6 +44,16 @@ func (g *GNBA) HasState(state *State) bool {
 		}
 	}
 	return false
+}
+
+// FindStateIndex finds the index of the state in the GNBA structure
+func (g *GNBA) FindStateIndex(state *State) int {
+	for i, s := range g.States {
+		if s == state {
+			return i
+		}
+	}
+	return -1
 }
 
 // Copy creates a copy of the GNBA

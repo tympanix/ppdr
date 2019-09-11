@@ -2,7 +2,10 @@ package ltl
 
 import (
 	"fmt"
+	"sort"
 	"strings"
+
+	"github.com/tympanix/master-2019/debug"
 )
 
 // Node is any node of an LTL formula
@@ -61,13 +64,15 @@ func FindAtomicPropositions(node Node) Set {
 func auxFindAtomicPropositions(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		return acc.Add(ap)
+	} else if _, ok := node.(True); ok {
+		return acc
 	} else if unary, ok := node.(UnaryNode); ok {
 		return auxFindAtomicPropositions(unary.ChildNode(), acc)
 	} else if binary, ok := node.(BinaryNode); ok {
 		aps := auxFindAtomicPropositions(binary.LHSNode(), acc)
 		return auxFindAtomicPropositions(binary.RHSNode(), aps)
 	}
-	panic("Unknown ltl node")
+	panic(fmt.Errorf("unknown ltl node %v", node))
 }
 
 // Closure returns a list of all sub-nodes of a given node and the
@@ -81,6 +86,9 @@ func auxClosure(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		acc = addNegation(ap, acc)
 		return acc.Add(ap)
+	} else if t, ok := node.(True); ok {
+		addNegation(t, acc)
+		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
 		acc.Add(unary)
 		addNegation(unary, acc)
@@ -91,7 +99,7 @@ func auxClosure(node Node, acc Set) Set {
 		acc = auxClosure(binary.LHSNode(), acc)
 		return auxClosure(binary.RHSNode(), acc)
 	}
-	panic("Unknown ltl node")
+	panic(fmt.Sprintf("unknown ltl node %v", node))
 }
 
 // Function will add the negation of a node to an array, if the node
@@ -107,14 +115,31 @@ func addNegation(node Node, nodes Set) Set {
 // FindElementarySets finds all the elementary sets for a
 // closure(phi).
 func FindElementarySets(closure Set) []Set {
+	t := debug.NewTimer("elemsets")
+
+	defer func() {
+		t.Stop()
+	}()
+
 	elementarySets := make([]Set, 0)
-	powerSet := closure.SortedPowerSet()
+	powerSet := closure.PowerSet()
 
 	for _, set := range powerSet {
 		if set.IsElementary(closure) {
 			elementarySets = append(elementarySets, set)
 		}
 	}
+
+	sort.SliceStable(elementarySets, func(i, j int) bool {
+		a := elementarySets[i].String()
+		b := elementarySets[j].String()
+
+		if len(a) != len(b) {
+			return len(a) < len(b)
+		}
+
+		return strings.Compare(a, b) < 0
+	})
 
 	return elementarySets
 }

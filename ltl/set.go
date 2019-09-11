@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+import (
+	"github.com/tympanix/master-2019/debug"
+)
+
 // Set is a set of formulas in LTL.
 type Set map[Node]bool
 
@@ -116,6 +120,8 @@ func (s Set) AsSlice() SetSlice {
 // PowerSet returns an array (set) containing all possible
 // subsets for a set.
 func (s Set) PowerSet() []Set {
+	t := debug.NewTimer("powerset")
+
 	powerSet := make([]Set, 0)
 	powerSetSize := int(math.Pow(2, float64(s.Size())))
 	values := s.AsSlice()
@@ -130,31 +136,29 @@ func (s Set) PowerSet() []Set {
 		powerSet = append(powerSet, subset)
 	}
 
+	defer func() {
+		t.Stop()
+	}()
+
 	return powerSet
 
 }
 
-// SortedPowerSet returns the power set which is sorted
-func (s Set) SortedPowerSet() []Set {
-	powerSet := s.PowerSet()
-
-	sort.SliceStable(powerSet, func(i, j int) bool {
-		a := powerSet[i].String()
-		b := powerSet[j].String()
-
-		if len(a) != len(b) {
-			return len(a) < len(b)
-		}
-
-		return strings.Compare(a, b) < 0
-	})
-
-	return powerSet
-}
-
-// IsElementary returns true if the set is elementary.
+// IsElementary returns true if the set is elementary
 func (s Set) IsElementary(closure Set) bool {
-	return s.isConsistent(closure) && s.isLocallyConsistent(closure) && s.isMaximal(closure)
+	if !s.isMaximal(closure) {
+		return false
+	}
+
+	if !s.isLocallyConsistent(closure) {
+		return false
+	}
+
+	if !s.isConsistent(closure) {
+		return false
+	}
+
+	return true
 }
 
 func (s Set) isConsistent(closure Set) bool {
