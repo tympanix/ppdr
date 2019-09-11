@@ -1,7 +1,6 @@
 package ltl
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -61,32 +60,4 @@ func TestPowerSet(t *testing.T) {
 	if len(powerSet) != 8 {
 		t.Error("Expected length to be 8 but was ", len(powerSet))
 	}
-}
-
-func ExampleSet_PowerSet() {
-	set := NewSet(AP{"A"}, AP{"B"}, AP{"C"}, Until{AP{"A"}, AP{"C"}})
-
-	powerSet := set.SortedPowerSet()
-
-	for _, e := range powerSet {
-		fmt.Println(e)
-	}
-
-	// Output:
-	// []
-	// [A]
-	// [B]
-	// [C]
-	// [A, B]
-	// [A, C]
-	// [B, C]
-	// [A U C]
-	// [A, B, C]
-	// [A U C, B]
-	// [A U C, C]
-	// [A, A U C]
-	// [A U C, B, C]
-	// [A, A U C, B]
-	// [A, A U C, C]
-	// [A, A U C, B, C]
 }
