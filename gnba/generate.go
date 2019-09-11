@@ -7,6 +7,7 @@ import (
 // GenerateGNBA generates an GNBA from an LTL formula phi
 func GenerateGNBA(phi ltl.Node) *GNBA {
 
+	phi = phi.Normalize()
 	closure := ltl.Closure(phi)
 	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(closure)

@@ -61,13 +61,15 @@ func FindAtomicPropositions(node Node) Set {
 func auxFindAtomicPropositions(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		return acc.Add(ap)
+	} else if _, ok := node.(True); ok {
+		return acc
 	} else if unary, ok := node.(UnaryNode); ok {
 		return auxFindAtomicPropositions(unary.ChildNode(), acc)
 	} else if binary, ok := node.(BinaryNode); ok {
 		aps := auxFindAtomicPropositions(binary.LHSNode(), acc)
 		return auxFindAtomicPropositions(binary.RHSNode(), aps)
 	}
-	panic("Unknown ltl node")
+	panic(fmt.Errorf("unknown ltl node %v", node))
 }
 
 // Closure returns a list of all sub-nodes of a given node and the
@@ -81,6 +83,9 @@ func auxClosure(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		acc = addNegation(ap, acc)
 		return acc.Add(ap)
+	} else if t, ok := node.(True); ok {
+		addNegation(t, acc)
+		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
 		acc.Add(unary)
 		addNegation(unary, acc)
@@ -91,7 +96,7 @@ func auxClosure(node Node, acc Set) Set {
 		acc = auxClosure(binary.LHSNode(), acc)
 		return auxClosure(binary.RHSNode(), acc)
 	}
-	panic("Unknown ltl node")
+	panic(fmt.Sprintf("unknown ltl node %v", node))
 }
 
 // Function will add the negation of a node to an array, if the node
