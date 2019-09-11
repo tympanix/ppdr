@@ -38,7 +38,7 @@ func TransformGNBAtoNBA(gnba *GNBA) *NBA {
 	for i, c := range copies {
 		for s := range c.FinalStates[0] {
 			for j, t := range s.Transitions {
-				next := copies[i+1%len(copies)]
+				next := copies[(i+1)%len(copies)]
 				k := c.FindStateIndex(t.State)
 				s.Transitions[j] = t.RenameTo(next.States[k])
 
