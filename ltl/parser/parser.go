@@ -152,13 +152,13 @@ func (p *Parser) parseAtomic() ltl.Node {
 		p.expect(token.RPAR)
 		return exp
 	} else if p.have(token.NOT) {
-		if p.have(token.LPAR) {
+		if p.see(token.LPAR) {
 			return p.parseParenthesis()
 		}
 		p.expect(token.AP)
 		return ltl.AP{p.last().String()}
 	} else if p.have(token.NEXT) {
-		if p.have(token.LPAR) {
+		if p.see(token.LPAR) {
 			return p.parseParenthesis()
 		}
 		p.expect(token.AP)

@@ -1,7 +1,9 @@
 package parser
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/tympanix/master-2019/ltl"
@@ -40,4 +42,51 @@ func TestParser_1(t *testing.T) {
 
 		i++
 	}
+}
+
+func TestParserFailed(t *testing.T) {
+
+	f, err := os.Open("./tests/fail.txt")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r := bufio.NewScanner(f)
+
+	for r.Scan() {
+		sc := scanner.NewFromString(r.Text())
+		p := New(sc)
+
+		_, err := p.Parse()
+
+		if err == nil {
+			t.Error(fmt.Sprintf("expected failure when parsing: %s", r.Text()))
+		}
+
+	}
+}
+
+func TestParserSuccess(t *testing.T) {
+
+	f, err := os.Open("./tests/pass.txt")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r := bufio.NewScanner(f)
+
+	for r.Scan() {
+		sc := scanner.NewFromString(r.Text())
+		p := New(sc)
+
+		_, err := p.Parse()
+
+		if err != nil {
+			t.Error(fmt.Sprintf("expected failure when parsing: %s, %v", r.Text(), err))
+		}
+
+	}
+
 }

@@ -1,0 +1,9 @@
+a and b
+a -> b
+a and b or c -> d
+!(a and b or c -> d)
+([]<> crit) & ([]<> crit2)
+Oa -> b
+[] Oa -> !(a and b or (c and d))
+[][][][][]a
+<><><><><>a
