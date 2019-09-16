@@ -1,69 +1,93 @@
 \section{Project to make}
 A proof-of-concept data repository with the incorporation of provenance-preserving confidentiality and integrity policies. Policies are expressed through resource formulas and are inspired by first order logic. The project aims to show how GDPR and data privacy can be accommodated in future database systems.
 
-\section{Timeline}
-Only a few weeks in the below timeline will have points stating dedicated work on report. Reason being that we intend to write the report in parallel with the remaining work, i.e. report will be written in period from week 34 to week 52.
+\section{MoSCoW model}
+\paragraph{Must implement}
+\begin{itemize}
+    \item Resource repository
+    \begin{itemize}
+        \item Client/server model
+        \item History of resource relationships
+    \end{itemize}
+    \item Structure of data
+    \begin{itemize}
+        \item Resources with attributes
+        \item Resources modelled by acyclic graph
+    \end{itemize}
+    \item Operations
+    \begin{itemize}
+        \item Put/query
+    \end{itemize}
+\end{itemize}
 
+\paragraph{Should implement}
+\begin{itemize}
+    \item Policies
+    \begin{itemize}
+        \item DSL for resource formulas (inspired by FOL)
+        \item Confidentiality policy for resources
+        \item Integrity policy for queries
+    \end{itemize}
+    \item Access control system
+    \begin{itemize}
+        \item Ensures policies are upheld
+        \item Identities (simple password based authentication)
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Could implement}
+\begin{itemize}
+    \item Functions to derive new data
+    \begin{itemize}
+        \item New resources can be computed from aggregated resources
+        \item E.g. min, max, mean, median
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Will not implement}
+\begin{itemize}
+    \item Security
+    \begin{itemize}
+        \item End-to-end encryption
+    \end{itemize}
+    \item Distributed system
+    \begin{itemize}
+        \item P2P structure with DHT (maybe blockchain)
+    \end{itemize}
+    \item Trustworthiness of resources
+    \begin{itemize}
+        \item Resources have a “trust score” which is inherited transitively
+    \end{itemize}
+\end{itemize}
+
+
+\section{Timeline}
 \paragraph{Week 34}
 \begin{itemize}
-    \item Read material regarding Linear Temporal Logic (LTL) and First Order Logic (FOL)
-    \item 
+    \item Read material regarding Linear Temporal Logic (LTL) and First Order Logic (FOL) (primarily \cite{baier2008principles})
 \end{itemize}
 \paragraph{Week 35}
 \begin{itemize}
-    \item Make decision about usage of LTL or FOL
+    \item Deadline for decision of LTL or FOL including other major design decisions
 \end{itemize}
-\paragraph{Week 36}
+\paragraph{Week 36-37}
 \begin{itemize}
-    \item Implementation of resource repository complete
+    \item Implementation of requirements from the \emph{must} section of the MoSCoW model
+    \item Begin design section of report with considerations of LTL versus FOL
 \end{itemize}
-\paragraph{Week 37}
+\paragraph{Week 38-43}
 \begin{itemize}
-    \item Simple working model implemented with support 
+    \item Implementation oriented period with some report writing
+    \item Implementation of requirements from the \emph{should} section of the MoSCoW model
 \end{itemize}
-\paragraph{Week 38}
+\paragraph{Week 44-47}
 \begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 39}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 40}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 41}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 42}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 43}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 44}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 45}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 46}
-\begin{itemize}
-    \item 
-\end{itemize}
-\paragraph{Week 47}
-\begin{itemize}
-    \item 
+    \item Report oriented period with some implementation
+    \item Implementation of requirements from the \emph{could} section of the MoSCoW model
 \end{itemize}
 \paragraph{Week 48}
 \begin{itemize}
-    \item Preparations for hand in of report
+    \item Preparations for hand in of report draft
 \end{itemize}
 \paragraph{Week 49}
 \begin{itemize}
