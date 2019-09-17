@@ -5,9 +5,7 @@ import (
 	"math"
 	"sort"
 	"strings"
-)
 
-import (
 	"github.com/tympanix/master-2019/debug"
 )
 
@@ -226,5 +224,11 @@ func (s Set) isMaximal(closure Set) bool {
 		}
 	}
 
+	return true
+}
+
+// Conflicts return true if two sets of predicates conflict with each other.
+func (s Set) Conflicts(s1 Set) bool {
+	// TODO: implement issue #17.
 	return true
 }
