@@ -5,67 +5,18 @@ import (
 	"github.com/tympanix/master-2019/systems/ts"
 )
 
-// State is a state in the product transition system of TS and A
-type State struct {
-	StateTS     *ts.State
-	StateNBA    *gnba.State
-	Transitions []*State
-	IsExpanded  bool
-}
-
-func newState(sTS *ts.State, sNBA *gnba.State) *State {
-	return &State{
-		StateTS:     sTS,
-		StateNBA:    sNBA,
-		Transitions: make([]*State, 0),
-		IsExpanded:  false,
-	}
-}
-
-func (s *State) post(p *Product) StateSet {
-	if !s.IsExpanded {
-		s.expand(p)
-	}
-	return NewStateSet()
-}
-
-func (s *State) addTransition(s1 *State) {
-	s.Transitions = append(s.Transitions, s1)
-}
-
-func (s *State) expand(p *Product) {
-	for _, tTS := range s.StateTS.Dependencies {
-		for _, tNBA := range s.StateNBA.Transitions {
-			pNBA := tNBA.State
-			if !tNBA.Label.Conflicts(tTS.Predicates) {
-				sPrime := newState(tTS, pNBA)
-				p.AddState(sPrime)
-				s.addTransition(sPrime)
-			}
-		}
-
-	}
-
-	s.IsExpanded = true
-}
-
 // Product is a product of a transition system and a NBA
 type Product struct {
-	States        []*State
+	States        map[StateTuple]*State
 	InitialStates []*State
 	TS            *ts.TS
 	NBA           *gnba.NBA
 }
 
-// AddState to the states of the product.
-func (p *Product) AddState(s *State) {
-	p.States = append(p.States, s)
-}
-
 // New creates a new product.
 func New(t *ts.TS, n *gnba.NBA) *Product {
 	return &Product{
-		States: make([]*State, 0),
+		States: make(map[StateTuple]*State),
 		TS:     t,
 		NBA:    n,
 	}
@@ -89,35 +40,90 @@ func newContext() *context {
 	}
 }
 
+// AddState to the states of the product.
+func (p *Product) AddState(s *State) *State {
+	if s, ok := p.States[s.StateTuple]; ok {
+		return s
+	}
+
+	p.States[s.StateTuple] = s
+	return s
+}
+
+func (p *Product) getOrAddState(sTS *ts.State, sNBA *gnba.State) *State {
+	stateTuple := StateTuple{
+		StateTS:  sTS,
+		StateNBA: sNBA,
+	}
+
+	if s, ok := p.States[stateTuple]; ok {
+		return s
+	}
+
+	s := newState(sTS, sNBA)
+
+	p.AddState(s)
+
+	return s
+}
+
 // HasCycle return true if a cycle exists in the product
 func (p *Product) HasCycle() bool {
-	// TODO: Detect cycles in the product of TS and A
 	p.addInitialStates()
 	c := newContext()
 
 	ir := NewStateSet(p.InitialStates...)
 	for ir.Size() > 0 || !c.CycleFound {
 		s := ir.Get()
-		reachableCycle(s, c)
+		p.reachableCycle(s, c)
 	}
 	if !c.CycleFound {
 		return true
-	} else {
-		return false // TODO: add counter example
 	}
+	return false // TODO: add counter example
 }
 
-func reachableCycle(s *State, c *context) {
+func (p *Product) reachableCycle(s *State, c *context) {
 	c.U.Push(s)
 	c.R.Add(s)
 	for ok := true; ok; ok = !(c.U.Empty() || c.CycleFound) {
 		s1 := c.U.Peek()
-		if true {
-
+		if s2 := s1.unvisitedSucc(c.R, p); s2 != nil {
+			c.U.Push(s2)
+			c.R.Add(s2)
 		} else {
-
+			c.U.Pop()
+			if s1.isFinalState(p) {
+				c.CycleFound = p.cycleCheck(s1, c)
+			}
 		}
 	}
+}
+
+func (p *Product) cycleCheck(s *State, c *context) bool {
+	// Reset V and T
+	c.T = NewStateSet()
+	c.V = NewStateStack()
+	cycleFound := false
+
+	c.V.Push(s)
+	c.T.Add(s)
+
+	for ok := true; ok; ok = !(c.V.Empty() || cycleFound) {
+		s1 := c.V.Peek()
+		if s1.post(p).Contains(s) {
+			cycleFound = true
+			c.V.Push(s)
+		} else {
+			if s2 := s1.unvisitedSucc(c.T, p); s2 != nil {
+				c.V.Push(s2)
+				c.T.Add(s2)
+			} else {
+				c.V.Pop()
+			}
+		}
+	}
+	return cycleFound
 }
 
 func (p *Product) addInitialStates() {
@@ -126,10 +132,7 @@ func (p *Product) addInitialStates() {
 			for _, t := range q0.Transitions {
 				if !t.Label.Conflicts(s0.Predicates) {
 					q := t.State
-					n := &State{
-						StateTS:  s0,
-						StateNBA: q,
-					}
+					n := newState(s0, q)
 					p.InitialStates = append(p.InitialStates, n)
 				}
 			}

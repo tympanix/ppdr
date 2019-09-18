@@ -229,6 +229,11 @@ func (s Set) isMaximal(closure Set) bool {
 
 // Conflicts return true if two sets of predicates conflict with each other.
 func (s Set) Conflicts(s1 Set) bool {
-	// TODO: implement issue #17.
-	return true
+	for n := range s {
+		if s1.Contains(Negate(n)) {
+			return true
+		}
+	}
+
+	return false
 }
