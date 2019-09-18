@@ -1,11 +1,19 @@
 package gnba
 
-import "github.com/tympanix/master-2019/ltl"
+import (
+	"fmt"
+
+	"github.com/tympanix/master-2019/ltl"
+)
 
 // State is a node in a GNBA
 type State struct {
 	ElementarySet ltl.Set
 	Transitions   []Transition
+}
+
+func (s *State) String() string {
+	return fmt.Sprint(s.ElementarySet)
 }
 
 // NewState returns a new state with no transitions with the given elementary set
@@ -16,45 +24,53 @@ func NewState(es ltl.Set) *State {
 	}
 }
 
+// AddTransition adds a transition from one state to another with labels for the transition
+func (s *State) AddTransition(s1 *State, l ...ltl.Node) {
+	s.Transitions = append(s.Transitions, Transition{
+		State: s1,
+		Label: ltl.NewSet(l...),
+	})
+}
+
 // Has returns true if the gnba node has formula psi in the elementary set
-func (n *State) Has(psi ltl.Node) bool {
-	return n.ElementarySet.Contains(psi)
+func (s *State) Has(psi ltl.Node) bool {
+	return s.ElementarySet.Contains(psi)
 }
 
 // Copy makes a copy of the state using a rename tabe to rename transitions
-func (n *State) Copy() *State {
+func (s *State) Copy() *State {
 	trns := make([]Transition, 0)
 
-	for _, t := range n.Transitions {
+	for _, t := range s.Transitions {
 		trns = append(trns, t)
 	}
 
 	return &State{
-		ElementarySet: n.ElementarySet.Copy(),
+		ElementarySet: s.ElementarySet.Copy(),
 		Transitions:   trns,
 	}
 }
 
 // Rename renames all state transitions using a rename table
-func (n *State) Rename(rt renameTable) {
-	for i, t := range n.Transitions {
-		n.Transitions[i] = t.Rename(rt)
+func (s *State) Rename(rt renameTable) {
+	for i, t := range s.Transitions {
+		s.Transitions[i] = t.Rename(rt)
 	}
 }
 
-func (n *State) addTransition(node *State, label ltl.Set) {
-	n.Transitions = append(n.Transitions, Transition{
-		State: node,
+func (s *State) addTransition(state *State, label ltl.Set) {
+	s.Transitions = append(s.Transitions, Transition{
+		State: state,
 		Label: label,
 	})
 }
 
-func (n *State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
+func (s *State) shouldHaveEdgeTo(state State, closure ltl.Set) bool {
 	// case 1
-	// n = B, node = B'
+	// s = B, state = B'
 	for psi := range closure {
 		if next, ok := psi.(ltl.Next); ok {
-			if n.Has(next) != node.Has(next.ChildNode()) {
+			if s.Has(next) != state.Has(next.ChildNode()) {
 				return false
 			}
 		}
@@ -63,7 +79,7 @@ func (n *State) shouldHaveEdgeTo(node State, closure ltl.Set) bool {
 	// case 2
 	for psi := range closure {
 		if until, ok := psi.(ltl.Until); ok {
-			if n.Has(until) != (n.Has(until.RHSNode()) || (n.Has(until.LHSNode()) && node.Has(until))) {
+			if s.Has(until) != (s.Has(until.RHSNode()) || (s.Has(until.LHSNode()) && state.Has(until))) {
 				return false
 			}
 		}

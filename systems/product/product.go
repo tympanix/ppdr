@@ -1,6 +1,9 @@
 package product
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/tympanix/master-2019/gnba"
 	"github.com/tympanix/master-2019/systems/ts"
 )
@@ -13,6 +16,28 @@ type Product struct {
 	NBA           *gnba.NBA
 }
 
+func (p *Product) String() string {
+	var sb strings.Builder
+	for _, v := range p.States {
+		var prefix string
+		if p.isInitialState(v) {
+			prefix = ">"
+		}
+
+		var suffix string
+		if v.isFinalState(p) {
+			suffix = fmt.Sprintf("*")
+		}
+
+		fmt.Fprintf(&sb, "%s%s%s\n", prefix, v, suffix)
+		for s := range v.Transitions {
+			fmt.Fprintf(&sb, "\t-->\t%s\n", s)
+		}
+	}
+
+	return sb.String()
+}
+
 // New creates a new product.
 func New(t *ts.TS, n *gnba.NBA) *Product {
 	return &Product{
@@ -20,6 +45,15 @@ func New(t *ts.TS, n *gnba.NBA) *Product {
 		TS:     t,
 		NBA:    n,
 	}
+}
+
+func (p *Product) isInitialState(s *State) bool {
+	for _, s1 := range p.InitialStates {
+		if s == s1 {
+			return true
+		}
+	}
+	return false
 }
 
 type context struct {
@@ -67,13 +101,13 @@ func (p *Product) getOrAddState(sTS *ts.State, sNBA *gnba.State) *State {
 	return s
 }
 
-// HasCycle return true if a cycle exists in the product
-func (p *Product) HasCycle() bool {
+// Satisfy return true if a cycle exists in the product
+func (p *Product) Satisfy() bool {
 	p.addInitialStates()
 	c := newContext()
 
 	ir := NewStateSet(p.InitialStates...)
-	for ir.Size() > 0 || !c.CycleFound {
+	for ir.Size() > 0 && !c.CycleFound {
 		s := ir.Get()
 		p.reachableCycle(s, c)
 	}
@@ -132,7 +166,7 @@ func (p *Product) addInitialStates() {
 			for _, t := range q0.Transitions {
 				if !t.Label.Conflicts(s0.Predicates) {
 					q := t.State
-					n := newState(s0, q)
+					n := p.getOrAddState(s0, q)
 					p.InitialStates = append(p.InitialStates, n)
 				}
 			}

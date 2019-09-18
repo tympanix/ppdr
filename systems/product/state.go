@@ -1,6 +1,8 @@
 package product
 
 import (
+	"fmt"
+
 	"github.com/tympanix/master-2019/gnba"
 	"github.com/tympanix/master-2019/systems/ts"
 )
@@ -11,11 +13,19 @@ type StateTuple struct {
 	StateNBA *gnba.State
 }
 
+func (s *StateTuple) String() string {
+	return fmt.Sprintf("<%v, %v>", s.StateTS, s.StateNBA)
+}
+
 // State is a state in the product transition system of TS and A
 type State struct {
 	StateTuple
 	Transitions StateSet
 	IsExpanded  bool
+}
+
+func (s *State) String() string {
+	return fmt.Sprint(s.StateTuple)
 }
 
 func newState(sTS *ts.State, sNBA *gnba.State) *State {

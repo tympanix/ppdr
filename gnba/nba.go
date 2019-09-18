@@ -21,6 +21,21 @@ func NewNBA() *NBA {
 	}
 }
 
+// AddState add one or more states to the NBA
+func (n *NBA) AddState(states ...*State) {
+	n.States = append(n.States, states...)
+}
+
+// AddInitialState add one or more initials states to the NBA
+func (n *NBA) AddInitialState(states ...*State) {
+	n.StartStates.Add(states...)
+}
+
+// AddAcceptanceState add one or more acceptance states to the NBA
+func (n *NBA) AddAcceptanceState(states ...*State) {
+	n.FinalStates.Add(states...)
+}
+
 // IsAcceptanceState returns true if state is an accepting state in the NBA
 func (n *NBA) IsAcceptanceState(state *State) bool {
 	return n.FinalStates.Contains(state)
