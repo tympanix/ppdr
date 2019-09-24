@@ -127,7 +127,7 @@ func (p *Product) reachableCycle(s *State, c *context) {
 			c.R.Add(s2)
 		} else {
 			c.U.Pop()
-			if s1.isFinalState(p) {
+			if !s1.isFinalState(p) { // TODO: Check if negation is correct
 				c.CycleFound = p.cycleCheck(s1, c)
 			}
 		}
