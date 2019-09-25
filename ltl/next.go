@@ -30,3 +30,7 @@ func (next Next) String() string {
 func (next Next) Normalize() Node {
 	return Next{next.ChildNode().Normalize()}
 }
+
+func (next Next) Len() int {
+	return 1 + next.ChildNode().Len()
+}

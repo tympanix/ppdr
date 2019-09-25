@@ -28,3 +28,7 @@ func (c And) String() string {
 func (c And) Normalize() Node {
 	return And{c.LHSNode().Normalize(), c.RHSNode().Normalize()}
 }
+
+func (c And) Len() int {
+	return 1 + c.LHSNode().Len() + c.RHSNode().Len()
+}

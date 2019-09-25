@@ -17,7 +17,7 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 	phi = phi.Normalize()
 	closure := ltl.Closure(phi)
 	aps := ltl.FindAtomicPropositions(phi)
-	elemSets := ltl.FindElementarySets(closure)
+	elemSets := ltl.FindElementarySets(phi)
 
 	gnba := NewGNBA()
 

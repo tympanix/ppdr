@@ -26,3 +26,7 @@ func (u Until) String() string {
 func (u Until) Normalize() Node {
 	return Until{u.LHSNode().Normalize(), u.RHSNode().Normalize()}
 }
+
+func (u Until) Len() int {
+	return 1 + u.LHSNode().Len() + u.RHSNode().Len()
+}

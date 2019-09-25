@@ -64,9 +64,35 @@ func TestNormalize(t *testing.T) {
 	}
 }
 
-func ExampleFindElementarySets() {
+func TestFormulaLength(t *testing.T) {
+
+	tests := map[Node]int{
+		AP{"a"}:                               0,
+		And{AP{"a"}, AP{"b"}}:                 1,
+		Not{AP{"a"}}:                          1,
+		Until{And{AP{"a"}, AP{"b"}}, AP{"c"}}: 2,
+		Next{Not{And{AP{"a"}, True{}}}}:       3,
+		Eventually{Or{True{}, Not{AP{"a"}}}}:  3,
+		Impl{Always{AP{"a"}}, AP{"b"}}:        2,
+	}
+
+	i := 0
+
+	for n, l := range tests {
+		name := fmt.Sprintf("test:%d", i)
+		t.Run(name, func(t *testing.T) {
+			if n.Len() != l {
+				t.Errorf("expected formula length: %d, got %d", l, n.Len())
+			}
+		})
+		i++
+	}
+
+}
+
+func ExampleFindElementarySets_one() {
 	phi := Next{AP{"A"}}
-	elemSets := FindElementarySets(Closure(phi))
+	elemSets := FindElementarySets(phi)
 
 	for _, s := range elemSets {
 		fmt.Println(s)
@@ -77,4 +103,20 @@ func ExampleFindElementarySets() {
 	// [!A, OA]
 	// [!OA, A]
 	// [!A, !OA]
+}
+
+func ExampleFindElementarySets_three() {
+	phi := Until{True{}, Not{Until{True{}, AP{"green"}}}}
+	elemSets := FindElementarySets(phi)
+
+	for _, s := range elemSets {
+		fmt.Println(s)
+	}
+
+	//Output:
+	// [green, true, true U !(true U green), true U green]
+	// [!green, true, true U !(true U green), true U green]
+	// [!(true U !(true U green)), green, true, true U green]
+	// [!(true U !(true U green)), !green, true, true U green]
+	// [!(true U green), !green, true, true U !(true U green)]
 }
