@@ -59,9 +59,9 @@ func (p *Product) isInitialState(s *State) bool {
 
 type context struct {
 	R          StateSet
-	U          StateStack
+	U          *StateStack
 	T          StateSet
-	V          StateStack
+	V          *StateStack
 	CycleFound bool
 }
 
