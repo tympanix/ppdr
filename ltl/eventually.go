@@ -31,3 +31,7 @@ func (e Eventually) SameAs(node Node) bool {
 func (e Eventually) Normalize() Node {
 	return Until{True{}, e.ChildNode().Normalize()}
 }
+
+func (e Eventually) Len() int {
+	return 1 + e.ChildNode().Len()
+}

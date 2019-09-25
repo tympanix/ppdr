@@ -24,3 +24,7 @@ func (ap AP) String() string {
 func (ap AP) Normalize() Node {
 	return ap
 }
+
+func (ap AP) Len() int {
+	return 0
+}

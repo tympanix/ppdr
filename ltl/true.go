@@ -16,3 +16,7 @@ func (t True) Normalize() Node {
 func (t True) String() string {
 	return "true"
 }
+
+func (t True) Len() int {
+	return 0
+}

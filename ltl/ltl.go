@@ -2,16 +2,14 @@ package ltl
 
 import (
 	"fmt"
-	"sort"
 	"strings"
-
-	"github.com/tympanix/master-2019/debug"
 )
 
 // Node is any node of an LTL formula
 type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
+	Len() int
 	String() string
 }
 
@@ -78,67 +76,33 @@ func auxFindAtomicPropositions(node Node, acc Set) Set {
 // Closure returns a list of all sub-nodes of a given node and the
 // node itself.
 func Closure(node Node) Set {
-	closureTemp := make(Set, 0)
-	return auxClosure(node, closureTemp)
+	sub := Subformulae(node)
+
+	for s := range sub {
+		sub.Add(Negate(s))
+	}
+
+	return sub
 }
 
-func auxClosure(node Node, acc Set) Set {
+// Subformulae return all subformulaes of a LTL formula
+func Subformulae(node Node) Set {
+	closureTemp := make(Set, 0)
+	return auxSubformulae(node, closureTemp)
+}
+
+func auxSubformulae(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
-		acc = addNegation(ap, acc)
 		return acc.Add(ap)
 	} else if t, ok := node.(True); ok {
 		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
 		acc.Add(unary)
-		addNegation(unary, acc)
-		return auxClosure(unary.ChildNode(), acc)
+		return auxSubformulae(unary.ChildNode(), acc)
 	} else if binary, ok := node.(BinaryNode); ok {
 		acc.Add(binary)
-		addNegation(binary, acc)
-		acc = auxClosure(binary.LHSNode(), acc)
-		return auxClosure(binary.RHSNode(), acc)
+		acc = auxSubformulae(binary.LHSNode(), acc)
+		return auxSubformulae(binary.RHSNode(), acc)
 	}
 	panic(fmt.Sprintf("unknown ltl node %v", node))
-}
-
-// Function will add the negation of a node to an array, if the node
-// ifself is not already a negation.
-func addNegation(node Node, nodes Set) Set {
-	if _, ok := node.(Not); !ok {
-		nodes.Add(Not{node})
-	}
-
-	return nodes
-}
-
-// FindElementarySets finds all the elementary sets for a
-// closure(phi).
-func FindElementarySets(closure Set) []Set {
-	t := debug.NewTimer("elemsets")
-
-	defer func() {
-		t.Stop()
-	}()
-
-	elementarySets := make([]Set, 0)
-	powerSet := closure.PowerSet()
-
-	for _, set := range powerSet {
-		if set.IsElementary(closure) {
-			elementarySets = append(elementarySets, set)
-		}
-	}
-
-	sort.SliceStable(elementarySets, func(i, j int) bool {
-		a := elementarySets[i].String()
-		b := elementarySets[j].String()
-
-		if len(a) != len(b) {
-			return len(a) < len(b)
-		}
-
-		return strings.Compare(a, b) < 0
-	})
-
-	return elementarySets
 }

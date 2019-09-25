@@ -28,3 +28,7 @@ func (i Impl) String() string {
 func (i Impl) Normalize() Node {
 	return Or{Negate(i.LHSNode().Normalize()), i.RHSNode().Normalize()}.Normalize()
 }
+
+func (i Impl) Len() int {
+	return 1 + i.LHSNode().Len() + i.RHSNode().Len()
+}

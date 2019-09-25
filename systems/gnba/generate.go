@@ -3,6 +3,7 @@ package gnba
 import (
 	"github.com/tympanix/master-2019/debug"
 	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/master-2019/systems/ba"
 )
 
 // GenerateGNBA generates an GNBA from an LTL formula phi
@@ -17,14 +18,14 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 	phi = phi.Normalize()
 	closure := ltl.Closure(phi)
 	aps := ltl.FindAtomicPropositions(phi)
-	elemSets := ltl.FindElementarySets(closure)
+	elemSets := ltl.FindElementarySets(phi)
 
 	gnba := NewGNBA(phi)
 
 	for _, s := range elemSets {
-		n := State{
+		n := ba.State{
 			ElementarySet: s,
-			Transitions:   make([]Transition, 0),
+			Transitions:   make([]ba.Transition, 0),
 		}
 
 		gnba.States = append(gnba.States, &n)
@@ -40,7 +41,7 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 	// Find acceptance sets
 	for psi := range closure {
 		if until, ok := psi.(ltl.Until); ok {
-			set := NewStateSet()
+			set := ba.NewStateSet()
 			for _, s := range gnba.States {
 				if !s.Has(until) || s.Has(until.RHSNode()) {
 					set.Add(s)
@@ -55,8 +56,8 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 		intersec := s.ElementarySet.Intersection(aps)
 
 		for _, s2 := range gnba.States {
-			if s.shouldHaveEdgeTo(*s2, closure) {
-				s.addTransition(s2, intersec)
+			if s.ShouldHaveEdgeTo(*s2, closure) {
+				s.AddTransitionFromSet(s2, intersec)
 			}
 		}
 	}

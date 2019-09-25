@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tympanix/master-2019/gnba"
+	"github.com/tympanix/master-2019/systems/ba"
+	"github.com/tympanix/master-2019/systems/nba"
 	"github.com/tympanix/master-2019/systems/ts"
 )
 
@@ -13,7 +14,7 @@ type Product struct {
 	States        map[StateTuple]*State
 	InitialStates []*State
 	TS            *ts.TS
-	NBA           *gnba.NBA
+	NBA           *nba.NBA
 }
 
 func (p *Product) String() string {
@@ -39,7 +40,7 @@ func (p *Product) String() string {
 }
 
 // New creates a new product.
-func New(t *ts.TS, n *gnba.NBA) *Product {
+func New(t *ts.TS, n *nba.NBA) *Product {
 	return &Product{
 		States: make(map[StateTuple]*State),
 		TS:     t,
@@ -58,7 +59,7 @@ func (p *Product) isInitialState(s *State) bool {
 
 type context struct {
 	Space      Statespace
-	S          StateStack
+	S          *StateStack
 	CycleFound bool
 }
 
@@ -80,7 +81,7 @@ func (p *Product) AddState(s *State) *State {
 	return s
 }
 
-func (p *Product) getOrAddState(sTS *ts.State, sNBA *gnba.State) *State {
+func (p *Product) getOrAddState(sTS *ts.State, sNBA *ba.State) *State {
 	stateTuple := StateTuple{
 		StateTS:  sTS,
 		StateNBA: sNBA,

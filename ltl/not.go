@@ -30,3 +30,7 @@ func (not Not) String() string {
 func (not Not) Normalize() Node {
 	return Negate(not.ChildNode().Normalize())
 }
+
+func (not Not) Len() int {
+	return 1 + not.ChildNode().Len()
+}

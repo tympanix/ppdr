@@ -5,28 +5,29 @@ import (
 	"strings"
 
 	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/master-2019/systems/ba"
 )
 
 // GNBA is a structure of a generalized non-deterministic Büchi automaton
 type GNBA struct {
-	States         []*State
-	StartingStates StateSet
-	FinalStates    []StateSet
+	States         []*ba.State
+	StartingStates ba.StateSet
+	FinalStates    []ba.StateSet
 	Phi            ltl.Node
 }
 
 // NewGNBA return a new empty GNBA
 func NewGNBA(phi ltl.Node) *GNBA {
 	return &GNBA{
-		States:         make([]*State, 0),
-		StartingStates: NewStateSet(),
-		FinalStates:    make([]StateSet, 0),
+		States:         make([]*ba.State, 0),
+		StartingStates: ba.NewStateSet(),
+		FinalStates:    make([]ba.StateSet, 0),
 		Phi:            phi,
 	}
 }
 
 // IsAcceptanceState return true if state is in any of the acceptance sets
-func (g *GNBA) IsAcceptanceState(state *State) (int, bool) {
+func (g *GNBA) IsAcceptanceState(state *ba.State) (int, bool) {
 	for i, s := range g.FinalStates {
 		if s.Contains(state) {
 			return i, true
@@ -35,7 +36,7 @@ func (g *GNBA) IsAcceptanceState(state *State) (int, bool) {
 	return -1, false
 }
 
-func (g *GNBA) getAcceptanceStateSets(state *State) []int {
+func (g *GNBA) getAcceptanceStateSets(state *ba.State) []int {
 	f := make([]int, 0)
 	for i, s := range g.FinalStates {
 		if s.Contains(state) {
@@ -46,12 +47,12 @@ func (g *GNBA) getAcceptanceStateSets(state *State) []int {
 }
 
 // IsStartingState returns true if state is a starting state for the GNBA
-func (g *GNBA) IsStartingState(state *State) bool {
+func (g *GNBA) IsStartingState(state *ba.State) bool {
 	return g.StartingStates.Contains(state)
 }
 
 // HasState returns true if state is a part of the GNBA
-func (g *GNBA) HasState(state *State) bool {
+func (g *GNBA) HasState(state *ba.State) bool {
 	for _, s := range g.States {
 		if s == state {
 			return true
@@ -61,7 +62,7 @@ func (g *GNBA) HasState(state *State) bool {
 }
 
 // FindStateIndex finds the index of the state in the GNBA structure
-func (g *GNBA) FindStateIndex(state *State) int {
+func (g *GNBA) FindStateIndex(state *ba.State) int {
 	for i, s := range g.States {
 		if s == state {
 			return i
@@ -74,7 +75,7 @@ func (g *GNBA) FindStateIndex(state *State) int {
 func (g *GNBA) Copy() *GNBA {
 	gnba := NewGNBA(g.Phi)
 
-	var rt = make(renameTable)
+	var rt = make(ba.RenameTable)
 
 	// Create a copy of each state and add to rename table
 	for _, s := range g.States {
@@ -94,7 +95,7 @@ func (g *GNBA) Copy() *GNBA {
 	}
 
 	// Copy and rename acceptance set
-	accSet := make([]StateSet, 0)
+	accSet := make([]ba.StateSet, 0)
 	for _, s := range g.FinalStates {
 		accSet = append(accSet, s.Copy(rt))
 	}
