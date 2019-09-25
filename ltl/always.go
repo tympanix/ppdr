@@ -31,3 +31,7 @@ func (a Always) SameAs(node Node) bool {
 func (a Always) Normalize() Node {
 	return Not{Eventually{Negate(a.ChildNode().Normalize())}.Normalize()}
 }
+
+func (a Always) Len() int {
+	return 1 + a.Child.Len()
+}
