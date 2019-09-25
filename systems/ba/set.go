@@ -1,4 +1,4 @@
-package gnba
+package ba
 
 // StateSet is a set of GNBA states
 type StateSet map[*State]bool
@@ -29,7 +29,7 @@ func (s StateSet) Contains(state *State) bool {
 }
 
 // Copy returns a new set with pointers renamed by a renaming table
-func (s StateSet) Copy(rt renameTable) StateSet {
+func (s StateSet) Copy(rt RenameTable) StateSet {
 	set := NewStateSet()
 	for s := range s {
 		set.Add(rt[s])

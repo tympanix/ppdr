@@ -1,8 +1,11 @@
-package gnba
+package ba
 
 import (
 	"github.com/tympanix/master-2019/ltl"
 )
+
+// RenameTable is a translation table from one set of nodes to others
+type RenameTable map[*State]*State
 
 // Transition is a transition in a GNBA
 type Transition struct {
@@ -11,7 +14,7 @@ type Transition struct {
 }
 
 // Copy returns a copy of the transition with renaming of nodes
-func (t Transition) Copy(rt renameTable) Transition {
+func (t Transition) Copy(rt RenameTable) Transition {
 	return Transition{
 		State: rt[t.State],
 		Label: t.Label.Copy(),
@@ -19,7 +22,7 @@ func (t Transition) Copy(rt renameTable) Transition {
 }
 
 // Rename renames the transition to point to a new state using a rename table
-func (t Transition) Rename(rt renameTable) Transition {
+func (t Transition) Rename(rt RenameTable) Transition {
 	return Transition{
 		State: rt[t.State],
 		Label: t.Label,
