@@ -1,4 +1,4 @@
-package gnba
+package ba
 
 import (
 	"fmt"
@@ -52,20 +52,20 @@ func (s *State) Copy() *State {
 }
 
 // Rename renames all state transitions using a rename table
-func (s *State) Rename(rt renameTable) {
+func (s *State) Rename(rt RenameTable) {
 	for i, t := range s.Transitions {
 		s.Transitions[i] = t.Rename(rt)
 	}
 }
 
-func (s *State) addTransition(state *State, label ltl.Set) {
+func (s *State) AddTransitionFromSet(state *State, label ltl.Set) {
 	s.Transitions = append(s.Transitions, Transition{
 		State: state,
 		Label: label,
 	})
 }
 
-func (s *State) shouldHaveEdgeTo(state State, closure ltl.Set) bool {
+func (s *State) ShouldHaveEdgeTo(state State, closure ltl.Set) bool {
 	// case 1
 	// s = B, state = B'
 	for psi := range closure {

@@ -3,14 +3,14 @@ package product
 import (
 	"fmt"
 
-	"github.com/tympanix/master-2019/systems/gnba"
+	"github.com/tympanix/master-2019/systems/ba"
 	"github.com/tympanix/master-2019/systems/ts"
 )
 
 // StateTuple is a tuple of states from the product transition system of TS and A
 type StateTuple struct {
 	StateTS  *ts.State
-	StateNBA *gnba.State
+	StateNBA *ba.State
 }
 
 func (s *StateTuple) String() string {
@@ -28,7 +28,7 @@ func (s *State) String() string {
 	return fmt.Sprint(s.StateTuple)
 }
 
-func newState(sTS *ts.State, sNBA *gnba.State) *State {
+func newState(sTS *ts.State, sNBA *ba.State) *State {
 	return &State{
 		StateTuple: StateTuple{
 			StateTS:  sTS,

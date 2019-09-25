@@ -1,9 +1,13 @@
-package gnba
+package nba
 
-import "github.com/tympanix/master-2019/debug"
+import (
+	"github.com/tympanix/master-2019/debug"
+	"github.com/tympanix/master-2019/systems/ba"
+	"github.com/tympanix/master-2019/systems/gnba"
+)
 
 // TransformGNBAtoNBA takes a GNBA and transforms it into an NBA
-func TransformGNBAtoNBA(gnba *GNBA) *NBA {
+func TransformGNBAtoNBA(g *gnba.GNBA) *NBA {
 
 	t := debug.NewTimer("transform")
 
@@ -12,18 +16,18 @@ func TransformGNBAtoNBA(gnba *GNBA) *NBA {
 	}()
 
 	// If final states is the empty set, all states are accepting
-	if len(gnba.FinalStates) == 0 {
-		copy := gnba.Copy()
+	if len(g.FinalStates) == 0 {
+		copy := g.Copy()
 		return &NBA{
 			States:      copy.States,
 			StartStates: copy.StartingStates,
-			FinalStates: NewStateSet(copy.States...),
+			FinalStates: ba.NewStateSet(copy.States...),
 		}
 	}
 
 	// If final states is a singleton set consider GNBA as NBA
-	if len(gnba.FinalStates) == 1 {
-		copy := gnba.Copy()
+	if len(g.FinalStates) == 1 {
+		copy := g.Copy()
 		return &NBA{
 			States:      copy.States,
 			StartStates: copy.StartingStates,
@@ -32,14 +36,14 @@ func TransformGNBAtoNBA(gnba *GNBA) *NBA {
 	}
 
 	// Else, construct NBA by transformation
-	copies := make([]*GNBA, 0, len(gnba.FinalStates))
-	for range gnba.FinalStates {
-		copies = append(copies, gnba.Copy())
+	copies := make([]*gnba.GNBA, 0, len(g.FinalStates))
+	for range g.FinalStates {
+		copies = append(copies, g.Copy())
 	}
 
 	// Make the i'th copy have the i'th acceptance set
 	for i, c := range copies {
-		c.FinalStates = []StateSet{c.FinalStates[i]}
+		c.FinalStates = []ba.StateSet{c.FinalStates[i]}
 	}
 
 	// Rearrange all transitions to point to the i'th+1 copy
@@ -57,10 +61,10 @@ func TransformGNBAtoNBA(gnba *GNBA) *NBA {
 	return mergeCopiesToNBA(copies)
 }
 
-func mergeCopiesToNBA(copies []*GNBA) *NBA {
+func mergeCopiesToNBA(copies []*gnba.GNBA) *NBA {
 	nba := NewNBA()
 
-	states := make([]*State, 0)
+	states := make([]*ba.State, 0)
 
 	for _, c := range copies {
 		states = append(states, c.States...)
@@ -72,5 +76,3 @@ func mergeCopiesToNBA(copies []*GNBA) *NBA {
 
 	return nba
 }
-
-type renameTable map[*State]*State

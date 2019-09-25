@@ -1,48 +1,50 @@
-package gnba
+package nba
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/tympanix/master-2019/systems/ba"
 )
 
 // NBA is a structure for non-deterministic Büchi automatons
 type NBA struct {
-	States      []*State
-	StartStates StateSet
-	FinalStates StateSet
+	States      []*ba.State
+	StartStates ba.StateSet
+	FinalStates ba.StateSet
 }
 
 // NewNBA returns a new empty NBA
 func NewNBA() *NBA {
 	return &NBA{
-		States:      make([]*State, 0),
-		StartStates: NewStateSet(),
-		FinalStates: NewStateSet(),
+		States:      make([]*ba.State, 0),
+		StartStates: ba.NewStateSet(),
+		FinalStates: ba.NewStateSet(),
 	}
 }
 
 // AddState add one or more states to the NBA
-func (n *NBA) AddState(states ...*State) {
+func (n *NBA) AddState(states ...*ba.State) {
 	n.States = append(n.States, states...)
 }
 
 // AddInitialState add one or more initials states to the NBA
-func (n *NBA) AddInitialState(states ...*State) {
+func (n *NBA) AddInitialState(states ...*ba.State) {
 	n.StartStates.Add(states...)
 }
 
 // AddAcceptanceState add one or more acceptance states to the NBA
-func (n *NBA) AddAcceptanceState(states ...*State) {
+func (n *NBA) AddAcceptanceState(states ...*ba.State) {
 	n.FinalStates.Add(states...)
 }
 
 // IsAcceptanceState returns true if state is an accepting state in the NBA
-func (n *NBA) IsAcceptanceState(state *State) bool {
+func (n *NBA) IsAcceptanceState(state *ba.State) bool {
 	return n.FinalStates.Contains(state)
 }
 
 // IsStartingState returns true if state is a starting state in the NBA
-func (n *NBA) IsStartingState(state *State) bool {
+func (n *NBA) IsStartingState(state *ba.State) bool {
 	return n.StartStates.Contains(state)
 }
 
