@@ -105,7 +105,7 @@ func ExampleFindElementarySets_one() {
 	// [!A, !OA]
 }
 
-func ExampleFindElementarySets_three() {
+func ExampleFindElementarySets_two() {
 	phi := Until{True{}, Not{Until{True{}, AP{"green"}}}}
 	elemSets := FindElementarySets(phi)
 

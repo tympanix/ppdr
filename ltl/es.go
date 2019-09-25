@@ -65,14 +65,14 @@ func (c *esContext) isConsistentAfter(n Node) bool {
 }
 
 // FindElementarySets return all sets of the closure which are elementary
-func FindElementarySets(node Node) []Set {
+func FindElementarySets(phi Node) []Set {
 	t := debug.NewTimer("elemsets")
 
 	defer func() {
 		t.Stop()
 	}()
 
-	sub := Subformulae(node).AsSlice()
+	sub := Subformulae(phi).AsSlice()
 
 	sort.SliceStable(sub, func(i, j int) bool {
 		return sub[i].Len() < sub[j].Len()
@@ -84,10 +84,10 @@ func FindElementarySets(node Node) []Set {
 		sub:     sub,
 		es:      &es,
 		cur:     NewSet(),
-		closure: Closure(node),
+		closure: Closure(phi),
 	}
 
-	auxEs(c)
+	auxFindElementarySets(c)
 
 	sort.SliceStable(es, func(i, j int) bool {
 		a := es[i].String()
@@ -103,7 +103,7 @@ func FindElementarySets(node Node) []Set {
 	return es
 }
 
-func auxEs(c *esContext) {
+func auxFindElementarySets(c *esContext) {
 
 	if c == nil {
 		return
@@ -117,10 +117,10 @@ func auxEs(c *esContext) {
 	}
 
 	if _, ok := c.next().(True); ok {
-		auxEs(c.rec(c.next()))
+		auxFindElementarySets(c.rec(c.next()))
 	} else {
-		auxEs(c.rec(c.next()))
-		auxEs(c.rec(Negate(c.next())))
+		auxFindElementarySets(c.rec(c.next()))
+		auxFindElementarySets(c.rec(Negate(c.next())))
 	}
 
 }
