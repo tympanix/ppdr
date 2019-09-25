@@ -30,7 +30,6 @@ func (c *esContext) copy() *esContext {
 func (c *esContext) rec(n Node) *esContext {
 
 	if !c.isConsistentAfter(n) {
-		//fmt.Println("cutoff", c.cur, n)
 		return nil
 	}
 
@@ -111,7 +110,9 @@ func auxEs(c *esContext) {
 	}
 
 	if len(c.sub) == 0 {
-		*(c.es) = append(*(c.es), c.cur)
+		if c.cur.IsElementary(c.closure) {
+			*(c.es) = append(*(c.es), c.cur)
+		}
 		return
 	}
 
