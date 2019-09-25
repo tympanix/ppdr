@@ -3,6 +3,8 @@ package gnba
 import (
 	"fmt"
 	"strings"
+
+	"github.com/tympanix/master-2019/ltl"
 )
 
 // GNBA is a structure of a generalized non-deterministic Büchi automaton
@@ -10,14 +12,16 @@ type GNBA struct {
 	States         []*State
 	StartingStates StateSet
 	FinalStates    []StateSet
+	Phi            ltl.Node
 }
 
 // NewGNBA return a new empty GNBA
-func NewGNBA() *GNBA {
+func NewGNBA(phi ltl.Node) *GNBA {
 	return &GNBA{
 		States:         make([]*State, 0),
 		StartingStates: NewStateSet(),
 		FinalStates:    make([]StateSet, 0),
+		Phi:            phi,
 	}
 }
 
@@ -29,6 +33,16 @@ func (g *GNBA) IsAcceptanceState(state *State) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+func (g *GNBA) getAcceptanceStateSets(state *State) []int {
+	f := make([]int, 0)
+	for i, s := range g.FinalStates {
+		if s.Contains(state) {
+			f = append(f, i)
+		}
+	}
+	return f
 }
 
 // IsStartingState returns true if state is a starting state for the GNBA
@@ -58,7 +72,7 @@ func (g *GNBA) FindStateIndex(state *State) int {
 
 // Copy creates a copy of the GNBA
 func (g *GNBA) Copy() *GNBA {
-	gnba := NewGNBA()
+	gnba := NewGNBA(g.Phi)
 
 	var rt = make(renameTable)
 
@@ -98,8 +112,8 @@ func (g GNBA) String() string {
 		}
 
 		var suffix string
-		if i, ok := g.IsAcceptanceState(s); ok {
-			suffix = fmt.Sprintf("{%d}", i)
+		if f := g.getAcceptanceStateSets(s); len(f) > 0 {
+			suffix = fmt.Sprintf("{%d}", f)
 		}
 
 		fmt.Fprintf(&sb, "%s%s%s\n", prefix, s.ElementarySet, suffix)

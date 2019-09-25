@@ -42,6 +42,36 @@ func TestClosure_two(t *testing.T) {
 
 }
 
+func TestClosure_three(t *testing.T) {
+	phi := Negate(Always{Eventually{AP{"green"}}}.Normalize())
+
+	t.Error("phi")
+	t.Error(phi)
+
+	closure := Closure(phi)
+
+	if len(closure) != 6 {
+		t.Error("Expected length to be 8 but was ", len(closure))
+		t.Error(closure)
+	}
+
+	golden := []Node{
+		phi,
+		Negate(phi),
+		True{},
+		Negate(True{}),
+		AP{"green"},
+		Negate(AP{"green"}),
+	}
+
+	for _, v := range golden {
+		if !closure.Contains(v) {
+			t.Errorf("Expected closure to contain %s.", v)
+		}
+	}
+
+}
+
 func TestNormalize(t *testing.T) {
 
 	tests := map[Node]Node{
@@ -71,6 +101,25 @@ func ExampleFindElementarySets() {
 	for _, s := range elemSets {
 		fmt.Println(s)
 	}
+
+	// Output:
+	// [A, OA]
+	// [!A, OA]
+	// [!OA, A]
+	// [!A, !OA]
+}
+
+func ExampleFindElementarySets_2() {
+	phi := Negate(Always{Eventually{AP{"green"}}}.Normalize())
+	//elemSets := FindElementarySets(Closure(phi))
+
+	eSet := NewSet(phi, True{}, AP{"green"}, Not{Until{True{}, AP{"green"}}})
+
+	fmt.Println(eSet.IsElementary(Closure(phi)))
+
+	//for _, s := range elemSets {
+	//	fmt.Println(s)
+	//}
 
 	// Output:
 	// [A, OA]

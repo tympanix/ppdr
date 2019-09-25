@@ -3,6 +3,8 @@ package gnba
 import (
 	"fmt"
 	"strings"
+
+	"github.com/tympanix/master-2019/ltl"
 )
 
 // NBA is a structure for non-deterministic Büchi automatons
@@ -10,14 +12,16 @@ type NBA struct {
 	States      []*State
 	StartStates StateSet
 	FinalStates StateSet
+	Phi         ltl.Node
 }
 
 // NewNBA returns a new empty NBA
-func NewNBA() *NBA {
+func NewNBA(phi ltl.Node) *NBA {
 	return &NBA{
 		States:      make([]*State, 0),
 		StartStates: NewStateSet(),
 		FinalStates: NewStateSet(),
+		Phi:         phi,
 	}
 }
 

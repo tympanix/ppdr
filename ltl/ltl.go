@@ -87,7 +87,6 @@ func auxClosure(node Node, acc Set) Set {
 		acc = addNegation(ap, acc)
 		return acc.Add(ap)
 	} else if t, ok := node.(True); ok {
-		addNegation(t, acc)
 		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
 		acc.Add(unary)

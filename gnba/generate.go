@@ -19,7 +19,7 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(closure)
 
-	gnba := NewGNBA()
+	gnba := NewGNBA(phi)
 
 	for _, s := range elemSets {
 		n := State{

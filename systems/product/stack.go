@@ -42,3 +42,14 @@ func (s *StateStack) Peek() *State {
 
 	return state
 }
+
+// Contains returns true if it contains the state
+func (s *StateStack) Contains(state *State) bool {
+	// TODO: Optimise this
+	for _, s1 := range *s {
+		if s1 == state {
+			return true
+		}
+	}
+	return false
+}
