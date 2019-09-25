@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/tympanix/master-2019/debug"
-	"github.com/tympanix/master-2019/gnba"
 	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/master-2019/systems/gnba"
 )
 
 func main() {

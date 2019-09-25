@@ -3,7 +3,7 @@ package product
 import (
 	"testing"
 
-	"github.com/tympanix/master-2019/gnba"
+	"github.com/tympanix/master-2019/systems/gnba"
 	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ts"
 )
