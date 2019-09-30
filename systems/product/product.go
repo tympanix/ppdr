@@ -164,5 +164,5 @@ func (p *Product) addInitialStates() {
 }
 
 func (p *Product) isAccepting(s *State) bool {
-	return s.StateNBA.Has(p.NBA.Phi)
+	return p.NBA.IsAcceptanceState(s.StateNBA)
 }
