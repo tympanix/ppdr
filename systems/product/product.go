@@ -118,7 +118,9 @@ func (p *Product) dfs(s *State, c *context) bool {
 
 	for t := range s.successors(p) {
 		if !c.Space.Contains(statespaceEntry{t, 0}) {
-			p.dfs(t, c)
+			if p.dfs(t, c) {
+				return true
+			}
 		}
 	}
 
