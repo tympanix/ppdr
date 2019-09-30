@@ -17,7 +17,6 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 
 	phi = phi.Normalize()
 	closure := ltl.Closure(phi)
-	aps := ltl.FindAtomicPropositions(phi)
 	elemSets := ltl.FindElementarySets(phi)
 
 	gnba := NewGNBA(phi)
@@ -53,7 +52,7 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 
 	// Find transitions relations
 	for _, s := range gnba.States {
-		intersec := s.ElementarySet.Intersection(aps)
+		intersec := s.ElementarySet.Intersection(gnba.AP)
 
 		for _, s2 := range gnba.States {
 			if s.ShouldHaveEdgeTo(*s2, closure) {

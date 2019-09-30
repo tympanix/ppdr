@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/tympanix/master-2019/gnba"
-
 	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/master-2019/systems/gnba"
+	"github.com/tympanix/master-2019/systems/nba"
 	"github.com/tympanix/master-2019/systems/product"
 	"github.com/tympanix/master-2019/systems/ts"
 )
@@ -23,11 +23,12 @@ func Test(t *testing.T) {
 
 	phi := ltl.Eventually{ltl.AP{"green"}}
 
-	n := gnba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
+	n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
 
 	p := product.New(tr, n)
 
 	t.Error(p.HasAcceptingCycle())
+
 	t.Error(p)
 }
 
@@ -43,7 +44,7 @@ func ExampleASD() {
 
 	phi := ltl.Negate(ltl.Eventually{ltl.AP{"green"}}).Normalize()
 
-	n := gnba.TransformGNBAtoNBA(gnba.GenerateGNBA(phi))
+	n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(phi))
 
 	//fmt.Println(ltl.FindElementarySets(ltl.Closure(phi)))
 	//fmt.Println(gnba.GenerateGNBA(phi))

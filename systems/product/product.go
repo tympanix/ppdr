@@ -150,11 +150,10 @@ func (p *Product) ndfs(s *State, c *context) bool {
 
 func (p *Product) addInitialStates() {
 	for _, s0 := range p.TS.InitialStates {
+		lf := p.NBA.AP.Intersection(s0.Predicates)
 		for q0 := range p.NBA.StartStates {
 			for _, t := range q0.Transitions {
-				fmt.Println("t.label = ", t.Label)
-				fmt.Println("s0.Predicates = ", s0.Predicates)
-				if s0.Predicates.ContainsAny(t.Label) {
+				if s0.ShouldHaveTransitionTo(t, lf) {
 					q := t.State
 					n := p.getOrAddState(s0, q)
 					p.InitialStates = append(p.InitialStates, n)

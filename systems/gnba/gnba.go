@@ -14,6 +14,7 @@ type GNBA struct {
 	StartingStates ba.StateSet
 	FinalStates    []ba.StateSet
 	Phi            ltl.Node
+	AP             ltl.Set
 }
 
 // NewGNBA return a new empty GNBA
@@ -23,6 +24,7 @@ func NewGNBA(phi ltl.Node) *GNBA {
 		StartingStates: ba.NewStateSet(),
 		FinalStates:    make([]ba.StateSet, 0),
 		Phi:            phi,
+		AP:             ltl.FindAtomicPropositions(phi),
 	}
 }
 

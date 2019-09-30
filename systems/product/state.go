@@ -53,9 +53,10 @@ func (s *State) addTransition(s1 *State) {
 
 func (s *State) expand(p *Product) StateSet {
 	for _, tTS := range s.StateTS.Dependencies {
+		lf := p.NBA.AP.Intersection(tTS.Predicates)
 		for _, tNBA := range s.StateNBA.Transitions {
 			pNBA := tNBA.State
-			if tTS.Predicates.ContainsAny(tNBA.Label) {
+			if tTS.ShouldHaveTransitionTo(tNBA, lf) {
 				sPrime := p.getOrAddState(tTS, pNBA)
 				s.addTransition(sPrime)
 			}
