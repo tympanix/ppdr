@@ -39,7 +39,7 @@ func newState(sTS *ts.State, sNBA *ba.State) *State {
 	}
 }
 
-func (s *State) post(p *Product) StateSet {
+func (s *State) successors(p *Product) StateSet {
 	if !s.IsExpanded {
 		return s.expand(p)
 	}
@@ -53,9 +53,10 @@ func (s *State) addTransition(s1 *State) {
 
 func (s *State) expand(p *Product) StateSet {
 	for _, tTS := range s.StateTS.Dependencies {
+		lf := p.NBA.AP.Intersection(tTS.Predicates)
 		for _, tNBA := range s.StateNBA.Transitions {
 			pNBA := tNBA.State
-			if !tNBA.Label.Conflicts(tTS.Predicates) {
+			if tTS.ShouldHaveTransitionTo(tNBA, lf) {
 				sPrime := p.getOrAddState(tTS, pNBA)
 				s.addTransition(sPrime)
 			}
@@ -63,17 +64,4 @@ func (s *State) expand(p *Product) StateSet {
 	}
 	s.IsExpanded = true
 	return s.Transitions
-}
-
-func (s *State) unvisitedSucc(set StateSet, p *Product) *State {
-	for s1 := range s.post(p) {
-		if !set.Contains(s1) {
-			return s1
-		}
-	}
-	return nil
-}
-
-func (s *State) isFinalState(p *Product) bool {
-	return p.NBA.IsAcceptanceState(s.StateNBA)
 }

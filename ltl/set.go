@@ -93,6 +93,16 @@ func (s Set) ContainsAll(set Set) bool {
 	return true
 }
 
+// ContainsAny return true if any element is contained in the set.
+func (s Set) ContainsAny(set Set) bool {
+	for e := range set {
+		if s.Contains(e) {
+			return true
+		}
+	}
+	return false
+}
+
 // Intersection find the intersection LTL nodes from another set.
 func (s Set) Intersection(set Set) Set {
 	res := make(Set, 0)
@@ -225,15 +235,4 @@ func (s Set) isMaximal(closure Set) bool {
 	}
 
 	return true
-}
-
-// Conflicts return true if two sets of predicates conflict with each other.
-func (s Set) Conflicts(s1 Set) bool {
-	for n := range s {
-		if s1.Contains(Negate(n)) {
-			return true
-		}
-	}
-
-	return false
 }

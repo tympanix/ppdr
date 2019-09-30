@@ -26,7 +26,7 @@ func (p *Product) String() string {
 		}
 
 		var suffix string
-		if v.isFinalState(p) {
+		if p.isAccepting(v) {
 			suffix = fmt.Sprintf("*")
 		}
 
@@ -58,19 +58,15 @@ func (p *Product) isInitialState(s *State) bool {
 }
 
 type context struct {
-	R          StateSet
-	U          *StateStack
-	T          StateSet
-	V          *StateStack
+	Space      Statespace
+	S          *StateStack
 	CycleFound bool
 }
 
 func newContext() *context {
 	return &context{
-		R:          NewStateSet(),
-		U:          NewStateStack(),
-		T:          NewStateSet(),
-		V:          NewStateStack(),
+		Space:      NewStatespace(),
+		S:          NewStateStack(),
 		CycleFound: false,
 	}
 }
@@ -102,70 +98,64 @@ func (p *Product) getOrAddState(sTS *ts.State, sNBA *ba.State) *State {
 	return s
 }
 
-// Satisfy return true if a cycle exists in the product
-func (p *Product) Satisfy() bool {
-	p.addInitialStates()
+// HasAcceptingCycle returns true if the product has a cycle that goes through an acceptance state
+func (p *Product) HasAcceptingCycle() bool {
 	c := newContext()
 
-	ir := NewStateSet(p.InitialStates...)
-	for ir.Size() > 0 && !c.CycleFound {
-		s := ir.Get()
-		p.reachableCycle(s, c)
+	p.addInitialStates()
+
+	for _, s := range p.InitialStates {
+		if p.dfs(s, c) {
+			return true
+		}
 	}
-	if !c.CycleFound {
-		return true
-	}
-	return false // TODO: add counter example
+	return false
 }
 
-func (p *Product) reachableCycle(s *State, c *context) {
-	c.U.Push(s)
-	c.R.Add(s)
-	for ok := true; ok; ok = !(c.U.Empty() || c.CycleFound) {
-		s1 := c.U.Peek()
-		if s2 := s1.unvisitedSucc(c.R, p); s2 != nil {
-			c.U.Push(s2)
-			c.R.Add(s2)
-		} else {
-			c.U.Pop()
-			if !s1.isFinalState(p) { // TODO: Check if negation is correct
-				c.CycleFound = p.cycleCheck(s1, c)
+func (p *Product) dfs(s *State, c *context) bool {
+	c.Space.Add(statespaceEntry{s, 0})
+	c.S.Push(s)
+
+	for t := range s.successors(p) {
+		if !c.Space.Contains(statespaceEntry{t, 0}) {
+			if p.dfs(t, c) {
+				return true
 			}
 		}
 	}
-}
 
-func (p *Product) cycleCheck(s *State, c *context) bool {
-	// Reset V and T
-	c.T = NewStateSet()
-	c.V = NewStateStack()
-	cycleFound := false
-
-	c.V.Push(s)
-	c.T.Add(s)
-
-	for ok := true; ok; ok = !(c.V.Empty() || cycleFound) {
-		s1 := c.V.Peek()
-		if s1.post(p).Contains(s) {
-			cycleFound = true
-			c.V.Push(s)
-		} else {
-			if s2 := s1.unvisitedSucc(c.T, p); s2 != nil {
-				c.V.Push(s2)
-				c.T.Add(s2)
-			} else {
-				c.V.Pop()
-			}
+	if p.isAccepting(s) {
+		if p.ndfs(s, c) {
+			return true
 		}
 	}
-	return cycleFound
+
+	c.S.Pop()
+
+	return false
+}
+
+func (p *Product) ndfs(s *State, c *context) bool {
+	c.Space.Add(statespaceEntry{s, 1})
+
+	for t := range s.successors(p) {
+		if !c.Space.Contains(statespaceEntry{t, 1}) {
+			if p.ndfs(t, c) {
+				return true
+			}
+		} else if c.S.Contains(t) {
+			return true
+		}
+	}
+	return false
 }
 
 func (p *Product) addInitialStates() {
 	for _, s0 := range p.TS.InitialStates {
+		lf := p.NBA.AP.Intersection(s0.Predicates)
 		for q0 := range p.NBA.StartStates {
 			for _, t := range q0.Transitions {
-				if !t.Label.Conflicts(s0.Predicates) {
+				if s0.ShouldHaveTransitionTo(t, lf) {
 					q := t.State
 					n := p.getOrAddState(s0, q)
 					p.InitialStates = append(p.InitialStates, n)
@@ -173,4 +163,8 @@ func (p *Product) addInitialStates() {
 			}
 		}
 	}
+}
+
+func (p *Product) isAccepting(s *State) bool {
+	return p.NBA.IsAcceptanceState(s.StateNBA)
 }
