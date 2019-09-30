@@ -1,5 +1,10 @@
 package product
 
+import (
+	"fmt"
+	"strings"
+)
+
 // StateStack is a stack of Product states
 type StateStack struct {
 	stack []*State
@@ -14,6 +19,14 @@ func NewStateStack(states ...*State) *StateStack {
 	}
 	stack.Push(states...)
 	return stack
+}
+
+func (s *StateStack) String() string {
+	var sb strings.Builder
+	for v := range s.set {
+		fmt.Fprintf(&sb, "%v (%p)\n", v, v)
+	}
+	return sb.String()
 }
 
 func (s *StateStack) push(state *State) {

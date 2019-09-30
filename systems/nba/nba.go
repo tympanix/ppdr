@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ba"
 )
 
@@ -12,14 +13,17 @@ type NBA struct {
 	States      []*ba.State
 	StartStates ba.StateSet
 	FinalStates ba.StateSet
+	Phi         ltl.Node
+	AP          ltl.Set
 }
 
 // NewNBA returns a new empty NBA
-func NewNBA() *NBA {
+func NewNBA(phi ltl.Node) *NBA {
 	return &NBA{
 		States:      make([]*ba.State, 0),
 		StartStates: ba.NewStateSet(),
 		FinalStates: ba.NewStateSet(),
+		Phi:         phi,
 	}
 }
 
