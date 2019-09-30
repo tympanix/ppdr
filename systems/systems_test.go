@@ -22,12 +22,19 @@ func TestCycleDetection(t *testing.T) {
 	tr.AddInitialState(s1)
 
 	tests := map[ltl.Node]bool{
-		ltl.Eventually{ltl.AP{"green"}}:             false,
-		ltl.Eventually{ltl.AP{"yellow"}}:            true,
-		ltl.Always{ltl.AP{"green"}}:                 true,
-		ltl.Always{ltl.Eventually{ltl.AP{"green"}}}: false,
-		ltl.Next{ltl.AP{"green"}}:                   false,
-		ltl.Next{ltl.AP{"red"}}:                     true,
+		ltl.Eventually{ltl.AP{"green"}}:                                         false,
+		ltl.Eventually{ltl.AP{"yellow"}}:                                        true,
+		ltl.Always{ltl.AP{"green"}}:                                             true,
+		ltl.Always{ltl.Eventually{ltl.AP{"green"}}}:                             false,
+		ltl.Next{ltl.AP{"green"}}:                                               false,
+		ltl.Next{ltl.AP{"red"}}:                                                 true,
+		ltl.Next{ltl.Next{ltl.AP{"red"}}}:                                       false,
+		ltl.Next{ltl.Next{ltl.AP{"green"}}}:                                     true,
+		ltl.Impl{ltl.AP{"red"}, ltl.Next{ltl.AP{"green"}}}:                      false,
+		ltl.Impl{ltl.AP{"red"}, ltl.Next{ltl.AP{"red"}}}:                        true,
+		ltl.And{ltl.Eventually{ltl.AP{"red"}}, ltl.Eventually{ltl.AP{"green"}}}: false,
+		ltl.And{ltl.Always{ltl.AP{"red"}}, ltl.Always{ltl.AP{"green"}}}:         true,
+		ltl.Always{ltl.Or{ltl.AP{"red"}, ltl.AP{"green"}}}:                      false,
 	}
 
 	i := 0
