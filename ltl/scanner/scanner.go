@@ -164,6 +164,8 @@ func (s *Scanner) NextToken() *token.Token {
 			return s.newToken(token.OR)
 		} else if s.hasString("->") {
 			return s.newToken(token.IMPL)
+		} else if s.hasString("true") {
+			return s.newToken(token.TRUE)
 		} else if s.has('O') {
 			return s.newToken(token.NEXT)
 		} else if s.has('U') {

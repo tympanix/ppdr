@@ -42,4 +42,5 @@ const (
 	LPAR
 	RPAR
 	NOT
+	TRUE
 )

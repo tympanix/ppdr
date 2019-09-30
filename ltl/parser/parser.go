@@ -87,12 +87,8 @@ func (p *Parser) parseExpression() ltl.Node {
 func (p *Parser) parseImpl() ltl.Node {
 	lhs := p.parseOr()
 
-	for {
-		if p.have(token.IMPL) {
-			lhs = ltl.Impl{lhs, p.parseOr()}
-		} else {
-			break
-		}
+	if p.have(token.IMPL) {
+		return ltl.Impl{lhs, p.parseImpl()}
 	}
 	return lhs
 }
@@ -100,51 +96,42 @@ func (p *Parser) parseImpl() ltl.Node {
 func (p *Parser) parseOr() ltl.Node {
 	lhs := p.parseAnd()
 
-	for {
-		if p.have(token.OR) {
-			lhs = ltl.Or{lhs, p.parseAnd()}
-		} else {
-			break
-		}
+	if p.have(token.OR) {
+		return ltl.Or{lhs, p.parseOr()}
 	}
+
 	return lhs
 }
 
 func (p *Parser) parseAnd() ltl.Node {
 	lhs := p.parseUntil()
 
-	for {
-		if p.have(token.AND) {
-			lhs = ltl.And{lhs, p.parseUntil()}
-		} else {
-			break
-		}
+	if p.have(token.AND) {
+		return ltl.And{lhs, p.parseAnd()}
 	}
+
 	return lhs
 }
 
 func (p *Parser) parseUntil() ltl.Node {
 	lhs := p.parseAtomic()
 
-	for {
-		if p.have(token.UNTIL) {
-			lhs = ltl.Until{lhs, p.parseAtomic()}
-		} else {
-			break
-		}
+	if p.have(token.UNTIL) {
+		return ltl.Until{lhs, p.parseUntil()}
 	}
+
 	return lhs
 }
 
 func (p *Parser) parseAtomic() ltl.Node {
 	if p.have(token.ALWAYS) {
 		if p.see(token.LPAR) {
-			return p.parseParenthesis()
+			return ltl.Always{p.parseParenthesis()}
 		}
 		return ltl.Always{p.parseAtomic()}
 	} else if p.have(token.EVENTUALLY) {
 		if p.see(token.LPAR) {
-			return p.parseParenthesis()
+			return ltl.Eventually{p.parseParenthesis()}
 		}
 		return ltl.Eventually{p.parseAtomic()}
 	} else if p.have(token.LPAR) {
@@ -153,20 +140,20 @@ func (p *Parser) parseAtomic() ltl.Node {
 		return exp
 	} else if p.have(token.NOT) {
 		if p.see(token.LPAR) {
-			return p.parseParenthesis()
+			return ltl.Not{p.parseParenthesis()}
 		}
-		p.expect(token.AP)
-		return ltl.AP{p.last().String()}
+		return ltl.Not{p.parseAtomic()}
 	} else if p.have(token.NEXT) {
 		if p.see(token.LPAR) {
-			return p.parseParenthesis()
+			return ltl.Next{p.parseParenthesis()}
 		}
-		p.expect(token.AP)
-		return ltl.AP{p.last().String()}
+		return ltl.Next{p.parseAtomic()}
+	} else if p.have(token.TRUE) {
+		return ltl.True{}
 	} else if p.have(token.AP) {
 		return ltl.AP{p.last().String()}
 	} else {
-		panic("unexpected token")
+		panic(fmt.Sprintf("unexpected token: %v", p.current().Kind()))
 	}
 }
 
