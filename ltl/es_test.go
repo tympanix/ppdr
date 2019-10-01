@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// formula: !Oa
 func TestElementarySets_one(t *testing.T) {
 	phi := Not{Next{AP{"a"}}}
 	elemSets := FindElementarySets(phi)
@@ -20,6 +21,7 @@ func TestElementarySets_one(t *testing.T) {
 
 }
 
+// formula: true U !green
 func TestElementarySets_two(t *testing.T) {
 	phi := Until{True{}, Not{AP{"green"}}}
 	elemSets := FindElementarySets(phi)
@@ -34,6 +36,7 @@ func TestElementarySets_two(t *testing.T) {
 
 }
 
+// formula: a U (b and c)
 func TestElementarySets_three(t *testing.T) {
 	a := AP{"a"}
 	b := AP{"b"}
@@ -55,6 +58,29 @@ func TestElementarySets_three(t *testing.T) {
 		NewSet(Not{phi}, Not{and}, Not{a}, Not{b}, c),
 		NewSet(Not{phi}, Not{and}, Not{a}, b, Not{c}),
 		NewSet(Not{phi}, Not{and}, Not{a}, Not{b}, Not{c}),
+	}
+
+	compareElemSets(t, elemSets, golden)
+
+}
+
+// formula: true U (c1 and c2)
+func TestElementarySets_four(t *testing.T) {
+	c1 := AP{"c1"}
+	c2 := AP{"c2"}
+	and := And{c1, c2}
+
+	phi := Until{True{}, and}
+	elemSets := FindElementarySets(phi)
+
+	golden := []Set{
+		NewSet(Negate(phi), Not{and}, True{}, Not{c1}, c2),
+		NewSet(Negate(phi), Not{and}, True{}, c1, Not{c2}),
+		NewSet(Negate(phi), Not{and}, True{}, Not{c1}, Not{c2}),
+		NewSet(phi, and, True{}, c1, c2),
+		NewSet(phi, Not{and}, True{}, Not{c1}, c2),
+		NewSet(phi, Not{and}, True{}, c1, Not{c2}),
+		NewSet(phi, Not{and}, True{}, Not{c1}, Not{c2}),
 	}
 
 	compareElemSets(t, elemSets, golden)

@@ -106,7 +106,8 @@ func (g *GNBA) Copy() *GNBA {
 	return gnba
 }
 
-func (g GNBA) String() string {
+// StringWithRenamer strings the GNBA using a naming function
+func (g GNBA) StringWithRenamer(r ba.StateNamer) string {
 	var sb strings.Builder
 	for _, s := range g.States {
 		var prefix string
@@ -119,12 +120,16 @@ func (g GNBA) String() string {
 			suffix = fmt.Sprintf("{%d}", f)
 		}
 
-		fmt.Fprintf(&sb, "%s%s%s\n", prefix, s.ElementarySet, suffix)
+		fmt.Fprintf(&sb, "%s%s%s\n", prefix, r.RenameState(s), suffix)
 
 		for _, t := range s.Transitions {
-			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, t.State.ElementarySet)
+			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, r.RenameState(t.State))
 		}
 	}
 
 	return sb.String()
+}
+
+func (g GNBA) String() string {
+	return g.StringWithRenamer(nil)
 }

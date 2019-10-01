@@ -75,6 +75,7 @@ func TestNormalize(t *testing.T) {
 		Always{AP{"a"}}:        Not{Until{True{}, Not{AP{"a"}}}},
 		Impl{AP{"a"}, AP{"b"}}: Not{And{AP{"a"}, Not{AP{"b"}}}},
 		And{Not{AP{"a"}}, Impl{Not{AP{"a"}}, AP{"b"}}}: And{Not{AP{"a"}}, Not{And{Not{AP{"a"}}, Not{AP{"b"}}}}},
+		Always{Or{Not{AP{"c1"}}, Not{AP{"c2"}}}}:       Not{Until{True{}, And{AP{"c1"}, AP{"c2"}}}},
 	}
 
 	i := 0

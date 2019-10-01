@@ -23,8 +23,8 @@ func NewStateStack(states ...*State) *StateStack {
 
 func (s *StateStack) String() string {
 	var sb strings.Builder
-	for v := range s.set {
-		fmt.Fprintf(&sb, "%v (%p)\n", v, v)
+	for _, v := range s.stack {
+		fmt.Fprintf(&sb, "%v\n", v)
 	}
 	return sb.String()
 }

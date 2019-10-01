@@ -52,7 +52,8 @@ func (n *NBA) IsStartingState(state *ba.State) bool {
 	return n.StartStates.Contains(state)
 }
 
-func (n *NBA) String() string {
+// StringWithRenamer strings the NBA using a naming function
+func (n *NBA) StringWithRenamer(r ba.StateNamer) string {
 	var sb strings.Builder
 	for _, s := range n.States {
 		var prefix string
@@ -65,12 +66,16 @@ func (n *NBA) String() string {
 			suffix = fmt.Sprintf("*")
 		}
 
-		fmt.Fprintf(&sb, "%s%s%s\n", prefix, s.ElementarySet, suffix)
+		fmt.Fprintf(&sb, "%s%s%s\n", prefix, r.RenameState(s), suffix)
 
 		for _, t := range s.Transitions {
-			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, t.State.ElementarySet)
+			fmt.Fprintf(&sb, "\t%s\t-->\t%s\n", t.Label, r.RenameState(t.State))
 		}
 	}
 
 	return sb.String()
+}
+
+func (n *NBA) String() string {
+	return n.StringWithRenamer(nil)
 }
