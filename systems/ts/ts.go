@@ -37,6 +37,10 @@ func (s *State) ShouldHaveTransitionTo(t ba.Transition, lf ltl.Set) bool {
 		return true
 	}
 
+	if t.Label.Size() != 0 && lf.Size() == 0 {
+		return false
+	}
+
 	return t.Label.ContainsAll(lf)
 	//return lf.ContainsAny(t.Label)
 }
