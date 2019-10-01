@@ -30,6 +30,7 @@ func TestCycleDetection_one(t *testing.T) {
 		ltl.Eventually{ltl.AP{"yellow"}}:                                        true,
 		ltl.Always{ltl.AP{"green"}}:                                             true,
 		ltl.Always{ltl.Eventually{ltl.AP{"green"}}}:                             false,
+		ltl.Eventually{ltl.Always{ltl.Not{ltl.AP{"green"}}}}:                    true,
 		ltl.Next{ltl.AP{"green"}}:                                               false,
 		ltl.Next{ltl.AP{"red"}}:                                                 true,
 		ltl.Next{ltl.Next{ltl.AP{"red"}}}:                                       false,

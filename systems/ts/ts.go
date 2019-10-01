@@ -37,7 +37,8 @@ func (s *State) ShouldHaveTransitionTo(t ba.Transition, lf ltl.Set) bool {
 		return true
 	}
 
-	return lf.ContainsAny(t.Label)
+	return t.Label.ContainsAll(lf)
+	//return lf.ContainsAny(t.Label)
 }
 
 // TS is a transition system
