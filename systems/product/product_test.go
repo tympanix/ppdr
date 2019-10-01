@@ -9,17 +9,20 @@ import (
 	"github.com/tympanix/master-2019/systems/ts"
 )
 
+// TestExample_4_64 test for a simple traffix light which can turn red or green.
+// The NBA is a simplified automaton for <>[]!green, which is the compliment for
+// []<>green. The compliment should have no cycles in the product
 func TestExample_4_64(t *testing.T) {
-	tr, n := generateExample4_22()
+	tr, n := generateFigure4_22()
 	p := New(tr, n)
-	if !p.Satisfy() {
-		t.Error("Expected p to satisfy.")
+	if p.HasAcceptingCycle() {
+		t.Error("expected transition product not to have a cycle")
 	}
 }
 
-func generateExample4_22() (*ts.TS, *nba.NBA) {
+func generateFigure4_22() (*ts.TS, *nba.NBA) {
 	t := ts.New()
-	n := nba.NewNBA()
+	n := nba.NewNBA(ltl.True{})
 
 	s1 := ts.NewState(ltl.AP{"red"})
 	s2 := ts.NewState(ltl.AP{"green"})

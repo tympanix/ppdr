@@ -45,12 +45,9 @@ func TestClosure_two(t *testing.T) {
 func TestClosure_three(t *testing.T) {
 	phi := Negate(Always{Eventually{AP{"green"}}}.Normalize())
 
-	t.Error("phi")
-	t.Error(phi)
-
 	closure := Closure(phi)
 
-	if len(closure) != 6 {
+	if len(closure) != 8 {
 		t.Error("Expected length to be 8 but was ", len(closure))
 		t.Error(closure)
 	}

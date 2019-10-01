@@ -39,6 +39,8 @@ func TestTransformExample4_57(t *testing.T) {
 		States:         []*ba.State{q0, q1, q2},
 		StartingStates: ba.NewStateSet(q0),
 		FinalStates:    []ba.StateSet{ba.NewStateSet(q1), ba.NewStateSet(q2)},
+		Phi:            ltl.True{}, // Dummy node
+		AP:             ltl.NewSet(ltl.AP{"crit1"}, ltl.AP{"crit2"}),
 	}
 
 	nba := TransformGNBAtoNBA(gnba)
