@@ -73,13 +73,13 @@ func TestCopyGNBA(t *testing.T) {
 		name := fmt.Sprintf("test:%d", i)
 
 		t.Run(name, func(t *testing.T) {
-			checkGNBAEquality(t, phi)
+			checkDuplicateGNBA(t, phi)
 		})
 
 	}
 }
 
-func checkGNBAEquality(t *testing.T, phi ltl.Node) {
+func checkDuplicateGNBA(t *testing.T, phi ltl.Node) {
 	g1 := GenerateGNBA(phi)
 	g2 := g1.Copy()
 
