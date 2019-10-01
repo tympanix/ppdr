@@ -119,34 +119,3 @@ func TestFormulaLength(t *testing.T) {
 	}
 
 }
-
-func ExampleFindElementarySets_one() {
-	phi := Next{AP{"A"}}
-	elemSets := FindElementarySets(phi)
-
-	for _, s := range elemSets {
-		fmt.Println(s)
-	}
-
-	// Output:
-	// [A, OA]
-	// [!A, OA]
-	// [!OA, A]
-	// [!A, !OA]
-}
-
-func ExampleFindElementarySets_two() {
-	phi := Until{True{}, Not{Until{True{}, AP{"green"}}}}
-	elemSets := FindElementarySets(phi)
-
-	for _, s := range elemSets {
-		fmt.Println(s)
-	}
-
-	//Output:
-	// [green, true, true U !(true U green), true U green]
-	// [!green, true, true U !(true U green), true U green]
-	// [!(true U !(true U green)), green, true, true U green]
-	// [!(true U !(true U green)), !green, true, true U green]
-	// [!(true U green), !green, true, true U !(true U green)]
-}
