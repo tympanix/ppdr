@@ -24,8 +24,13 @@ type State struct {
 	IsExpanded  bool
 }
 
+// StringWithRenamer strings the state using a rename function
+func (s *State) StringWithRenamer(r ba.StateNamer) string {
+	return fmt.Sprintf("<%v, %v>", s.StateTS, r.RenameState(s.StateNBA))
+}
+
 func (s *State) String() string {
-	return fmt.Sprint(s.StateTuple)
+	return s.StringWithRenamer(nil)
 }
 
 func newState(sTS *ts.State, sNBA *ba.State) *State {
@@ -56,7 +61,7 @@ func (s *State) expand(p *Product) StateSet {
 		lf := p.NBA.AP.Intersection(tTS.Predicates)
 		for _, tNBA := range s.StateNBA.Transitions {
 			pNBA := tNBA.State
-			if tTS.ShouldHaveTransitionTo(tNBA, lf) {
+			if tNBA.Label.Equals(lf) {
 				sPrime := p.getOrAddState(tTS, pNBA)
 				s.addTransition(sPrime)
 			}

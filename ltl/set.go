@@ -103,6 +103,21 @@ func (s Set) ContainsAny(set Set) bool {
 	return false
 }
 
+// Equals returns true on set equality (i.e. same length and same elements)
+func (s Set) Equals(set Set) bool {
+	if s.Size() != set.Size() {
+		return false
+	}
+
+	for e := range s {
+		if !set.Contains(e) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Intersection find the intersection LTL nodes from another set.
 func (s Set) Intersection(set Set) Set {
 	res := make(Set, 0)

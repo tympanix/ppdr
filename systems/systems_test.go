@@ -42,7 +42,7 @@ func TestCycleDetection_one(t *testing.T) {
 		ltl.Always{ltl.Or{ltl.AP{"red"}, ltl.AP{"green"}}}:                      false,
 	}
 
-	checkFormulas(t, tr, tests)
+	checkFormulas(t, tr, tests, nil)
 
 }
 
@@ -63,10 +63,11 @@ func Example5_10() {
 		"B6": ltl.NewSet(phi, ltl.Not{and}, ltl.True{}, c1, ltl.Not{c2}),
 		"B7": ltl.NewSet(phi, ltl.Not{and}, ltl.True{}, ltl.Not{c1}, ltl.Not{c2}),
 	}
+	r := ba.NewStateNamerFromMap(names)
 
 	n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(phi))
 
-	fmt.Println(n.StringWithRenamer(ba.NewStateNamerFromMap(names)))
+	fmt.Println(n.StringWithRenamer(r))
 
 	// Output:
 	// >B4*
@@ -110,15 +111,15 @@ func TestCycleDetection_two(t *testing.T) {
 	tr := generateFigure_5_5()
 
 	tests := map[ltl.Node]bool{
-		//ltl.Eventually{ltl.And{ltl.AP{"c1"}, ltl.AP{"c2"}}}:                                          true,
-		ltl.Always{ltl.Or{ltl.Not{ltl.AP{"c1"}}, ltl.Not{ltl.AP{"c2"}}}}: false,
-		//ltl.Or{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:   false,
-		//ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:  true,
-		//ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}}: true,
-		//ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w2"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}: true,
+		ltl.Eventually{ltl.And{ltl.AP{"c1"}, ltl.AP{"c2"}}}:                                          true,
+		ltl.Always{ltl.Or{ltl.Not{ltl.AP{"c1"}}, ltl.Not{ltl.AP{"c2"}}}}:                             false,
+		ltl.Or{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:   false,
+		ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:  true,
+		ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}}: true,
+		ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w2"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}: true,
 	}
 
-	checkFormulas(t, tr, tests)
+	checkFormulas(t, tr, tests, nil)
 
 }
 
@@ -162,7 +163,7 @@ func generateFigure_5_5() *ts.TS {
 	return t
 }
 
-func checkFormulas(t *testing.T, tr *ts.TS, tests map[ltl.Node]bool) {
+func checkFormulas(t *testing.T, tr *ts.TS, tests map[ltl.Node]bool, r ba.StateNamer) {
 	i := 0
 
 	for phi, cycle := range tests {
@@ -171,10 +172,17 @@ func checkFormulas(t *testing.T, tr *ts.TS, tests map[ltl.Node]bool) {
 			n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
 			p := product.New(tr, n)
 
-			if p.HasAcceptingCycle() != cycle {
+			context := p.HasAcceptingCycle()
+
+			if (context != nil) != cycle {
 				t.Errorf("expected cycle: %v, formula: %v", cycle, phi)
 				t.Errorf("size of product: %v", len(p.States))
+
+				if context != nil {
+					fmt.Println(context.TraceWithRenamer(r))
+				}
 			}
+
 		})
 		i++
 	}

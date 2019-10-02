@@ -17,7 +17,8 @@ type Product struct {
 	NBA           *nba.NBA
 }
 
-func (p *Product) String() string {
+// StringWithRenamer strings the product using a naming function
+func (p *Product) StringWithRenamer(r ba.StateNamer) string {
 	var sb strings.Builder
 	for _, v := range p.States {
 		var prefix string
@@ -30,13 +31,17 @@ func (p *Product) String() string {
 			suffix = fmt.Sprintf("*")
 		}
 
-		fmt.Fprintf(&sb, "%s%s%s\n", prefix, v, suffix)
+		fmt.Fprintf(&sb, "%s%s%s\n", prefix, v.StringWithRenamer(r), suffix)
 		for s := range v.Transitions {
-			fmt.Fprintf(&sb, "\t-->\t%s\n", s)
+			fmt.Fprintf(&sb, "\t-->\t%s\n", s.StringWithRenamer(r))
 		}
 	}
 
 	return sb.String()
+}
+
+func (p *Product) String() string {
+	return p.StringWithRenamer(nil)
 }
 
 // New creates a new product.
@@ -57,16 +62,32 @@ func (p *Product) isInitialState(s *State) bool {
 	return false
 }
 
-type context struct {
+// Context contains information about a cycle check
+type Context struct {
 	Space      Statespace
 	S          *StateStack
+	T          *StateStack
 	CycleFound bool
 }
 
-func newContext() *context {
-	return &context{
+// TraceWithRenamer return the cycle trace using a naming function
+func (c *Context) TraceWithRenamer(r ba.StateNamer) string {
+	var sb strings.Builder
+	for _, s := range c.S.stack {
+		fmt.Fprintf(&sb, "%v\n", s.StringWithRenamer(r))
+	}
+	fmt.Fprintf(&sb, "begin cycle:\n")
+	for _, s := range c.T.stack {
+		fmt.Fprintf(&sb, "%v\n", s.StringWithRenamer(r))
+	}
+	return sb.String()
+}
+
+func newContext() *Context {
+	return &Context{
 		Space:      NewStatespace(),
 		S:          NewStateStack(),
+		T:          NewStateStack(),
 		CycleFound: false,
 	}
 }
@@ -99,55 +120,58 @@ func (p *Product) getOrAddState(sTS *ts.State, sNBA *ba.State) *State {
 }
 
 // HasAcceptingCycle returns true if the product has a cycle that goes through an acceptance state
-func (p *Product) HasAcceptingCycle() bool {
+func (p *Product) HasAcceptingCycle() (cycle *Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			if c, ok := r.(*Context); ok {
+				cycle = c
+			}
+		}
+	}()
+
 	c := newContext()
 
 	p.addInitialStates()
 
 	for _, s := range p.InitialStates {
-		if p.dfs(s, c) {
-			return true
-		}
+		p.dfs(s, c)
 	}
-	return false
+
+	return nil
 }
 
-func (p *Product) dfs(s *State, c *context) bool {
+func (p *Product) dfs(s *State, c *Context) {
 	c.Space.Add(statespaceEntry{s, 0})
 	c.S.Push(s)
 
 	for t := range s.successors(p) {
 		if !c.Space.Contains(statespaceEntry{t, 0}) {
-			if p.dfs(t, c) {
-				return true
-			}
+			p.dfs(t, c)
 		}
 	}
 
 	if p.isAccepting(s) {
-		if p.ndfs(s, c) {
-			return true
-		}
+		c.T = NewStateStack()
+		p.ndfs(s, c)
 	}
 
 	c.S.Pop()
-
-	return false
 }
 
-func (p *Product) ndfs(s *State, c *context) bool {
+func (p *Product) ndfs(s *State, c *Context) {
 	c.Space.Add(statespaceEntry{s, 1})
+	c.T.Push(s)
 
 	for t := range s.successors(p) {
 		if !c.Space.Contains(statespaceEntry{t, 1}) {
-			if p.ndfs(t, c) {
-				return true
-			}
+			p.ndfs(t, c)
 		} else if c.S.Contains(t) {
-			return true
+			c.T.Push(t)
+			panic(c)
 		}
 	}
-	return false
+
+	c.T.Pop()
 }
 
 func (p *Product) addInitialStates() {
@@ -155,7 +179,7 @@ func (p *Product) addInitialStates() {
 		lf := p.NBA.AP.Intersection(s0.Predicates)
 		for q0 := range p.NBA.StartStates {
 			for _, t := range q0.Transitions {
-				if s0.ShouldHaveTransitionTo(t, lf) {
+				if t.Label.Equals(lf) {
 					q := t.State
 					n := p.getOrAddState(s0, q)
 					p.InitialStates = append(p.InitialStates, n)
