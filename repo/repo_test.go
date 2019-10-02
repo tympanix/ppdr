@@ -32,7 +32,9 @@ func TestRepo_one(t *testing.T) {
 	var c *State
 	var err error
 
-	if c, err = r.Query(s2, ltl.Eventually{ltl.AP{"test"}}); err != nil {
+	phi := ltl.Eventually{ltl.AP{"test"}}
+
+	if c, err = r.Query(s2, phi); err != nil {
 		t.Errorf("unexpected error on query: %v", s2)
 	}
 
@@ -40,7 +42,7 @@ func TestRepo_one(t *testing.T) {
 		t.Errorf("unexpected state, got: %v, expected: %v", c, s2)
 	}
 
-	if c, err = r.Query(s2, ltl.Not{ltl.Eventually{ltl.AP{"test"}}}); err == nil {
+	if c, err = r.Query(s2, ltl.Not{phi}); err == nil {
 		t.Errorf("expected error on query: %v", s2)
 	}
 
