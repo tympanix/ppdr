@@ -5,15 +5,15 @@ import (
 	"strings"
 
 	"github.com/tympanix/master-2019/systems/ba"
-	"github.com/tympanix/master-2019/systems/mock/ts"
 	"github.com/tympanix/master-2019/systems/nba"
+	"github.com/tympanix/master-2019/systems/ts"
 )
 
 // Product is a product of a transition system and a NBA
 type Product struct {
 	States        map[StateTuple]*State
 	InitialStates []*State
-	TS            *ts.TS
+	TS            ts.TS
 	NBA           *nba.NBA
 }
 
@@ -45,7 +45,7 @@ func (p *Product) String() string {
 }
 
 // New creates a new product.
-func New(t *ts.TS, n *nba.NBA) *Product {
+func New(t ts.TS, n *nba.NBA) *Product {
 	return &Product{
 		States: make(map[StateTuple]*State),
 		TS:     t,
@@ -102,7 +102,7 @@ func (p *Product) AddState(s *State) *State {
 	return s
 }
 
-func (p *Product) getOrAddState(sTS *ts.State, sNBA *ba.State) *State {
+func (p *Product) getOrAddState(sTS ts.State, sNBA *ba.State) *State {
 	stateTuple := StateTuple{
 		StateTS:  sTS,
 		StateNBA: sNBA,
@@ -175,8 +175,8 @@ func (p *Product) ndfs(s *State, c *Context) {
 }
 
 func (p *Product) addInitialStates() {
-	for _, s0 := range p.TS.InitialStates {
-		lf := p.NBA.AP.Intersection(s0.Predicates)
+	for _, s0 := range p.TS.InitialStates() {
+		lf := p.NBA.AP.Intersection(s0.Predicates())
 		for q0 := range p.NBA.StartStates {
 			for _, t := range q0.Transitions {
 				if t.Label.Equals(lf) {
