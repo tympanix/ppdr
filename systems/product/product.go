@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/tympanix/master-2019/systems/ba"
+	"github.com/tympanix/master-2019/systems/mock/ts"
 	"github.com/tympanix/master-2019/systems/nba"
-	"github.com/tympanix/master-2019/systems/ts"
 )
 
 // Product is a product of a transition system and a NBA

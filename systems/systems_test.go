@@ -9,7 +9,7 @@ import (
 	"github.com/tympanix/master-2019/systems/gnba"
 	"github.com/tympanix/master-2019/systems/nba"
 	"github.com/tympanix/master-2019/systems/product"
-	"github.com/tympanix/master-2019/systems/ts"
+	"github.com/tympanix/master-2019/systems/mock/ts"
 )
 
 // An example of a simple traffix light which transitions between red and green

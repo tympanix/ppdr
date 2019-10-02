@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/tympanix/master-2019/systems/ba"
-	"github.com/tympanix/master-2019/systems/ts"
+	"github.com/tympanix/master-2019/systems/mock/ts"
 )
 
 // StateTuple is a tuple of states from the product transition system of TS and A
