@@ -163,11 +163,11 @@ func (p *Product) ndfs(s *State, c *Context) {
 	c.T.Push(s)
 
 	for t := range s.successors(p) {
-		if !c.Space.Contains(statespaceEntry{t, 1}) {
-			p.ndfs(t, c)
-		} else if c.S.Contains(t) {
+		if c.S.Contains(t) {
 			c.T.Push(t)
 			panic(c)
+		} else if !c.Space.Contains(statespaceEntry{t, 1}) {
+			p.ndfs(t, c)
 		}
 	}
 
