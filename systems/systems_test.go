@@ -47,6 +47,22 @@ func TestCycleDetection_one(t *testing.T) {
 }
 
 // formula: true U (c1 and c2)
+func TestCycleDetection_two(t *testing.T) {
+	tr := generateFigure_5_5()
+
+	tests := map[ltl.Node]bool{
+		ltl.Eventually{ltl.And{ltl.AP{"c1"}, ltl.AP{"c2"}}}:                                          true,
+		ltl.Always{ltl.Or{ltl.Not{ltl.AP{"c1"}}, ltl.Not{ltl.AP{"c2"}}}}:                             false,
+		ltl.Or{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:   false,
+		ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:  true,
+		ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}}: true,
+		ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w2"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}: true,
+	}
+
+	checkFormulas(t, tr, tests, nil)
+
+}
+
 func Example5_10() {
 	c1 := ltl.AP{"c1"}
 	c2 := ltl.AP{"c2"}
@@ -107,22 +123,8 @@ func Example5_10() {
 	// 	[]	-->	B3
 }
 
-func TestCycleDetection_two(t *testing.T) {
-	tr := generateFigure_5_5()
-
-	tests := map[ltl.Node]bool{
-		ltl.Eventually{ltl.And{ltl.AP{"c1"}, ltl.AP{"c2"}}}:                                          true,
-		ltl.Always{ltl.Or{ltl.Not{ltl.AP{"c1"}}, ltl.Not{ltl.AP{"c2"}}}}:                             false,
-		ltl.Or{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:   false,
-		ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}:  true,
-		ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c1"}}}}: true,
-		ltl.Impl{ltl.Always{ltl.Eventually{ltl.AP{"w2"}}}, ltl.Always{ltl.Eventually{ltl.AP{"c2"}}}}: true,
-	}
-
-	checkFormulas(t, tr, tests, nil)
-
-}
-
+// Figure 5.5 is a transition system of two processes and a critical section
+// modelled by a mutex. Transition system model mutual exclusion.
 func generateFigure_5_5() *ts.TS {
 	t := ts.New()
 
