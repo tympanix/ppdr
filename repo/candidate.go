@@ -22,6 +22,9 @@ func (c candidate) satisfiesConfPolicies() bool {
 }
 
 func (c candidate) satisfiesFormula(phi ltl.Node) bool {
+	if phi == nil {
+		return true
+	}
 	n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
 	p := product.New(c, n)
 	return p.HasAcceptingCycle() == nil

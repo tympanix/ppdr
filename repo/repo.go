@@ -9,11 +9,27 @@ import (
 // Repo is the data repository itself
 type Repo struct {
 	states map[*State]bool
+	origin *State
 }
 
 // NewRepo returns a new empty repo
 func NewRepo() *Repo {
-	return &Repo{}
+	s0 := NewState()
+	s0.addDependency(s0)
+
+	r := &Repo{
+		states: make(map[*State]bool),
+		origin: s0,
+	}
+
+	return r
+}
+
+func (r *Repo) addState(state *State) {
+	if len(state.Dependencies()) == 0 {
+		state.addDependency(r.origin)
+	}
+	r.states[state] = true
 }
 
 // Query performs a lookup in the data repository with a integrity policy
@@ -57,7 +73,7 @@ func (r *Repo) Put(state *State) bool {
 	c := candidate{state}
 
 	if c.satisfiesConfPolicies() {
-		r.states[state] = true
+		r.addState(state)
 		return true
 	}
 	return false
