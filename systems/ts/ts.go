@@ -6,7 +6,6 @@ import (
 
 // TS is an interface for the transition system itself
 type TS interface {
-	States() []State
 	InitialStates() []State
 }
 
