@@ -9,16 +9,12 @@ import (
 // Repo is the data repository itself
 type Repo struct {
 	states map[*State]bool
-	origin *Origin
 }
 
 // NewRepo returns a new empty repo
 func NewRepo() *Repo {
-	s0 := NewOrigin()
-
 	r := &Repo{
 		states: make(map[*State]bool),
-		origin: s0,
 	}
 
 	return r
@@ -27,7 +23,7 @@ func NewRepo() *Repo {
 func (r *Repo) addState(states ...*State) {
 	for _, s := range states {
 		if len(s.Dependencies()) == 0 {
-			s.addDependency(r.origin)
+			s.addDependency(s)
 		}
 		r.states[s] = true
 	}
