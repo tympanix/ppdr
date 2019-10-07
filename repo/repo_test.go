@@ -104,6 +104,7 @@ func TestRepo_two(t *testing.T) {
 	s3 := NewState(ltl.AP{"Bob"})
 	s4 := NewState(ltl.AP{"Mallory"})
 	s5 := NewState(ltl.AP{"Alice"})
+	s6 := NewState(ltl.AP{"Bob"})
 
 	s1.addDependency(s0)
 	s3.addDependency(s1)
@@ -111,9 +112,11 @@ func TestRepo_two(t *testing.T) {
 	s4.addDependency(s2)
 	s5.addDependency(s3)
 	s5.addDependency(s4)
+	s6.addDependency(s2)
 
 	phi1 := ltl.Impl{ltl.AP{"Bob"}, ltl.Next{ltl.AP{"Charlie"}}}
 	phi2 := ltl.Always{ltl.Not{ltl.AP{"Mallory"}}}
+	phi3 := ltl.Impl{ltl.AP{"Bob"}, ltl.Next{ltl.Always{ltl.AP{"Charlie"}}}}
 
 	tests := []exe{
 		// Add states
@@ -123,6 +126,7 @@ func TestRepo_two(t *testing.T) {
 		exe{put{s3}, OK},
 		exe{put{s4}, OK},
 		exe{put{s5}, OK},
+		exe{put{s6}, OK},
 
 		// Bob -> O Charlie
 		exe{query{s3, phi1}, OK},
@@ -132,6 +136,48 @@ func TestRepo_two(t *testing.T) {
 		exe{query{s3, phi2}, OK},
 		exe{query{s5, phi2}, ERR},
 		exe{query{s4, phi2}, ERR},
+
+		// Bob -> O[]Charlie
+		exe{query{s5, phi3}, OK},
+		exe{query{s3, phi3}, OK},
+		exe{query{s6, phi3}, ERR},
+	}
+
+	runTableTest(t, r, tests)
+
+}
+
+func TestRepo_three(t *testing.T) {
+	r := NewRepo()
+
+	alice := ltl.AP{"Alice"}
+	bob := ltl.AP{"Bob"}
+	charlie := ltl.AP{"Charlie"}
+
+	s0 := NewState(alice)
+	s1 := NewState(bob)
+	s2 := NewState(bob)
+
+	s3 := NewState(bob)
+	s4 := NewState(charlie)
+
+	s1.addDependency(s0)
+	s2.addDependency(s1)
+	s3.addDependency(s2)
+	s4.addDependency(s2)
+
+	phi := ltl.Until{bob, alice}
+
+	tests := []exe{
+		exe{put{s0}, OK},
+		exe{put{s1}, OK},
+		exe{put{s2}, OK},
+		exe{put{s3}, OK},
+		exe{put{s4}, OK},
+
+		// Bob U Alice
+		exe{query{s3, phi}, OK},
+		exe{query{s4, phi}, ERR},
 	}
 
 	runTableTest(t, r, tests)
