@@ -9,13 +9,12 @@ import (
 // Repo is the data repository itself
 type Repo struct {
 	states map[*State]bool
-	origin *State
+	origin *Origin
 }
 
 // NewRepo returns a new empty repo
 func NewRepo() *Repo {
-	s0 := NewState()
-	s0.addDependency(s0)
+	s0 := NewOrigin()
 
 	r := &Repo{
 		states: make(map[*State]bool),
@@ -25,11 +24,13 @@ func NewRepo() *Repo {
 	return r
 }
 
-func (r *Repo) addState(state *State) {
-	if len(state.Dependencies()) == 0 {
-		state.addDependency(r.origin)
+func (r *Repo) addState(states ...*State) {
+	for _, s := range states {
+		if len(s.Dependencies()) == 0 {
+			s.addDependency(r.origin)
+		}
+		r.states[s] = true
 	}
-	r.states[state] = true
 }
 
 // Query performs a lookup in the data repository with a integrity policy
@@ -54,9 +55,9 @@ func (r *Repo) Query(state *State, intr ltl.Node) (*State, error) {
 }
 
 // Put adds a new data point to the repository with a confidentiality policy
-func (r *Repo) Put(state *State) bool {
+func (r *Repo) Put(state *State) error {
 	if _, ok := r.states[state]; ok {
-		return false
+		return errors.New("state already exists")
 	}
 	for _, d := range state.Dependencies() {
 		if s, ok := d.(*State); ok {
@@ -72,9 +73,10 @@ func (r *Repo) Put(state *State) bool {
 
 	c := candidate{state}
 
-	if c.satisfiesConfPolicies() {
-		r.addState(state)
-		return true
+	if !c.satisfiesConfPolicies() {
+		return errors.New("confidentiality not satisfied")
 	}
-	return false
+
+	r.addState(state)
+	return nil
 }
