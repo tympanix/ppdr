@@ -1,10 +1,57 @@
 package repo
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/tympanix/master-2019/ltl"
 )
+
+type result int
+
+const (
+	OK  result = 0
+	ERR result = iota
+)
+
+type op interface {
+	Do(*Repo) error
+}
+
+type query struct {
+	s   *State
+	phi ltl.Node
+}
+
+func (q query) String() string {
+	return fmt.Sprintf("query(%v, %v)", q.s, q.phi)
+}
+
+func (q query) Do(r *Repo) error {
+	_, err := r.Query(q.s, q.phi)
+	return err
+}
+
+type put struct {
+	s *State
+}
+
+func (p put) String() string {
+	return fmt.Sprintf("put(%v)", p.s)
+}
+
+func (p put) Do(r *Repo) error {
+	return r.Put(p.s)
+}
+
+type exe struct {
+	o op
+	r result
+}
+
+func (e exe) String() string {
+	return fmt.Sprintf("%v", e.o)
+}
 
 func TestRepo_one(t *testing.T) {
 
@@ -17,15 +64,15 @@ func TestRepo_one(t *testing.T) {
 	s1.addDependency(s0)
 	s2.addDependency(s1)
 
-	if !r.Put(s0) {
+	if r.Put(s0) != nil {
 		t.Errorf("could not add state %v", s0)
 	}
 
-	if !r.Put(s1) {
+	if r.Put(s1) != nil {
 		t.Errorf("could not add state %v", s0)
 	}
 
-	if !r.Put(s2) {
+	if r.Put(s2) != nil {
 		t.Errorf("could not add state %v", s0)
 	}
 
@@ -46,4 +93,61 @@ func TestRepo_one(t *testing.T) {
 		t.Errorf("expected error on query: %v", s2)
 	}
 
+}
+
+func TestRepo_two(t *testing.T) {
+	r := NewRepo()
+
+	s0 := NewState(ltl.AP{"Charlie"})
+	s1 := NewState(ltl.AP{"Charlie"})
+	s2 := NewState(ltl.AP{"David"})
+	s3 := NewState(ltl.AP{"Bob"})
+	s4 := NewState(ltl.AP{"Mallory"})
+	s5 := NewState(ltl.AP{"Alice"})
+
+	s1.addDependency(s0)
+	s3.addDependency(s1)
+	s4.addDependency(s1)
+	s4.addDependency(s2)
+	s5.addDependency(s3)
+	s5.addDependency(s4)
+
+	phi1 := ltl.Impl{ltl.AP{"Bob"}, ltl.Next{ltl.AP{"Charlie"}}}
+	phi2 := ltl.Always{ltl.Not{ltl.AP{"Mallory"}}}
+
+	tests := []exe{
+		// Add states
+		exe{put{s0}, OK},
+		exe{put{s1}, OK},
+		exe{put{s2}, OK},
+		exe{put{s3}, OK},
+		exe{put{s4}, OK},
+		exe{put{s5}, OK},
+
+		// Bob -> O Charlie
+		exe{query{s3, phi1}, OK},
+		exe{query{s5, phi1}, OK},
+
+		// [] !Mallory
+		exe{query{s3, phi2}, OK},
+		exe{query{s5, phi2}, ERR},
+		exe{query{s4, phi2}, ERR},
+	}
+
+	runTableTest(t, r, tests)
+
+}
+
+func runTableTest(t *testing.T, r *Repo, tab []exe) {
+	for _, e := range tab {
+		err := e.o.Do(r)
+
+		if (e.r == OK) != (err == nil) {
+			if err != nil {
+				t.Errorf("operation failed: %v, error: %v", e, err)
+			} else {
+				t.Errorf("expected error on op: %v", e.o)
+			}
+		}
+	}
 }
