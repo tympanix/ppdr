@@ -147,6 +147,11 @@ func TestRepo_two(t *testing.T) {
 
 }
 
+// -- Alice --
+// -- Bob --
+// -- Bob --
+// - / - \ --
+// Bob -- Charlie
 func TestRepo_three(t *testing.T) {
 	r := NewRepo()
 
