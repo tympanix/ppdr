@@ -32,6 +32,10 @@ func (a Always) Normalize() Node {
 	return Not{Eventually{Negate(a.ChildNode().Normalize())}.Normalize()}
 }
 
+func (a Always) Compile(m *RefTable) Node {
+	return Always{a.ChildNode().Compile(m)}
+}
+
 func (a Always) Len() int {
 	return 1 + a.Child.Len()
 }
