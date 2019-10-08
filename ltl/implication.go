@@ -32,3 +32,12 @@ func (i Impl) Normalize() Node {
 func (i Impl) Len() int {
 	return 1 + i.LHSNode().Len() + i.RHSNode().Len()
 }
+
+func (i Impl) Satisfied(s Set) bool {
+	if lhs, ok := i.LHSNode().(Satisfiable); ok {
+		if rhs, ok := i.RHSNode().(Satisfiable); ok {
+			return !lhs.Satisfied(s) || rhs.Satisfied(s)
+		}
+	}
+	panic(ErrNotPropositional)
+}

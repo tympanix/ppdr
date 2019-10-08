@@ -34,3 +34,10 @@ func (not Not) Normalize() Node {
 func (not Not) Len() int {
 	return 1 + not.ChildNode().Len()
 }
+
+func (n Not) Satisfied(s Set) bool {
+	if child, ok := n.ChildNode().(Satisfiable); ok {
+		return !child.Satisfied(s)
+	}
+	panic(ErrNotPropositional)
+}

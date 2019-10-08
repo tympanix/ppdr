@@ -25,6 +25,11 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 	if phi == nil {
 		return true
 	}
+
+	if s, err := ltl.Satisfied(phi, c.State.Predicates()); err == nil {
+		return s
+	}
+
 	n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
 	p := product.New(c, n)
 	return p.HasAcceptingCycle() == nil
