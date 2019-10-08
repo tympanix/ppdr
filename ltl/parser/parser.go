@@ -157,6 +157,8 @@ func (p *Parser) parseAtomic() ltl.Node {
 			return ltl.Next{p.parseParenthesis()}
 		}
 		return ltl.Next{p.parseAtomic()}
+	} else if p.have(token.LITSTRING) {
+		return ltl.LitString{p.last().String()}
 	} else if p.have(token.TRUE) {
 		return ltl.True{}
 	} else if p.have(token.AP) {

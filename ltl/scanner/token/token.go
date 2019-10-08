@@ -44,4 +44,5 @@ const (
 	RPAR
 	NOT
 	TRUE
+	LITSTRING
 )
