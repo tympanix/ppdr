@@ -28,3 +28,7 @@ func (ap AP) Normalize() Node {
 func (ap AP) Len() int {
 	return 0
 }
+
+func (a AP) Satisfied(s Set) bool {
+	return s.Contains(a)
+}

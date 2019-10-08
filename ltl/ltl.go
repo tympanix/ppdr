@@ -1,9 +1,13 @@
 package ltl
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
+
+// ErrNotPropositional is an error for nodes not supporting propositional logic
+var ErrNotPropositional = errors.New("not propositional logic")
 
 // Node is any node of an LTL formula
 type Node interface {
@@ -24,6 +28,11 @@ type BinaryNode interface {
 type UnaryNode interface {
 	Node
 	ChildNode() Node
+}
+
+// Satisfiable is an interface that determines if a node is satisfiable
+type Satisfiable interface {
+	Satisfied(Set) bool
 }
 
 func binaryNodeString(b BinaryNode, op string) string {
@@ -105,4 +114,19 @@ func auxSubformulae(node Node, acc Set) Set {
 		return auxSubformulae(binary.RHSNode(), acc)
 	}
 	panic(fmt.Sprintf("unknown ltl node %v", node))
+}
+
+// Satisfied returns true if the set satisfies phi
+func Satisfied(phi Node, set Set) (sat bool, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if r == ErrNotPropositional {
+				err = ErrNotPropositional
+			}
+		}
+	}()
+	if p, ok := phi.(Satisfiable); ok {
+		return p.Satisfied(set), nil
+	}
+	return false, ErrNotPropositional
 }
