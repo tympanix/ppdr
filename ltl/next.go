@@ -31,6 +31,10 @@ func (next Next) Normalize() Node {
 	return Next{next.ChildNode().Normalize()}
 }
 
+func (next Next) Compile(m *RefTable) Node {
+	return Next{next.ChildNode().Compile(m)}
+}
+
 func (next Next) Len() int {
 	return 1 + next.ChildNode().Len()
 }

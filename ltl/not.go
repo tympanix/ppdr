@@ -20,6 +20,10 @@ func (not Not) ChildNode() Node {
 	return not.Child
 }
 
+func (not Not) Compile(m *RefTable) Node {
+	return Not{not.ChildNode().Compile(m)}
+}
+
 func (not Not) String() string {
 	if _, ok := not.Child.(BinaryNode); ok {
 		return fmt.Sprintf("!(%v)", not.ChildNode())

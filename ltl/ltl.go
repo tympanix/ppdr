@@ -9,6 +9,9 @@ import (
 // ErrNotPropositional is an error for nodes not supporting propositional logic
 var ErrNotPropositional = errors.New("not propositional logic")
 
+// ErrCompile is an error for when compilations has failed
+var ErrCompile = errors.New("compile error")
+
 // Node is any node of an LTL formula
 type Node interface {
 	SameAs(Node) bool
@@ -38,6 +41,13 @@ type Satisfiable interface {
 
 // RefTable references other propositional logic
 type RefTable map[Ref]Node
+
+// NewRef adds a new reference to the reference table
+func (r *RefTable) NewRef(n Node) Ref {
+	ref := Ref{len(r)}
+	r[ref] = n
+	return ref
+}
 
 func binaryNodeString(b BinaryNode, op string) string {
 	var sb strings.Builder

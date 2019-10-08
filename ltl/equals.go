@@ -29,6 +29,17 @@ func (e Equals) Normalize() Node {
 	return e
 }
 
+func (e Equals) Compile(m *RefTable) Node {
+	if _, ok := e.LHSNode().(AP); !ok {
+		panic(ErrCompile)
+	}
+	if _, ok := e.RHSNode().(LitString); !ok {
+		panic(ErrCompile)
+	}
+	ref := m.NewRef(e)
+	return ref
+}
+
 func (e Equals) Len() int {
 	return 1 + e.LHSNode().Len() + e.RHSNode().Len()
 }

@@ -13,6 +13,10 @@ func (t True) Normalize() Node {
 	return t
 }
 
+func (t True) Compile(m *RefTable) Node {
+	return t
+}
+
 func (t True) String() string {
 	return "true"
 }
