@@ -48,6 +48,7 @@ func TestParser(t *testing.T) {
 		"[]<> crit1 and []<> crit2": ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"crit1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"crit2"}}}},
 		"<> green and <> red":       ltl.And{ltl.Eventually{ltl.AP{"green"}}, ltl.Eventually{ltl.AP{"red"}}},
 		"a -> b = c":                ltl.Equals{ltl.Impl{ltl.AP{"a"}, ltl.AP{"b"}}, ltl.AP{"c"}},
+		"[]a = b":                   ltl.Equals{ltl.Always{ltl.AP{"a"}}, ltl.AP{"b"}},
 	}
 
 	var i int
