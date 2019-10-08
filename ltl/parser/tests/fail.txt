@@ -1,3 +1,4 @@
 a and and b
 a and )b(
 []<> a -> -> !b
+a == b

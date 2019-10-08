@@ -31,6 +31,7 @@ type Kind int
 
 const (
 	EOF Kind = iota
+	EQUALS
 	AP
 	EVENTUALLY
 	ALWAYS
