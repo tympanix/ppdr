@@ -29,6 +29,10 @@ func (c And) Normalize() Node {
 	return And{c.LHSNode().Normalize(), c.RHSNode().Normalize()}
 }
 
+func (c And) Compile(m *RefTable) Node {
+	return And{c.LHSNode().Compile(m), c.RHSNode().Compile(m)}
+}
+
 func (c And) Len() int {
 	return 1 + c.LHSNode().Len() + c.RHSNode().Len()
 }

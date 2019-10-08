@@ -30,6 +30,10 @@ func (d Or) Normalize() Node {
 	return Not{And{Negate(d.LHSNode().Normalize()), Negate(d.RHSNode().Normalize())}}
 }
 
+func (d Or) Compile(m *RefTable) Node {
+	return Or{d.LHSNode().Compile(m), d.RHSNode().Compile(m)}
+}
+
 func (d Or) Len() int {
 	return 1 + d.LHSNode().Len() + d.RHSNode().Len()
 }

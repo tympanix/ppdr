@@ -13,7 +13,7 @@ var ErrNotPropositional = errors.New("not propositional logic")
 type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
-	Compile(*map[Ref]Node) Node
+	Compile(*RefTable) Node
 	Len() int
 	String() string
 }
