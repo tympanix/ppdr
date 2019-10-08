@@ -25,7 +25,9 @@ func TestParser(t *testing.T) {
 		"<><>a":    ltl.Eventually{ltl.Eventually{ltl.AP{"a"}}},
 		"[]<>a":    ltl.Always{ltl.Eventually{ltl.AP{"a"}}},
 		"<>[]a":    ltl.Eventually{ltl.Always{ltl.AP{"a"}}},
-		"\"ok\"":   ltl.LitString{"ok"},
+
+		// Literals
+		"\"ok\"": ltl.LitString{"ok"},
 
 		// Negations
 		"!Oa":        ltl.Not{ltl.Next{ltl.AP{"a"}}},
