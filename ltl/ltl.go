@@ -13,6 +13,7 @@ var ErrNotPropositional = errors.New("not propositional logic")
 type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
+	Compile(*map[Ref]Node) Node
 	Len() int
 	String() string
 }
@@ -34,6 +35,9 @@ type UnaryNode interface {
 type Satisfiable interface {
 	Satisfied(Set) bool
 }
+
+// RefTable references other propositional logic
+type RefTable map[Ref]Node
 
 func binaryNodeString(b BinaryNode, op string) string {
 	var sb strings.Builder
