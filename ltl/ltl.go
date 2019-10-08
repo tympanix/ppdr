@@ -44,8 +44,8 @@ type RefTable map[Ref]Node
 
 // NewRef adds a new reference to the reference table
 func (r *RefTable) NewRef(n Node) Ref {
-	ref := Ref{len(r)}
-	r[ref] = n
+	ref := Ref{len(*r)}
+	(*r)[ref] = n
 	return ref
 }
 
@@ -143,4 +143,19 @@ func Satisfied(phi Node, set Set) (sat bool, err error) {
 		return p.Satisfied(set), nil
 	}
 	return false, ErrNotPropositional
+}
+
+// Compile runs through each node and substitutes unwanted propositional logic
+// with references which can then later be evaluated
+func Compile(phi Node) (n Node, t RefTable, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if r == ErrCompile {
+				err = ErrCompile
+			}
+		}
+	}()
+
+	t = make(RefTable)
+	return phi.Compile(&t), t, nil
 }

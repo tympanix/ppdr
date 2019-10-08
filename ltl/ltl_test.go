@@ -196,3 +196,26 @@ func TestSatisfied_two(t *testing.T) {
 		i++
 	}
 }
+
+func TestCompile_one(t *testing.T) {
+
+	tests := map[Node]Node{
+		AP{"a"}:                         AP{"a"},
+		Equals{AP{"a"}, LitString{"b"}}: Ref{0},
+		And{AP{"a"}, Equals{AP{"a"}, LitString{"b"}}}: And{AP{"a"}, Ref{0}},
+
+		// Multiple refereces
+		Or{Equals{AP{"a"}, LitString{"b"}}, Equals{AP{"a"}, LitString{"b"}}}: Or{Ref{0}, Ref{1}},
+	}
+
+	for k, v := range tests {
+		n, _, err := Compile(k)
+
+		if err != nil {
+			t.Error(err)
+		}
+		if !n.SameAs(v) {
+			t.Errorf("extected %v, got %v", v, n)
+		}
+	}
+}
