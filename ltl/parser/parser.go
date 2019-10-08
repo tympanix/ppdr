@@ -81,7 +81,16 @@ func (p *Parser) Parse() (exp ltl.Node, err error) {
 }
 
 func (p *Parser) parseExpression() ltl.Node {
-	return p.parseImpl()
+	return p.parseEquals()
+}
+
+func (p *Parser) parseEquals() ltl.Node {
+	lhs := p.parseImpl()
+
+	if p.have(token.EQUALS) {
+		return ltl.Equals{lhs, p.parseEquals()}
+	}
+	return lhs
 }
 
 func (p *Parser) parseImpl() ltl.Node {
