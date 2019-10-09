@@ -41,5 +41,5 @@ func (e Eventually) Len() int {
 }
 
 func (e Eventually) Map(fn MapFunc) Node {
-	return fn(Eventually{fn(e.ChildNode())})
+	return fn(Eventually{e.ChildNode().Map(fn)})
 }

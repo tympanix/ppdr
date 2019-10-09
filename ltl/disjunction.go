@@ -48,5 +48,5 @@ func (d Or) Satisfied(r Resolver) bool {
 }
 
 func (d Or) Map(fn MapFunc) Node {
-	return fn(Or{fn(d.LHSNode()), fn(d.RHSNode())})
+	return fn(Or{d.LHSNode().Map(fn), d.RHSNode().Map(fn)})
 }

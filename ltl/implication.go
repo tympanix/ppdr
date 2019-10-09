@@ -47,5 +47,5 @@ func (i Impl) Satisfied(r Resolver) bool {
 }
 
 func (i Impl) Map(fn MapFunc) Node {
-	return fn(Impl{fn(i.LHSNode()), fn(i.RHSNode())})
+	return fn(Impl{i.LHSNode().Map(fn), i.RHSNode().Map(fn)})
 }

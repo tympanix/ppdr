@@ -41,5 +41,5 @@ func (a Always) Len() int {
 }
 
 func (a Always) Map(fn MapFunc) Node {
-	return fn(Always{fn(a.ChildNode())})
+	return fn(Always{a.ChildNode().Map(fn)})
 }

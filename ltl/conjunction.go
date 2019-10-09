@@ -47,5 +47,5 @@ func (c And) Satisfied(r Resolver) bool {
 }
 
 func (c And) Map(fn MapFunc) Node {
-	return fn(And{fn(c.LHSNode()), fn(c.RHSNode())})
+	return fn(And{c.LHSNode().Map(fn), c.RHSNode().Map(fn)})
 }

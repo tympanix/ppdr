@@ -70,5 +70,5 @@ func (e Equals) Satisfied(r Resolver) bool {
 }
 
 func (e Equals) Map(fn MapFunc) Node {
-	return fn(Equals{fn(e.LHSNode()), fn(e.RHSNode())})
+	return fn(Equals{e.LHSNode().Map(fn), e.RHSNode().Map(fn)})
 }
