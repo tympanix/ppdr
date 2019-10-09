@@ -160,3 +160,14 @@ func Compile(phi Node) (n Node, t RefTable, err error) {
 	t = make(RefTable)
 	return phi.Compile(&t), t, nil
 }
+
+// ValueToLiteral return the value as an LTL literal node
+func ValueToLiteral(value interface{}) Node {
+	switch v := value.(type) {
+	case string:
+		return LitString{v}
+	case bool:
+		return LitBool{v}
+	}
+	panic("unsupported literal type")
+}

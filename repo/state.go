@@ -8,12 +8,12 @@ import (
 )
 
 // Attrs is a map containing attributes for the state
-type Attrs map[string]interface{}
+type Attrs map[string]ltl.Node
 
 // State is a data node in the repo
 type State struct {
 	dependencies []ts.State
-	attributes   map[string]interface{}
+	attributes   Attrs
 	confPolicies ltl.Set
 }
 
@@ -34,10 +34,10 @@ func parseAttributes(vals []interface{}) Attrs {
 
 	for i < len(vals) {
 		if key, ok := vals[i].(string); ok {
-			a[key] = vals[i+1]
+			a[key] = ltl.ValueToLiteral(vals[i+1])
 			i += 2
 		} else if ap, ok := vals[i].(ltl.AP); ok {
-			a[ap.Name] = true
+			a[ap.Name] = ltl.ValueToLiteral(true)
 			i++
 		} else {
 			panic("could not parse attributes")
@@ -57,7 +57,7 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 	for k := range ap {
 		if a, ok := k.(ltl.AP); ok {
 			if v, ok := s.attributes[a.Name]; ok {
-				if b, ok := v.(bool); ok && b {
+				if b, ok := v.(ltl.LitBool); ok && b.Bool {
 					preds.Add(k)
 				}
 			}

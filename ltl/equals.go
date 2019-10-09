@@ -40,10 +40,12 @@ func (e Equals) Compile(m *RefTable) Node {
 	return ref
 }
 
+// Len returns the length of the equals operator and its children
 func (e Equals) Len() int {
 	return 1 + e.LHSNode().Len() + e.RHSNode().Len()
 }
 
+// Satisfied returns true if LHS and RHS are equal in type and value
 func (e Equals) Satisfied(r Resolver) bool {
 	var ap AP
 	var ok bool
@@ -58,9 +60,11 @@ func (e Equals) Satisfied(r Resolver) bool {
 		return false
 	}
 
+	return e.RHSNode().SameAs(lhs)
+
 	if s, ok := e.RHSNode().(LitString); ok {
-		if s2, ok := lhs.(string); ok {
-			return s.Str == s2
+		if s2, ok := lhs.(LitString); ok {
+			return s.Str == s2.Str
 		}
 	}
 
