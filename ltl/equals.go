@@ -13,10 +13,12 @@ func (e Equals) SameAs(node Node) bool {
 	return false
 }
 
+// LHSNode returns the LHS of the equals operator
 func (e Equals) LHSNode() Node {
 	return e.LHS
 }
 
+// RHSNode returns the RHS of the equals operator
 func (e Equals) RHSNode() Node {
 	return e.RHS
 }
@@ -25,10 +27,12 @@ func (e Equals) String() string {
 	return binaryNodeString(e, "=")
 }
 
+// Normalize for equals performs nothing
 func (e Equals) Normalize() Node {
 	return e
 }
 
+// Compile ensures that LHS is an AP and RHS is a literal
 func (e Equals) Compile(m *RefTable) Node {
 	if _, ok := e.LHSNode().(AP); !ok {
 		panic(ErrCompile)
