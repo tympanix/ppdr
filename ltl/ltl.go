@@ -187,7 +187,7 @@ func ValueToLiteral(value interface{}) Node {
 // RenameSelfPredicate renames all self predicates
 func RenameSelfPredicate(phi Node) Node {
 	return phi.Map(func(n Node) Node {
-		if s, ok := n.(Self); ok {
+		if _, ok := n.(Self); ok {
 			return Ptr{}
 		}
 		return n

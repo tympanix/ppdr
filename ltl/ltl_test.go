@@ -219,3 +219,18 @@ func TestCompile_one(t *testing.T) {
 		}
 	}
 }
+
+func TestRenameSelfPredicate(t *testing.T) {
+
+	tests := map[Node]Node{
+		Next{Self{}}: Next{Ptr{}},
+	}
+
+	for k, v := range tests {
+		act := RenameSelfPredicate(k)
+		if !act.SameAs(v) {
+			t.Errorf("expected %v, got %v", v, act)
+		}
+	}
+
+}

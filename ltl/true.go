@@ -29,6 +29,6 @@ func (t True) Map(fn MapFunc) Node {
 	return fn(t)
 }
 
-func (t True) Satisfied(s Set) bool {
+func (t True) Satisfied(r Resolver) bool {
 	return true
 }
