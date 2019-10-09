@@ -46,3 +46,7 @@ func (d Or) Satisfied(r Resolver) bool {
 	}
 	panic(ErrNotPropositional)
 }
+
+func (d Or) Map(fn MapFunc) Node {
+	return fn(Or{fn(d.LHSNode()), fn(d.RHSNode())})
+}

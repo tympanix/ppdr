@@ -45,3 +45,7 @@ func (i Impl) Satisfied(r Resolver) bool {
 	}
 	panic(ErrNotPropositional)
 }
+
+func (i Impl) Map(fn MapFunc) Node {
+	return fn(Impl{fn(i.LHSNode()), fn(i.RHSNode())})
+}

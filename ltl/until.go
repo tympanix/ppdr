@@ -36,5 +36,5 @@ func (u Until) Len() int {
 }
 
 func (u Until) Map(fn MapFunc) Node {
-	fn(Until{fn(u.LHSNode()), fn(u.RHSNode())})
+	return fn(Until{fn(u.LHSNode()), fn(u.RHSNode())})
 }

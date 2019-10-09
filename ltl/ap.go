@@ -36,3 +36,7 @@ func (ap AP) Len() int {
 func (a AP) Satisfied(r Resolver) bool {
 	return r.ResolveBool(a.Name)
 }
+
+func (a AP) Map(fn MapFunc) Node {
+	return fn(a)
+}
