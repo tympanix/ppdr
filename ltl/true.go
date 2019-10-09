@@ -25,6 +25,10 @@ func (t True) Len() int {
 	return 0
 }
 
+func (t True) Map(fn MapFunc) Node {
+	return fn(t)
+}
+
 func (t True) Satisfied(s Set) bool {
 	return true
 }

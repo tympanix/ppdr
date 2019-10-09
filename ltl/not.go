@@ -39,6 +39,10 @@ func (not Not) Len() int {
 	return 1 + not.ChildNode().Len()
 }
 
+func (not Not) Map(fn MapFunc) Node {
+	return fn(not)
+}
+
 func (n Not) Satisfied(r Resolver) bool {
 	if child, ok := n.ChildNode().(Satisfiable); ok {
 		return !child.Satisfied(r)
