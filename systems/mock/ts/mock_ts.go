@@ -19,7 +19,7 @@ func (s *State) Dependencies() []ts.State {
 }
 
 // Predicates returns the set of predicates which hold in this state
-func (s *State) Predicates() ltl.Set {
+func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 	return s.predicates
 }
 

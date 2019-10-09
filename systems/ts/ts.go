@@ -11,6 +11,6 @@ type TS interface {
 
 // State is a state in a transition system
 type State interface {
-	Predicates() ltl.Set
+	Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set
 	Dependencies() []State
 }

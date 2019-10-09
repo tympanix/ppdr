@@ -58,7 +58,7 @@ func (s *State) addTransition(s1 *State) {
 
 func (s *State) expand(p *Product) StateSet {
 	for _, tTS := range s.StateTS.Dependencies() {
-		lf := p.NBA.AP.Intersection(tTS.Predicates())
+		lf := p.NBA.AP.Intersection(tTS.Predicates(p.NBA.AP, p.NBA.RefTable))
 		for _, tNBA := range s.StateNBA.Transitions {
 			pNBA := tNBA.State
 			if tNBA.Label.Equals(lf) {

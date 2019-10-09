@@ -57,7 +57,7 @@ func TestRepo_one(t *testing.T) {
 
 	r := NewRepo()
 
-	s0 := NewState(ltl.AP{"test"})
+	s0 := NewState("test", true)
 	s1 := NewState()
 	s2 := NewState()
 

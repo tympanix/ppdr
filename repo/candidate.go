@@ -26,7 +26,16 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 		return true
 	}
 
-	if s, err := ltl.Satisfied(phi, c.State.Predicates()); err == nil {
+	phi, table, err := ltl.Compile(phi)
+
+	if err != nil {
+		panic(err)
+	}
+
+	phi = phi.Normalize()
+	ap := ltl.FindAtomicPropositions(phi)
+
+	if s, err := ltl.Satisfied(phi, c.State.Predicates(ap, table)); err == nil {
 		return s
 	}
 

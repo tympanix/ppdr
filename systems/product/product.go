@@ -176,7 +176,7 @@ func (p *Product) ndfs(s *State, c *Context) {
 
 func (p *Product) addInitialStates() {
 	for _, s0 := range p.TS.InitialStates() {
-		lf := p.NBA.AP.Intersection(s0.Predicates())
+		lf := p.NBA.AP.Intersection(s0.Predicates(p.NBA.AP, p.NBA.RefTable))
 		for q0 := range p.NBA.StartStates {
 			for _, t := range q0.Transitions {
 				if t.Label.Equals(lf) {
