@@ -19,6 +19,10 @@ func (l LitNumber) Normalize() Node {
 	return l
 }
 
+func (l LitNumber) Map(fn MapFunc) Node {
+	return fn(l)
+}
+
 func (l LitNumber) SameAs(n Node) bool {
 	if l2, ok := n.(LitNumber); ok {
 		return l.Num == l2.Num

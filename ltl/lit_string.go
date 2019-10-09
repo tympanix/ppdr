@@ -19,6 +19,10 @@ func (l LitString) Normalize() Node {
 	return l
 }
 
+func (l LitString) Map(fn MapFunc) Node {
+	return fn(l)
+}
+
 func (l LitString) SameAs(n Node) bool {
 	if l2, ok := n.(LitString); ok {
 		return l.Str == l2.Str
