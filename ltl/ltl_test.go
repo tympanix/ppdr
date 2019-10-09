@@ -223,8 +223,10 @@ func TestCompile_one(t *testing.T) {
 func TestRenameSelfPredicate(t *testing.T) {
 
 	tests := map[Node]Node{
-		//Next{Self{}}:                         Next{Ptr{}},
-		Until{And{Self{}, AP{"a"}}, AP{"b"}}: Until{And{Ptr{}, AP{"a"}}, AP{"b"}},
+		Next{Self{}}:                              Next{Ptr{}},
+		Until{And{Self{}, AP{"a"}}, AP{"b"}}:      Until{And{Ptr{}, AP{"a"}}, AP{"b"}},
+		Or{Next{Not{Self{}}}, AP{"a"}}:            Or{Next{Not{Ptr{}}}, AP{"a"}},
+		Eventually{Impl{AP{"a"}, Always{Self{}}}}: Eventually{Impl{AP{"a"}, Always{Ptr{}}}},
 	}
 
 	for k, v := range tests {
