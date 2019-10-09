@@ -46,7 +46,6 @@ func (e Equals) Len() int {
 
 func (e Equals) Satisfied(r Resolver) bool {
 	var ap AP
-	var rhs interface{}
 	var ok bool
 
 	if ap, ok = e.LHSNode().(AP); !ok {
@@ -59,7 +58,7 @@ func (e Equals) Satisfied(r Resolver) bool {
 		return false
 	}
 
-	if s, ok := rhs.(LitString); ok {
+	if s, ok := e.RHSNode().(LitString); ok {
 		if s2, ok := lhs.(string); ok {
 			return s.Str == s2
 		}

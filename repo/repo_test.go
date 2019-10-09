@@ -227,3 +227,50 @@ func runTableTest(t *testing.T, r *Repo, tab []exe) {
 		}
 	}
 }
+
+func TestRepo_four(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState("value", "ok")
+	s1 := NewState("value", true)
+	s2 := NewState()
+
+	s1.addDependency(s0)
+	s2.addDependency(s1)
+
+	eq := ltl.Equals{ltl.AP{"value"}, ltl.LitString{"ok"}}
+
+	phi1 := ltl.Eventually{eq}
+	phi2 := ltl.Always{eq}
+	phi3 := ltl.Next{eq}
+	phi4 := ltl.Until{ltl.Not{eq}, eq}
+
+	tests := []exe{
+		exe{put{s0}, OK},
+		exe{put{s1}, OK},
+		exe{put{s2}, OK},
+
+		// <>(value = "ok")
+		exe{query{s0, phi1}, OK},
+		exe{query{s1, phi1}, OK},
+		exe{query{s2, phi1}, OK},
+
+		// [](value = "ok")
+		exe{query{s0, phi2}, OK},
+		exe{query{s1, phi2}, ERR},
+		exe{query{s2, phi2}, ERR},
+
+		// O(value = "ok")
+		exe{query{s0, phi3}, OK},
+		exe{query{s1, phi3}, OK},
+		exe{query{s2, phi3}, ERR},
+
+		// !(value = "ok") U (value = "ok")
+		exe{query{s0, phi4}, OK},
+		exe{query{s1, phi4}, OK},
+		exe{query{s2, phi4}, OK},
+	}
+
+	runTableTest(t, r, tests)
+}

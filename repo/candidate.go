@@ -26,17 +26,17 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 		return true
 	}
 
-	phi, table, err := ltl.Compile(phi)
+	phi2, table, err := ltl.Compile(phi)
 
 	if err != nil {
 		panic(err)
 	}
 
-	phi = phi.Normalize()
-	ap := ltl.FindAtomicPropositions(phi)
+	phi2 = phi2.Normalize()
+	ap := ltl.FindAtomicPropositions(phi2)
 
 	r := ltl.NewResolverFromSet(c.State.Predicates(ap, table))
-	if s, err := ltl.Satisfied(phi, r); err == nil {
+	if s, err := ltl.Satisfied(phi2, r); err == nil {
 		return s
 	}
 
