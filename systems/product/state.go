@@ -9,7 +9,7 @@ import (
 
 // StateTuple is a tuple of states from the product transition system of TS and A
 type StateTuple struct {
-	StateTS  *ts.State
+	StateTS  ts.State
 	StateNBA *ba.State
 }
 
@@ -33,7 +33,7 @@ func (s *State) String() string {
 	return s.StringWithRenamer(nil)
 }
 
-func newState(sTS *ts.State, sNBA *ba.State) *State {
+func newState(sTS ts.State, sNBA *ba.State) *State {
 	return &State{
 		StateTuple: StateTuple{
 			StateTS:  sTS,
@@ -57,8 +57,8 @@ func (s *State) addTransition(s1 *State) {
 }
 
 func (s *State) expand(p *Product) StateSet {
-	for _, tTS := range s.StateTS.Dependencies {
-		lf := p.NBA.AP.Intersection(tTS.Predicates)
+	for _, tTS := range s.StateTS.Dependencies() {
+		lf := p.NBA.AP.Intersection(tTS.Predicates(p.NBA.AP, p.NBA.RefTable))
 		for _, tNBA := range s.StateNBA.Transitions {
 			pNBA := tNBA.State
 			if tNBA.Label.Equals(lf) {

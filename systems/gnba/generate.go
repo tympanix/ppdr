@@ -15,11 +15,18 @@ func GenerateGNBA(phi ltl.Node) *GNBA {
 		t.Stop()
 	}()
 
+	phi, table, err := ltl.Compile(phi)
+
+	if err != nil {
+		panic(err)
+	}
+
 	phi = phi.Normalize()
 	closure := ltl.Closure(phi)
 	elemSets := ltl.FindElementarySets(phi)
 
 	gnba := NewGNBA(phi)
+	gnba.RefTable = table
 
 	for _, s := range elemSets {
 		n := ba.State{

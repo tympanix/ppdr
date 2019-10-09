@@ -1,14 +1,22 @@
 package ltl
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
+
+// ErrNotPropositional is an error for nodes not supporting propositional logic
+var ErrNotPropositional = errors.New("not propositional logic")
+
+// ErrCompile is an error for when compilations has failed
+var ErrCompile = errors.New("compile error")
 
 // Node is any node of an LTL formula
 type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
+	Compile(*RefTable) Node
 	Len() int
 	String() string
 }
@@ -24,6 +32,16 @@ type BinaryNode interface {
 type UnaryNode interface {
 	Node
 	ChildNode() Node
+}
+
+// RefTable references other propositional logic
+type RefTable map[Ref]Node
+
+// NewRef adds a new reference to the reference table
+func (r *RefTable) NewRef(n Node) Ref {
+	ref := Ref{len(*r)}
+	(*r)[ref] = n
+	return ref
 }
 
 func binaryNodeString(b BinaryNode, op string) string {
@@ -62,6 +80,8 @@ func FindAtomicPropositions(node Node) Set {
 func auxFindAtomicPropositions(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		return acc.Add(ap)
+	} else if r, ok := node.(Ref); ok {
+		return acc.Add(r)
 	} else if _, ok := node.(True); ok {
 		return acc
 	} else if unary, ok := node.(UnaryNode); ok {
@@ -94,6 +114,8 @@ func Subformulae(node Node) Set {
 func auxSubformulae(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		return acc.Add(ap)
+	} else if r, ok := node.(Ref); ok {
+		return acc.Add(r)
 	} else if t, ok := node.(True); ok {
 		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
@@ -105,4 +127,55 @@ func auxSubformulae(node Node, acc Set) Set {
 		return auxSubformulae(binary.RHSNode(), acc)
 	}
 	panic(fmt.Sprintf("unknown ltl node %v", node))
+}
+
+// Satisfied returns true if the set satisfies phi
+func Satisfied(phi Node, r Resolver) (sat bool, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if r == ErrNotPropositional {
+				err = ErrNotPropositional
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	if p, ok := phi.(Satisfiable); ok {
+		return p.Satisfied(r), nil
+	}
+	return false, ErrNotPropositional
+}
+
+// Compile runs through each node and substitutes unwanted propositional logic
+// with references which can then later be evaluated
+func Compile(phi Node) (n Node, t RefTable, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if r == ErrCompile {
+				err = ErrCompile
+			}
+		}
+	}()
+
+	t = make(RefTable)
+	return phi.Compile(&t), t, nil
+}
+
+// ValueToLiteral return the value as an LTL literal node
+func ValueToLiteral(value interface{}) Node {
+	switch v := value.(type) {
+	case string:
+		return LitString{v}
+	case bool:
+		return LitBool{v}
+	case int:
+		return LitNumber{float64(v)}
+	case int64:
+		return LitNumber{float64(v)}
+	case float32:
+		return LitNumber{float64(v)}
+	case float64:
+		return LitNumber{float64(v)}
+	}
+	panic("unsupported literal type")
 }

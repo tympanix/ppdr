@@ -32,6 +32,10 @@ func (e Eventually) Normalize() Node {
 	return Until{True{}, e.ChildNode().Normalize()}
 }
 
+func (e Eventually) Compile(m *RefTable) Node {
+	return Eventually{e.ChildNode().Compile(m)}
+}
+
 func (e Eventually) Len() int {
 	return 1 + e.ChildNode().Len()
 }

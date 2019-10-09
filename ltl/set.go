@@ -78,6 +78,13 @@ func (s *Set) Add(node ...Node) Set {
 	return *s
 }
 
+// AddSet adds all elements from the argument set to this one
+func (s *Set) AddSet(set Set) {
+	for e := range set {
+		s.Add(e)
+	}
+}
+
 // Copy returns a new set which is identical to the original one
 func (s *Set) Copy() Set {
 	return NewSet(s.AsSlice()...)
@@ -91,6 +98,28 @@ func (s Set) ContainsAll(set Set) bool {
 		}
 	}
 	return true
+}
+
+// Conjunction returns a single formula which is a conjunction of all formulae
+// in the set
+func (s Set) Conjunction() Node {
+
+	if s.Size() == 0 {
+		return nil
+	}
+
+	if s.Size() == 1 {
+		return s.AsSlice()[0]
+	}
+
+	l := s.AsSlice()
+	conj := And{l[0], l[1]}
+
+	for _, e := range l[2:] {
+		conj = And{e, conj}
+	}
+
+	return conj
 }
 
 // ContainsAny return true if any element is contained in the set.

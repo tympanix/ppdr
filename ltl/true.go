@@ -13,10 +13,18 @@ func (t True) Normalize() Node {
 	return t
 }
 
+func (t True) Compile(m *RefTable) Node {
+	return t
+}
+
 func (t True) String() string {
 	return "true"
 }
 
 func (t True) Len() int {
 	return 0
+}
+
+func (t True) Satisfied(s Set) bool {
+	return true
 }

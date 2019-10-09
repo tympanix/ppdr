@@ -25,6 +25,14 @@ func (ap AP) Normalize() Node {
 	return ap
 }
 
+func (ap AP) Compile(m *RefTable) Node {
+	return ap
+}
+
 func (ap AP) Len() int {
 	return 0
+}
+
+func (a AP) Satisfied(r Resolver) bool {
+	return r.ResolveBool(a.Name)
 }

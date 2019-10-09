@@ -54,6 +54,8 @@ func TestScanner_1(t *testing.T) {
 		"[]<> crit1 & []<> crit2": {[]token.Kind{token.ALWAYS, token.EVENTUALLY, token.AP, token.AND, token.ALWAYS, token.EVENTUALLY, token.AP, token.EOF}, []string{"crit1", "crit2"}},
 		"!(a | b) and (b -> c)":   {[]token.Kind{token.NOT, token.LPAR, token.AP, token.OR, token.AP, token.RPAR, token.AND, token.LPAR, token.AP, token.IMPL, token.AP, token.RPAR, token.EOF}, []string{"a", "b", "b", "c"}},
 		"true":                    {[]token.Kind{token.TRUE, token.EOF}, []string{}},
+		"a = b":                   {[]token.Kind{token.AP, token.EQUALS, token.AP, token.EOF}, []string{"a", "b"}},
+		"\"ok\"":                  {[]token.Kind{token.LITSTRING, token.EOF}, []string{}},
 	}
 
 	var i int

@@ -20,6 +20,10 @@ func (not Not) ChildNode() Node {
 	return not.Child
 }
 
+func (not Not) Compile(m *RefTable) Node {
+	return Not{not.ChildNode().Compile(m)}
+}
+
 func (not Not) String() string {
 	if _, ok := not.Child.(BinaryNode); ok {
 		return fmt.Sprintf("!(%v)", not.ChildNode())
@@ -33,4 +37,11 @@ func (not Not) Normalize() Node {
 
 func (not Not) Len() int {
 	return 1 + not.ChildNode().Len()
+}
+
+func (n Not) Satisfied(r Resolver) bool {
+	if child, ok := n.ChildNode().(Satisfiable); ok {
+		return !child.Satisfied(r)
+	}
+	panic(ErrNotPropositional)
 }

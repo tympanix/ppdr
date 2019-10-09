@@ -29,6 +29,19 @@ func (i Impl) Normalize() Node {
 	return Or{Negate(i.LHSNode().Normalize()), i.RHSNode().Normalize()}.Normalize()
 }
 
+func (i Impl) Compile(m *RefTable) Node {
+	return Impl{i.LHSNode().Compile(m), i.RHSNode().Compile(m)}
+}
+
 func (i Impl) Len() int {
 	return 1 + i.LHSNode().Len() + i.RHSNode().Len()
+}
+
+func (i Impl) Satisfied(r Resolver) bool {
+	if lhs, ok := i.LHSNode().(Satisfiable); ok {
+		if rhs, ok := i.RHSNode().(Satisfiable); ok {
+			return !lhs.Satisfied(r) || rhs.Satisfied(r)
+		}
+	}
+	panic(ErrNotPropositional)
 }

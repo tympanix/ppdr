@@ -15,6 +15,7 @@ type NBA struct {
 	FinalStates ba.StateSet
 	Phi         ltl.Node
 	AP          ltl.Set
+	RefTable    ltl.RefTable
 }
 
 // NewNBA returns a new empty NBA

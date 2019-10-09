@@ -27,6 +27,10 @@ func (u Until) Normalize() Node {
 	return Until{u.LHSNode().Normalize(), u.RHSNode().Normalize()}
 }
 
+func (u Until) Compile(m *RefTable) Node {
+	return Until{u.LHSNode().Compile(m), u.RHSNode().Compile(m)}
+}
+
 func (u Until) Len() int {
 	return 1 + u.LHSNode().Len() + u.RHSNode().Len()
 }
