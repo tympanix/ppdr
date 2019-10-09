@@ -228,24 +228,29 @@ func runTableTest(t *testing.T, r *Repo, tab []exe) {
 	}
 }
 
+// s0 {value: "ok", number: true}
+// s1 {value: true, number: 5}
+// s2 {value: false}
 func TestRepo_four(t *testing.T) {
 
 	r := NewRepo()
 
-	s0 := NewState("value", "ok")
-	s1 := NewState("value", true)
-	s2 := NewState()
+	s0 := NewState("value", "ok", "number", true)
+	s1 := NewState("value", true, "number", 5)
+	s2 := NewState("value", false)
 
 	s1.addDependency(s0)
 	s2.addDependency(s1)
 
-	eq := ltl.Equals{ltl.AP{"value"}, ltl.LitString{"ok"}}
+	eqOk := ltl.Equals{ltl.AP{"value"}, ltl.LitString{"ok"}}
+	eq5 := ltl.Equals{ltl.AP{"number"}, ltl.LitNumber{5}}
 
-	phi1 := ltl.Eventually{eq}
-	phi2 := ltl.Always{eq}
-	phi3 := ltl.Next{eq}
-	phi4 := ltl.Until{ltl.Not{eq}, eq}
-	phi5 := eq
+	phi1 := ltl.Eventually{eqOk}
+	phi2 := ltl.Always{eqOk}
+	phi3 := ltl.Next{eqOk}
+	phi4 := ltl.Until{ltl.Not{eqOk}, eqOk}
+	phi5 := eqOk
+	phi6 := eq5
 
 	tests := []exe{
 		exe{put{s0}, OK},
@@ -276,6 +281,11 @@ func TestRepo_four(t *testing.T) {
 		exe{query{s0, phi5}, OK},
 		exe{query{s1, phi5}, ERR},
 		exe{query{s2, phi5}, ERR},
+
+		// number = 5
+		exe{query{s0, phi6}, ERR},
+		exe{query{s1, phi6}, OK},
+		exe{query{s2, phi6}, ERR},
 	}
 
 	runTableTest(t, r, tests)
