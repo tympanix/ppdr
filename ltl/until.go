@@ -35,6 +35,6 @@ func (u Until) Len() int {
 	return 1 + u.LHSNode().Len() + u.RHSNode().Len()
 }
 
-func (u Until) Filter(fn MapFunc) Node {
+func (u Until) Map(fn MapFunc) Node {
 	fn(Until{fn(u.LHSNode()), fn(u.RHSNode())})
 }

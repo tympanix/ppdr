@@ -17,7 +17,7 @@ type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
 	Compile(*RefTable) Node
-	Filter(MapFunc) Node
+	Map(MapFunc) Node
 	Len() int
 	String() string
 }
@@ -186,7 +186,7 @@ func ValueToLiteral(value interface{}) Node {
 
 // RenameSelfPredicate renames all self predicates
 func RenameSelfPredicate(phi Node) Node {
-	return phi.Filter(func(n Node) Node {
+	return phi.Map(func(n Node) Node {
 		if s, ok := n.(Self); ok {
 			return Ptr{}
 		}
