@@ -24,7 +24,7 @@ func (t Ptr) Compile(m *RefTable) Node {
 }
 
 func (t Ptr) String() string {
-	return "true"
+	return "ptr"
 }
 
 func (t Ptr) Len() int {
