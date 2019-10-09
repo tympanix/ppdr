@@ -150,7 +150,7 @@ func TestSatisfied_one(t *testing.T) {
 	for k, v := range tests {
 		name := fmt.Sprintf("test:%d", i)
 		t.Run(name, func(t *testing.T) {
-			s, err := Satisfied(k, set)
+			s, err := Satisfied(k, NewResolverFromSet(set))
 			if err != nil {
 				t.Errorf("expected no errors from %v", k)
 			}
@@ -186,7 +186,7 @@ func TestSatisfied_two(t *testing.T) {
 	for _, v := range tests {
 		name := fmt.Sprintf("test:%d", i)
 		t.Run(name, func(t *testing.T) {
-			_, err := Satisfied(v, set)
+			_, err := Satisfied(v, NewResolverFromSet(set))
 			if err != ErrNotPropositional {
 				t.Errorf("expected: %v\rgot: %v\n", ErrNotPropositional, err)
 			}

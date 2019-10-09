@@ -38,10 +38,10 @@ func (d Or) Len() int {
 	return 1 + d.LHSNode().Len() + d.RHSNode().Len()
 }
 
-func (d Or) Satisfied(s Set) bool {
+func (d Or) Satisfied(r Resolver) bool {
 	if lhs, ok := d.LHSNode().(Satisfiable); ok {
 		if rhs, ok := d.RHSNode().(Satisfiable); ok {
-			return lhs.Satisfied(s) || rhs.Satisfied(s)
+			return lhs.Satisfied(r) || rhs.Satisfied(r)
 		}
 	}
 	panic(ErrNotPropositional)

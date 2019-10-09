@@ -43,3 +43,27 @@ func (e Equals) Compile(m *RefTable) Node {
 func (e Equals) Len() int {
 	return 1 + e.LHSNode().Len() + e.RHSNode().Len()
 }
+
+func (e Equals) Satisfied(r Resolver) bool {
+	var ap AP
+	var rhs interface{}
+	var ok bool
+
+	if ap, ok = e.LHSNode().(AP); !ok {
+		return false
+	}
+
+	lhs := r.Resolve(ap.Name)
+
+	if lhs == nil {
+		return false
+	}
+
+	if s, ok := rhs.(LitString); ok {
+		if s2, ok := lhs.(string); ok {
+			return s.Str == s2
+		}
+	}
+
+	return false
+}

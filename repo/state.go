@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+
 	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ts"
 )
@@ -59,6 +61,19 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 					preds.Add(k)
 				}
 			}
+		} else if r, ok := k.(ltl.Ref); ok {
+			exp, ok := t[r]
+
+			if !ok {
+				panic(fmt.Sprintf("unknown reference %v", r))
+			}
+
+			b, err := ltl.Satisfied(exp, ltl.NewResolverFromMap(s.attributes))
+
+			if b && (err == nil) {
+				preds.Add(r)
+			}
+
 		}
 	}
 	return preds

@@ -37,10 +37,10 @@ func (i Impl) Len() int {
 	return 1 + i.LHSNode().Len() + i.RHSNode().Len()
 }
 
-func (i Impl) Satisfied(s Set) bool {
+func (i Impl) Satisfied(r Resolver) bool {
 	if lhs, ok := i.LHSNode().(Satisfiable); ok {
 		if rhs, ok := i.RHSNode().(Satisfiable); ok {
-			return !lhs.Satisfied(s) || rhs.Satisfied(s)
+			return !lhs.Satisfied(r) || rhs.Satisfied(r)
 		}
 	}
 	panic(ErrNotPropositional)

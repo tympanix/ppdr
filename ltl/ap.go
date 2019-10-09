@@ -33,6 +33,6 @@ func (ap AP) Len() int {
 	return 0
 }
 
-func (a AP) Satisfied(s Set) bool {
-	return s.Contains(a)
+func (a AP) Satisfied(r Resolver) bool {
+	return r.ResolveBool(a.Name)
 }

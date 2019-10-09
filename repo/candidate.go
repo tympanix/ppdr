@@ -35,7 +35,8 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 	phi = phi.Normalize()
 	ap := ltl.FindAtomicPropositions(phi)
 
-	if s, err := ltl.Satisfied(phi, c.State.Predicates(ap, table)); err == nil {
+	r := ltl.NewResolverFromSet(c.State.Predicates(ap, table))
+	if s, err := ltl.Satisfied(phi, r); err == nil {
 		return s
 	}
 

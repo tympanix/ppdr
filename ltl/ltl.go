@@ -34,11 +34,6 @@ type UnaryNode interface {
 	ChildNode() Node
 }
 
-// Satisfiable is an interface that determines if a node is satisfiable
-type Satisfiable interface {
-	Satisfied(Set) bool
-}
-
 // RefTable references other propositional logic
 type RefTable map[Ref]Node
 
@@ -85,6 +80,8 @@ func FindAtomicPropositions(node Node) Set {
 func auxFindAtomicPropositions(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		return acc.Add(ap)
+	} else if r, ok := node.(Ref); ok {
+		return acc.Add(r)
 	} else if _, ok := node.(True); ok {
 		return acc
 	} else if unary, ok := node.(UnaryNode); ok {
@@ -117,6 +114,8 @@ func Subformulae(node Node) Set {
 func auxSubformulae(node Node, acc Set) Set {
 	if ap, ok := node.(AP); ok {
 		return acc.Add(ap)
+	} else if r, ok := node.(Ref); ok {
+		return acc.Add(r)
 	} else if t, ok := node.(True); ok {
 		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
@@ -131,16 +130,18 @@ func auxSubformulae(node Node, acc Set) Set {
 }
 
 // Satisfied returns true if the set satisfies phi
-func Satisfied(phi Node, set Set) (sat bool, err error) {
+func Satisfied(phi Node, r Resolver) (sat bool, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if r == ErrNotPropositional {
 				err = ErrNotPropositional
+			} else {
+				panic(r)
 			}
 		}
 	}()
 	if p, ok := phi.(Satisfiable); ok {
-		return p.Satisfied(set), nil
+		return p.Satisfied(r), nil
 	}
 	return false, ErrNotPropositional
 }
