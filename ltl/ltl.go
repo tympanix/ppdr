@@ -17,6 +17,7 @@ type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
 	Compile(*RefTable) Node
+	Filter(MapFunc) Node
 	Len() int
 	String() string
 }
@@ -36,6 +37,9 @@ type UnaryNode interface {
 
 // RefTable references other propositional logic
 type RefTable map[Ref]Node
+
+// MapFunc is a function which maps one node to another
+type MapFunc func(Node) Node
 
 // NewRef adds a new reference to the reference table
 func (r *RefTable) NewRef(n Node) Ref {
@@ -178,4 +182,14 @@ func ValueToLiteral(value interface{}) Node {
 		return LitNumber{float64(v)}
 	}
 	panic("unsupported literal type")
+}
+
+// RenameSelfPredicate renames all self predicates
+func RenameSelfPredicate(phi Node) Node {
+	return phi.Filter(func(n Node) Node {
+		if s, ok := n.(Self); ok {
+			return Ptr{}
+		}
+		return n
+	})
 }
