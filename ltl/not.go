@@ -40,7 +40,7 @@ func (not Not) Len() int {
 }
 
 func (not Not) Map(fn MapFunc) Node {
-	return fn(not)
+	return fn(Not{not.Child.Map(fn)})
 }
 
 func (n Not) Satisfied(r Resolver) bool {
