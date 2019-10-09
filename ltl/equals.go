@@ -61,12 +61,4 @@ func (e Equals) Satisfied(r Resolver) bool {
 	}
 
 	return e.RHSNode().SameAs(lhs)
-
-	if s, ok := e.RHSNode().(LitString); ok {
-		if s2, ok := lhs.(LitString); ok {
-			return s.Str == s2.Str
-		}
-	}
-
-	return false
 }
