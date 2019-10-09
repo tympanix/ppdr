@@ -37,11 +37,13 @@ func (e Equals) Compile(m *RefTable) Node {
 	if _, ok := e.LHSNode().(AP); !ok {
 		panic(ErrCompile)
 	}
-	if _, ok := e.RHSNode().(LitString); !ok {
+	switch e.RHSNode().(type) {
+	case LitString, LitBool, LitNumber:
+		ref := m.NewRef(e)
+		return ref
+	default:
 		panic(ErrCompile)
 	}
-	ref := m.NewRef(e)
-	return ref
 }
 
 // Len returns the length of the equals operator and its children

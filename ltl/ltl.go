@@ -168,6 +168,14 @@ func ValueToLiteral(value interface{}) Node {
 		return LitString{v}
 	case bool:
 		return LitBool{v}
+	case int:
+		return LitNumber{float64(v)}
+	case int64:
+		return LitNumber{float64(v)}
+	case float32:
+		return LitNumber{float64(v)}
+	case float64:
+		return LitNumber{float64(v)}
 	}
 	panic("unsupported literal type")
 }
