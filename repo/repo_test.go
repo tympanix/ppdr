@@ -245,6 +245,7 @@ func TestRepo_four(t *testing.T) {
 	phi2 := ltl.Always{eq}
 	phi3 := ltl.Next{eq}
 	phi4 := ltl.Until{ltl.Not{eq}, eq}
+	phi5 := eq
 
 	tests := []exe{
 		exe{put{s0}, OK},
@@ -270,6 +271,11 @@ func TestRepo_four(t *testing.T) {
 		exe{query{s0, phi4}, OK},
 		exe{query{s1, phi4}, OK},
 		exe{query{s2, phi4}, OK},
+
+		// value = "ok"
+		exe{query{s0, phi5}, OK},
+		exe{query{s1, phi5}, ERR},
+		exe{query{s2, phi5}, ERR},
 	}
 
 	runTableTest(t, r, tests)
