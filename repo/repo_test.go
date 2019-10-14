@@ -301,21 +301,23 @@ func TestRepo_five(t *testing.T) {
 	s2 := NewState(ltl.AP{"a"})
 	s3 := NewState(ltl.AP{"a"})
 	s4 := NewState()
-	s5 := NewState(ltl.AP{"a"})
 
 	s1.addDependency(s0)
 	s2.addDependency(s1)
 	s3.addDependency(s2)
 	s4.addDependency(s3)
-	s5.addDependency(s4)
 
 	tests := []exe{
+		// Put states into repo
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
-		// exe{put{s2}, OK},
-		// exe{put{s3}, OK},
-		// exe{put{s4}, ERR},
-		// exe{put{s5}, ERR},
+		exe{put{s2}, OK},
+		exe{put{s3}, OK},
+		exe{put{s4}, ERR},
+
+		// Queries
+		exe{query{s0, ltl.Always{ltl.Self{}}}, OK},
+		exe{query{s1, ltl.Always{ltl.Self{}}}, ERR},
 	}
 
 	runTableTest(t, r, tests)

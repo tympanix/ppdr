@@ -87,8 +87,6 @@ func auxFindAtomicPropositions(node Node, acc Set) Set {
 		return acc.Add(ap)
 	} else if r, ok := node.(Ref); ok {
 		return acc.Add(r)
-	} else if p, ok := node.(Ptr); ok {
-		return acc.Add(p)
 	} else if _, ok := node.(True); ok {
 		return acc
 	} else if unary, ok := node.(UnaryNode); ok {

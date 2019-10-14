@@ -20,7 +20,7 @@ func (t Ptr) Normalize() Node {
 }
 
 func (t Ptr) Compile(m *RefTable) Node {
-	return t
+	return m.NewRef(t)
 }
 
 func (t Ptr) String() string {
