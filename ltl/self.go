@@ -14,7 +14,7 @@ func (t Self) Normalize() Node {
 }
 
 func (t Self) Compile(m *RefTable) Node {
-	return t
+	panic("self can not be compiled")
 }
 
 func (t Self) String() string {
@@ -30,5 +30,5 @@ func (t Self) Map(fn MapFunc) Node {
 }
 
 func (t Self) Satisfied(r Resolver) bool {
-	return true
+	panic("self can not be checked for satisfyability")
 }

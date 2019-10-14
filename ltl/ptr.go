@@ -36,5 +36,5 @@ func (t Ptr) Map(fn MapFunc) Node {
 }
 
 func (t Ptr) Satisfied(r Resolver) bool {
-	return true
+	return r.Resolve("self").SameAs(t)
 }

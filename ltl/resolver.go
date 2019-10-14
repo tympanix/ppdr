@@ -47,3 +47,28 @@ func (s setResolver) ResolveBool(str string) bool {
 func NewResolverFromSet(s Set) Resolver {
 	return setResolver{s}
 }
+
+type combinedResolver struct {
+	r1 Resolver
+	r2 Resolver
+}
+
+func (c combinedResolver) Resolve(str string) Node {
+	if v := c.r1.Resolve(str); v != nil {
+		return v
+	}
+	return c.r2.Resolve(str)
+}
+
+func (c combinedResolver) ResolveBool(str string) bool {
+	return c.r1.ResolveBool(str) || c.r2.ResolveBool(str)
+}
+
+// NewResolverCombined return a new resolver composed by combining two
+// individual resolvers. The first resolver, r1, has priority
+func NewResolverCombined(r1 Resolver, r2 Resolver) Resolver {
+	return combinedResolver{
+		r1: r1,
+		r2: r2,
+	}
+}

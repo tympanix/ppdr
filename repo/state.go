@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"unsafe"
 
 	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ts"
@@ -79,6 +80,21 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 	return preds
 }
 
+func (s *State) replaceSelfReferences() {
+	set := ltl.NewSet()
+
+	for p := range s.confPolicies {
+		p1 := ltl.RenameSelfPredicate(p, unsafe.Pointer(s))
+		set.Add(p1)
+	}
+
+	s.attributes["self"] = ltl.Ptr{
+		Pointer: unsafe.Pointer(s),
+	}
+
+	s.confPolicies = set
+}
+
 // Dependencies return a list of dependencies from this state
 func (s *State) Dependencies() []ts.State {
 	return s.dependencies
@@ -86,4 +102,8 @@ func (s *State) Dependencies() []ts.State {
 
 func (s *State) addConfPolicy(set ltl.Set) {
 	s.confPolicies.AddSet(set)
+}
+
+func (s *State) AddPolicy(n ltl.Node) {
+	s.confPolicies.Add(n)
 }
