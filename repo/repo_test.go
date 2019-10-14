@@ -360,3 +360,29 @@ func TestRepo_five(t *testing.T) {
 
 	runTableTest(t, r, tests)
 }
+
+func TestRepo_six(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState()
+	s1 := NewState()
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{john}, OK},
+
+		exe{put{s0}, OK},
+		exe{put{s1}, OK},
+
+		exe{user{jane}, OK},
+
+		// Queries
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.LitString{"john"}}}, OK},
+	}
+
+	runTableTest(t, r, tests)
+
+}

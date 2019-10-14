@@ -30,6 +30,7 @@ func NewIdentity(name string) *Identity {
 // Repo is the data repository itself
 type Repo struct {
 	states      map[*State]bool
+	users       map[string]*Identity
 	currentUser *Identity
 }
 
