@@ -8,33 +8,33 @@ type Ptr struct {
 }
 
 // SameAs returns true if node is also true
-func (t Ptr) SameAs(node Node) bool {
+func (p Ptr) SameAs(node Node) bool {
 	if p2, ok := node.(Ptr); ok {
-		return t.Pointer == p2.Pointer
+		return p.Pointer == p2.Pointer
 	}
 	return false
 }
 
-func (t Ptr) Normalize() Node {
-	return t
+func (p Ptr) Normalize() Node {
+	return p
 }
 
-func (t Ptr) Compile(m *RefTable) Node {
-	return t
+func (p Ptr) Compile(m *RefTable) Node {
+	return p
 }
 
-func (t Ptr) String() string {
+func (p Ptr) String() string {
 	return "ptr"
 }
 
-func (t Ptr) Len() int {
+func (p Ptr) Len() int {
 	return 0
 }
 
-func (t Ptr) Map(fn MapFunc) Node {
-	return fn(t)
+func (p Ptr) Map(fn MapFunc) Node {
+	return fn(p)
 }
 
-func (t Ptr) Satisfied(r Resolver) bool {
+func (p Ptr) Satisfied(r Resolver) bool {
 	return true
 }
