@@ -68,3 +68,7 @@ func (e Equals) Satisfied(r Resolver) bool {
 
 	return e.RHSNode().SameAs(lhs)
 }
+
+func (e Equals) Map(fn MapFunc) Node {
+	return fn(Equals{e.LHSNode().Map(fn), e.RHSNode().Map(fn)})
+}

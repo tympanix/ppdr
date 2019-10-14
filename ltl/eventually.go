@@ -39,3 +39,7 @@ func (e Eventually) Compile(m *RefTable) Node {
 func (e Eventually) Len() int {
 	return 1 + e.ChildNode().Len()
 }
+
+func (e Eventually) Map(fn MapFunc) Node {
+	return fn(Eventually{e.ChildNode().Map(fn)})
+}

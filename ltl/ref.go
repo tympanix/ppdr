@@ -26,6 +26,10 @@ func (r Ref) Normalize() Node {
 	return r
 }
 
+func (r Ref) Map(fn MapFunc) Node {
+	return fn(r)
+}
+
 func (r Ref) String() string {
 	return fmt.Sprintf("#%v", r.R)
 }

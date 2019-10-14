@@ -39,3 +39,7 @@ func (a Always) Compile(m *RefTable) Node {
 func (a Always) Len() int {
 	return 1 + a.Child.Len()
 }
+
+func (a Always) Map(fn MapFunc) Node {
+	return fn(Always{a.ChildNode().Map(fn)})
+}

@@ -26,6 +26,10 @@ func (l LitBool) SameAs(n Node) bool {
 	return false
 }
 
+func (l LitBool) Map(fn MapFunc) Node {
+	return fn(l)
+}
+
 func (l LitBool) String() string {
 	return fmt.Sprintf("%v", l.Bool)
 }

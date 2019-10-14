@@ -34,3 +34,7 @@ func (u Until) Compile(m *RefTable) Node {
 func (u Until) Len() int {
 	return 1 + u.LHSNode().Len() + u.RHSNode().Len()
 }
+
+func (u Until) Map(fn MapFunc) Node {
+	return fn(Until{u.LHSNode().Map(fn), u.RHSNode().Map(fn)})
+}

@@ -35,6 +35,10 @@ func (next Next) Compile(m *RefTable) Node {
 	return Next{next.ChildNode().Compile(m)}
 }
 
+func (next Next) Map(fn MapFunc) Node {
+	return fn(Next{next.ChildNode().Map(fn)})
+}
+
 func (next Next) Len() int {
 	return 1 + next.ChildNode().Len()
 }

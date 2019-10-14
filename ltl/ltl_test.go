@@ -3,6 +3,7 @@ package ltl
 import (
 	"fmt"
 	"testing"
+	"unsafe"
 )
 
 func TestClosure(t *testing.T) {
@@ -218,4 +219,24 @@ func TestCompile_one(t *testing.T) {
 			t.Errorf("extected %v, got %v", v, n)
 		}
 	}
+}
+
+func TestRenameSelfPredicate(t *testing.T) {
+
+	p := 42
+
+	tests := map[Node]Node{
+		Next{Self{}}:                              Next{Ptr{unsafe.Pointer(&p)}},
+		Until{And{Self{}, AP{"a"}}, AP{"b"}}:      Until{And{Ptr{unsafe.Pointer(&p)}, AP{"a"}}, AP{"b"}},
+		Or{Next{Not{Self{}}}, AP{"a"}}:            Or{Next{Not{Ptr{unsafe.Pointer(&p)}}}, AP{"a"}},
+		Eventually{Impl{AP{"a"}, Always{Self{}}}}: Eventually{Impl{AP{"a"}, Always{Ptr{unsafe.Pointer(&p)}}}},
+	}
+
+	for k, v := range tests {
+		act := RenameSelfPredicate(k, unsafe.Pointer(&p))
+		if !act.SameAs(v) {
+			t.Errorf("expected %v, got %v", v, act)
+		}
+	}
+
 }

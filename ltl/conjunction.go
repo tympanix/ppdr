@@ -45,3 +45,7 @@ func (c And) Satisfied(r Resolver) bool {
 	}
 	panic(ErrNotPropositional)
 }
+
+func (c And) Map(fn MapFunc) Node {
+	return fn(And{c.LHSNode().Map(fn), c.RHSNode().Map(fn)})
+}

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"unsafe"
 
 	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ts"
@@ -56,12 +57,16 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 	preds := ltl.NewSet()
 	for k := range ap {
 		if a, ok := k.(ltl.AP); ok {
+			// If node is an AP, return that AP if it is contained in the
+			// attributes map as LitBool value
 			if v, ok := s.attributes[a.Name]; ok {
 				if b, ok := v.(ltl.LitBool); ok && b.Bool {
 					preds.Add(k)
 				}
 			}
 		} else if r, ok := k.(ltl.Ref); ok {
+			// Else if AP is a reference, look up that reference in the
+			// reference table and evaluate the expression
 			exp, ok := t[r]
 
 			if !ok {
@@ -73,10 +78,26 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 			if b && (err == nil) {
 				preds.Add(r)
 			}
-
+		} else {
+			panic(fmt.Sprintf("ltl node: %v, can not be evaluated as an atomic proposition", k))
 		}
 	}
 	return preds
+}
+
+func (s *State) replaceSelfReferences() {
+	set := ltl.NewSet()
+
+	for p := range s.confPolicies {
+		p1 := ltl.RenameSelfPredicate(p, unsafe.Pointer(s))
+		set.Add(p1)
+	}
+
+	s.attributes["self"] = ltl.Ptr{
+		Pointer: unsafe.Pointer(s),
+	}
+
+	s.confPolicies = set
 }
 
 // Dependencies return a list of dependencies from this state
@@ -86,4 +107,8 @@ func (s *State) Dependencies() []ts.State {
 
 func (s *State) addConfPolicy(set ltl.Set) {
 	s.confPolicies.AddSet(set)
+}
+
+func (s *State) AddPolicy(n ltl.Node) {
+	s.confPolicies.Add(n)
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"unsafe"
 )
 
 // ErrNotPropositional is an error for nodes not supporting propositional logic
@@ -17,6 +18,7 @@ type Node interface {
 	SameAs(Node) bool
 	Normalize() Node
 	Compile(*RefTable) Node
+	Map(MapFunc) Node
 	Len() int
 	String() string
 }
@@ -36,6 +38,9 @@ type UnaryNode interface {
 
 // RefTable references other propositional logic
 type RefTable map[Ref]Node
+
+// MapFunc is a function which maps one node to another
+type MapFunc func(Node) Node
 
 // NewRef adds a new reference to the reference table
 func (r *RefTable) NewRef(n Node) Ref {
@@ -116,6 +121,8 @@ func auxSubformulae(node Node, acc Set) Set {
 		return acc.Add(ap)
 	} else if r, ok := node.(Ref); ok {
 		return acc.Add(r)
+	} else if p, ok := node.(Ptr); ok {
+		return acc.Add(p)
 	} else if t, ok := node.(True); ok {
 		return acc.Add(t)
 	} else if unary, ok := node.(UnaryNode); ok {
@@ -178,4 +185,14 @@ func ValueToLiteral(value interface{}) Node {
 		return LitNumber{float64(v)}
 	}
 	panic("unsupported literal type")
+}
+
+// RenameSelfPredicate renames all self predicates
+func RenameSelfPredicate(phi Node, ptr unsafe.Pointer) Node {
+	return phi.Map(func(n Node) Node {
+		if _, ok := n.(Self); ok {
+			return Ptr{ptr}
+		}
+		return n
+	})
 }

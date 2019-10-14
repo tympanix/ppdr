@@ -290,3 +290,35 @@ func TestRepo_four(t *testing.T) {
 
 	runTableTest(t, r, tests)
 }
+
+func TestRepo_five(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState()
+	s1 := NewState(ltl.AP{"a"})
+	s1.AddPolicy(ltl.Until{ltl.AP{"a"}, ltl.Self{}})
+	s2 := NewState(ltl.AP{"a"})
+	s3 := NewState(ltl.AP{"a"})
+	s4 := NewState()
+
+	s1.addDependency(s0)
+	s2.addDependency(s1)
+	s3.addDependency(s2)
+	s4.addDependency(s3)
+
+	tests := []exe{
+		// Put states into repo
+		exe{put{s0}, OK},
+		exe{put{s1}, OK},
+		exe{put{s2}, OK},
+		exe{put{s3}, OK},
+		exe{put{s4}, ERR},
+
+		// Queries
+		exe{query{s0, ltl.Always{ltl.Self{}}}, OK},
+		exe{query{s1, ltl.Always{ltl.Self{}}}, ERR},
+	}
+
+	runTableTest(t, r, tests)
+}
