@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"unsafe"
 )
 
 // ErrNotPropositional is an error for nodes not supporting propositional logic
@@ -188,10 +187,10 @@ func ValueToLiteral(value interface{}) Node {
 }
 
 // RenameSelfPredicate renames all self predicates
-func RenameSelfPredicate(phi Node, ptr unsafe.Pointer) Node {
+func RenameSelfPredicate(phi Node, r Node) Node {
 	return phi.Map(func(n Node) Node {
 		if _, ok := n.(Self); ok {
-			return Ptr{ptr}
+			return r
 		}
 		return n
 	})

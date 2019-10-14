@@ -88,16 +88,27 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 func (s *State) replaceSelfReferences() {
 	set := ltl.NewSet()
 
+	s.newAttrPtr("self", unsafe.Pointer(s))
+
 	for p := range s.confPolicies {
-		p1 := ltl.RenameSelfPredicate(p, unsafe.Pointer(s))
+		p1 := ltl.RenameSelfPredicate(p, s.getSelfAttr())
 		set.Add(p1)
 	}
 
-	s.attributes["self"] = ltl.Ptr{
-		Pointer: unsafe.Pointer(s),
-	}
-
 	s.confPolicies = set
+}
+
+func (s *State) getSelfAttr() ltl.Node {
+	return s.attributes["self"]
+}
+
+func (s *State) newAttrPtr(attr string, ptr unsafe.Pointer) ltl.Ptr {
+	r := ltl.Ptr{
+		Attr:    attr,
+		Pointer: ptr,
+	}
+	s.attributes[r.Attr] = r
+	return r
 }
 
 // Dependencies return a list of dependencies from this state

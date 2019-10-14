@@ -1,9 +1,13 @@
 package ltl
 
-import "unsafe"
+import (
+	"fmt"
+	"unsafe"
+)
 
 // Ptr is a logical true
 type Ptr struct {
+	Attr    string
 	Pointer unsafe.Pointer
 }
 
@@ -24,7 +28,7 @@ func (p Ptr) Compile(m *RefTable) Node {
 }
 
 func (p Ptr) String() string {
-	return "ptr"
+	return fmt.Sprintf("ptr(%v)", p.Attr)
 }
 
 func (p Ptr) Len() int {
@@ -36,5 +40,5 @@ func (p Ptr) Map(fn MapFunc) Node {
 }
 
 func (p Ptr) Satisfied(r Resolver) bool {
-	return r.Resolve("self").SameAs(p)
+	return r.Resolve(p.Attr).SameAs(p)
 }

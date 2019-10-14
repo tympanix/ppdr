@@ -44,6 +44,19 @@ func (p put) Do(r *Repo) error {
 	return r.Put(p.s)
 }
 
+type user struct {
+	id *Identity
+}
+
+func (u user) String() string {
+	return fmt.Sprintf("user(%v)", u.id)
+}
+
+func (u user) Do(r *Repo) error {
+	r.SetCurrentUser(u.id)
+	return nil
+}
+
 type exe struct {
 	o op
 	r result
@@ -63,6 +76,9 @@ func TestRepo_one(t *testing.T) {
 
 	s1.addDependency(s0)
 	s2.addDependency(s1)
+
+	u := NewIdentity("john")
+	r.SetCurrentUser(u)
 
 	if r.Put(s0) != nil {
 		t.Errorf("could not add state %v", s0)
@@ -125,7 +141,12 @@ func TestRepo_two(t *testing.T) {
 	phi4 := alice
 	phi5 := ltl.Or{ltl.Always{mallory}, charlie}
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
 		// Add states
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
@@ -198,7 +219,13 @@ func TestRepo_three(t *testing.T) {
 
 	phi := ltl.Until{bob, alice}
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
+		// Put
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
 		exe{put{s2}, OK},
@@ -252,7 +279,13 @@ func TestRepo_four(t *testing.T) {
 	phi5 := eqOk
 	phi6 := eq5
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
+		// Put
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
 		exe{put{s2}, OK},
@@ -307,7 +340,12 @@ func TestRepo_five(t *testing.T) {
 	s3.addDependency(s2)
 	s4.addDependency(s3)
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
 		// Put states into repo
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},

@@ -1,15 +1,36 @@
 package repo
 
 import (
+	"crypto/rand"
 	"errors"
 	"unsafe"
 
 	"github.com/tympanix/master-2019/ltl"
 )
 
+// Identity is the identity of a user
+type Identity struct {
+	name string
+	id   []byte
+}
+
+// NewIdentity generates a new identity
+func NewIdentity(name string) *Identity {
+	id := make([]byte, 4)
+	_, err := rand.Read(id)
+	if err != nil {
+		panic(err)
+	}
+	return &Identity{
+		name: name,
+		id:   id,
+	}
+}
+
 // Repo is the data repository itself
 type Repo struct {
-	states map[*State]bool
+	states      map[*State]bool
+	currentUser *Identity
 }
 
 // NewRepo returns a new empty repo
@@ -19,6 +40,11 @@ func NewRepo() *Repo {
 	}
 
 	return r
+}
+
+// SetCurrentUser changes the current user
+func (r *Repo) SetCurrentUser(user *Identity) {
+	r.currentUser = user
 }
 
 func (r *Repo) addState(states ...*State) {
@@ -32,6 +58,10 @@ func (r *Repo) addState(states ...*State) {
 
 // Query performs a lookup in the data repository with a integrity policy
 func (r *Repo) Query(state *State, intr ltl.Node) (*State, error) {
+	// Ensure that current user is set
+	if r.currentUser == nil {
+		panic("current user must be set")
+	}
 
 	// Ensure that state actually exists in data repo
 	if _, ok := r.states[state]; !ok {
@@ -39,7 +69,7 @@ func (r *Repo) Query(state *State, intr ltl.Node) (*State, error) {
 	}
 
 	// Make self predicates reference the argument state
-	intr = ltl.RenameSelfPredicate(intr, unsafe.Pointer(state))
+	intr = ltl.RenameSelfPredicate(intr, state.getSelfAttr())
 
 	// Ensure integrity policy is satisfied
 	c := candidate{state}
@@ -59,10 +89,18 @@ func (r *Repo) Query(state *State, intr ltl.Node) (*State, error) {
 
 // Put adds a new data point to the repository with a confidentiality policy
 func (r *Repo) Put(state *State) error {
+	// Ensure that the user is set
+	if r.currentUser == nil {
+		panic("current user must be set")
+	}
+
 	// Make sure state doesn't already exist
 	if _, ok := r.states[state]; ok {
 		return errors.New("state already exists")
 	}
+
+	// Save attribute author in this state
+	state.newAttrPtr("author", unsafe.Pointer(r.currentUser))
 
 	// Make self predicates reference this state
 	state.replaceSelfReferences()
