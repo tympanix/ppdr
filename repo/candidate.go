@@ -40,24 +40,24 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 		return n
 	})
 
-	phi2, table, err := ltl.Compile(phi)
+	phi, table, err := ltl.Compile(phi)
 
 	if err != nil {
 		panic(err)
 	}
 
-	phi2 = phi2.Normalize()
-	ap := ltl.FindAtomicPropositions(phi2)
+	phi = phi.Normalize()
+	ap := ltl.FindAtomicPropositions(phi)
 
 	r1 := ltl.NewResolverFromMap(c.State.attributes)
 	r2 := ltl.NewResolverFromSet(c.State.Predicates(ap, table))
 	r := ltl.NewResolverCombined(r1, r2)
 
-	if s, err := ltl.Satisfied(phi2, r); err == nil {
+	if s, err := ltl.Satisfied(phi, r); err == nil {
 		return s
 	}
 
 	n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
-	p := product.New(c, n)
+	p := product.New(c, n, table)
 	return p.HasAcceptingCycle() == nil
 }

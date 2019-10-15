@@ -171,8 +171,14 @@ func checkFormulas(t *testing.T, tr *ts.TS, tests map[ltl.Node]bool, r ba.StateN
 	for phi, cycle := range tests {
 		name := fmt.Sprintf("test:%v", i)
 		t.Run(name, func(t *testing.T) {
+			phi, table, err := ltl.Compile(phi)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
-			p := product.New(tr, n)
+			p := product.New(tr, n, table)
 
 			context := p.HasAcceptingCycle()
 
