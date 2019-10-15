@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+var (
+	// UserRef is a satic reference pointing to a user
+	UserRef = Ref{-1}
+)
+
 // ErrNotPropositional is an error for nodes not supporting propositional logic
 var ErrNotPropositional = errors.New("not propositional logic")
 
@@ -195,4 +200,3 @@ func RenameSelfPredicate(phi Node, r Node) Node {
 		return n
 	})
 }
-

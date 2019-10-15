@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"unsafe"
+
 	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/gnba"
 	"github.com/tympanix/master-2019/systems/nba"
@@ -10,6 +12,7 @@ import (
 
 type candidate struct {
 	*State
+	*Repo
 }
 
 func (c candidate) InitialStates() []ts.State {
@@ -25,6 +28,17 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 	if phi == nil {
 		return true
 	}
+
+	// Rename reader with current user
+	phi = phi.Map(func(n ltl.Node) ltl.Node {
+		if _, ok := n.(ltl.Reader); ok {
+			return ltl.Ptr{
+				Attr:    "reader",
+				Pointer: unsafe.Pointer(c.Repo.currentUser),
+			}
+		}
+		return n
+	})
 
 	phi2, table, err := ltl.Compile(phi)
 

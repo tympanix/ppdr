@@ -98,7 +98,7 @@ func (r *Repo) Query(state *State, intr ltl.Node) (*State, error) {
 	intr = ltl.RenameSelfPredicate(intr, state.getSelfAttr())
 
 	// Ensure integrity policy is satisfied
-	c := candidate{state}
+	c := candidate{state, r}
 	if !c.satisfiesFormula(intr) {
 		return nil, errors.New("integrity not satisfied")
 	}
@@ -145,7 +145,7 @@ func (r *Repo) Put(state *State) error {
 	}
 
 	// Ensure conf policies are satisfied before submitting
-	c := candidate{state}
+	c := candidate{state, r}
 	if !c.satisfiesConfPolicies() {
 		return errors.New("confidentiality not satisfied")
 	}

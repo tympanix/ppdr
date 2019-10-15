@@ -361,6 +361,7 @@ func TestRepo_five(t *testing.T) {
 	runTableTest(t, r, tests)
 }
 
+// Integiry test of reader/author
 func TestRepo_six(t *testing.T) {
 
 	r := NewRepo()
@@ -381,10 +382,51 @@ func TestRepo_six(t *testing.T) {
 		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, OK},
 		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, ERR},
 		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}, ERR},
 
 		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, ERR},
 		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, OK},
 		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}, OK},
+	}
+
+	runTableTest(t, r, tests)
+}
+
+// Confidentiality test of reader/author
+func TestRepo_seven(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState()
+	s0.AddPolicy(ltl.Equals{ltl.AP{"author"}, ltl.Reader{}})
+	s1 := NewState()
+	s2 := NewState()
+
+	s1.addDependency(s0)
+	s2.addDependency(s1)
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{john}, OK},
+		exe{put{s0}, OK},
+		exe{user{jane}, OK},
+		exe{put{s1}, OK},
+		exe{put{s2}, OK},
+
+		// Query as Jane
+		exe{user{jane}, OK},
+		exe{query{s0, ltl.True{}}, ERR},
+		exe{query{s1, ltl.True{}}, OK},
+		exe{query{s2, ltl.True{}}, OK},
+
+		// Query as John
+		exe{user{john}, OK},
+		exe{query{s0, ltl.True{}}, OK},
+		exe{query{s1, ltl.True{}}, ERR},
+		exe{query{s2, ltl.True{}}, ERR},
 	}
 
 	runTableTest(t, r, tests)
