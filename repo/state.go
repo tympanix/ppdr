@@ -52,6 +52,10 @@ func (s *State) addDependency(state *State) {
 	s.dependencies = append(s.dependencies, state)
 }
 
+func (s *State) resolver() ltl.Resolver {
+	return ltl.NewResolverFromMap(s.attributes)
+}
+
 // Predicates returns the set of predicates which hold in the state
 func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 	preds := ltl.NewSet()
@@ -73,7 +77,7 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 				panic(fmt.Sprintf("unknown reference %v", r))
 			}
 
-			b, err := ltl.Satisfied(exp, ltl.NewResolverFromMap(s.attributes))
+			b, err := ltl.Satisfied(exp, s.resolver())
 
 			if b && (err == nil) {
 				preds.Add(r)
