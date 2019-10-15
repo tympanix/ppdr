@@ -3,7 +3,6 @@ package systems
 import (
 	"fmt"
 	"testing"
-	"unsafe"
 
 	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ba"
@@ -12,27 +11,6 @@ import (
 	"github.com/tympanix/master-2019/systems/nba"
 	"github.com/tympanix/master-2019/systems/product"
 )
-
-func TestLalala(t *testing.T) {
-	tr := ts.New()
-
-	p := 5
-
-	s0 := ts.NewState()
-	s1 := ts.NewState(ltl.AP{"a"}, ltl.Ptr{unsafe.Pointer(&p)})
-
-	s0.AddDependency(s0)
-	s1.AddDependency(s0)
-
-	tr.AddState(s0, s1)
-	tr.AddInitialState()
-
-	tests := map[ltl.Node]bool{
-		ltl.Until{ltl.AP{"a"}, ltl.Ptr{unsafe.Pointer(&p)}}: false,
-	}
-
-	checkFormulas(t, tr, tests, nil)
-}
 
 // An example of a simple traffix light which transitions between red and green
 // light. It is checked whether certain properties are held for the traffic
@@ -193,8 +171,14 @@ func checkFormulas(t *testing.T, tr *ts.TS, tests map[ltl.Node]bool, r ba.StateN
 	for phi, cycle := range tests {
 		name := fmt.Sprintf("test:%v", i)
 		t.Run(name, func(t *testing.T) {
+			phi, table, err := ltl.Compile(phi)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			n := nba.TransformGNBAtoNBA(gnba.GenerateGNBA(ltl.Negate(phi)))
-			p := product.New(tr, n)
+			p := product.New(tr, n, table)
 
 			context := p.HasAcceptingCycle()
 

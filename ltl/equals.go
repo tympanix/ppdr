@@ -38,9 +38,8 @@ func (e Equals) Compile(m *RefTable) Node {
 		panic(ErrCompile)
 	}
 	switch e.RHSNode().(type) {
-	case LitString, LitBool, LitNumber:
-		ref := m.NewRef(e)
-		return ref
+	case LitString, LitBool, LitNumber, Ptr:
+		return m.NewRef(e)
 	default:
 		panic(ErrCompile)
 	}

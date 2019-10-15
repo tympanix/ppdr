@@ -15,7 +15,6 @@ type GNBA struct {
 	FinalStates    []ba.StateSet
 	Phi            ltl.Node
 	AP             ltl.Set
-	RefTable       ltl.RefTable
 }
 
 // NewGNBA return a new empty GNBA
@@ -79,8 +78,6 @@ func (g *GNBA) Copy() *GNBA {
 	gnba := NewGNBA(g.Phi)
 
 	var rt = make(ba.RenameTable)
-
-	gnba.RefTable = g.RefTable
 
 	// Create a copy of each state and add to rename table
 	for _, s := range g.States {

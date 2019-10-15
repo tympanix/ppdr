@@ -52,6 +52,10 @@ func (s *State) addDependency(state *State) {
 	s.dependencies = append(s.dependencies, state)
 }
 
+func (s *State) resolver() ltl.Resolver {
+	return ltl.NewResolverFromMap(s.attributes)
+}
+
 // Predicates returns the set of predicates which hold in the state
 func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 	preds := ltl.NewSet()
@@ -73,7 +77,7 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 				panic(fmt.Sprintf("unknown reference %v", r))
 			}
 
-			b, err := ltl.Satisfied(exp, ltl.NewResolverFromMap(s.attributes))
+			b, err := ltl.Satisfied(exp, s.resolver())
 
 			if b && (err == nil) {
 				preds.Add(r)
@@ -88,16 +92,27 @@ func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set {
 func (s *State) replaceSelfReferences() {
 	set := ltl.NewSet()
 
+	s.newAttrPtr("self", unsafe.Pointer(s))
+
 	for p := range s.confPolicies {
-		p1 := ltl.RenameSelfPredicate(p, unsafe.Pointer(s))
+		p1 := ltl.RenameSelfPredicate(p, s.getSelfAttr())
 		set.Add(p1)
 	}
 
-	s.attributes["self"] = ltl.Ptr{
-		Pointer: unsafe.Pointer(s),
-	}
-
 	s.confPolicies = set
+}
+
+func (s *State) getSelfAttr() ltl.Node {
+	return s.attributes["self"]
+}
+
+func (s *State) newAttrPtr(attr string, ptr unsafe.Pointer) ltl.Ptr {
+	r := ltl.Ptr{
+		Attr:    attr,
+		Pointer: ptr,
+	}
+	s.attributes[r.Attr] = r
+	return r
 }
 
 // Dependencies return a list of dependencies from this state

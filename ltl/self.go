@@ -1,6 +1,6 @@
 package ltl
 
-// Self is a logical true
+// Self is a predicate for the state to which a policy is applied
 type Self struct{}
 
 // SameAs returns true if node is also true

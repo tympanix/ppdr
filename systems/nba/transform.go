@@ -24,7 +24,6 @@ func TransformGNBAtoNBA(g *gnba.GNBA) *NBA {
 			FinalStates: ba.NewStateSet(copy.States...),
 			Phi:         copy.Phi,
 			AP:          copy.AP,
-			RefTable:    copy.RefTable,
 		}
 	}
 
@@ -37,7 +36,6 @@ func TransformGNBAtoNBA(g *gnba.GNBA) *NBA {
 			FinalStates: copy.FinalStates[0],
 			Phi:         copy.Phi,
 			AP:          copy.AP,
-			RefTable:    copy.RefTable,
 		}
 	}
 
@@ -80,7 +78,6 @@ func mergeCopiesToNBA(copies []*gnba.GNBA) *NBA {
 	nba.StartStates = copies[0].StartingStates
 	nba.FinalStates = copies[0].FinalStates[0]
 	nba.AP = copies[0].AP
-	nba.RefTable = copies[0].RefTable
 
 	return nba
 }

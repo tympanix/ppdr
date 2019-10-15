@@ -44,6 +44,19 @@ func (p put) Do(r *Repo) error {
 	return r.Put(p.s)
 }
 
+type user struct {
+	id *Identity
+}
+
+func (u user) String() string {
+	return fmt.Sprintf("user(%v)", u.id)
+}
+
+func (u user) Do(r *Repo) error {
+	r.SetCurrentUser(u.id)
+	return nil
+}
+
 type exe struct {
 	o op
 	r result
@@ -63,6 +76,9 @@ func TestRepo_one(t *testing.T) {
 
 	s1.addDependency(s0)
 	s2.addDependency(s1)
+
+	u := NewIdentity("john")
+	r.SetCurrentUser(u)
 
 	if r.Put(s0) != nil {
 		t.Errorf("could not add state %v", s0)
@@ -125,7 +141,12 @@ func TestRepo_two(t *testing.T) {
 	phi4 := alice
 	phi5 := ltl.Or{ltl.Always{mallory}, charlie}
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
 		// Add states
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
@@ -198,7 +219,13 @@ func TestRepo_three(t *testing.T) {
 
 	phi := ltl.Until{bob, alice}
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
+		// Put
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
 		exe{put{s2}, OK},
@@ -252,7 +279,13 @@ func TestRepo_four(t *testing.T) {
 	phi5 := eqOk
 	phi6 := eq5
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
+		// Put
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
 		exe{put{s2}, OK},
@@ -307,7 +340,12 @@ func TestRepo_five(t *testing.T) {
 	s3.addDependency(s2)
 	s4.addDependency(s3)
 
+	u := NewIdentity("john")
+
 	tests := []exe{
+		// Set current user
+		exe{user{u}, OK},
+
 		// Put states into repo
 		exe{put{s0}, OK},
 		exe{put{s1}, OK},
@@ -318,6 +356,116 @@ func TestRepo_five(t *testing.T) {
 		// Queries
 		exe{query{s0, ltl.Always{ltl.Self{}}}, OK},
 		exe{query{s1, ltl.Always{ltl.Self{}}}, ERR},
+	}
+
+	runTableTest(t, r, tests)
+}
+
+// Integrity:
+//		author = john
+//		author = jane
+//		author = jack
+//		author = reader()
+func TestRepo_six(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState()
+	s1 := NewState()
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{john}, OK},
+		exe{put{s0}, OK},
+		exe{user{jane}, OK},
+		exe{put{s1}, OK},
+
+		// Queries
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, OK},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, ERR},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}, ERR},
+
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, ERR},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, OK},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}, OK},
+	}
+
+	runTableTest(t, r, tests)
+}
+
+// Confidentiality: author = reader()
+func TestRepo_seven(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState()
+	s0.AddPolicy(ltl.Equals{ltl.AP{"author"}, ltl.Reader{}})
+	s1 := NewState()
+	s2 := NewState()
+
+	s1.addDependency(s0)
+	s2.addDependency(s1)
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{john}, OK},
+		exe{put{s0}, OK},
+		exe{user{jane}, OK},
+		exe{put{s1}, OK},
+		exe{put{s2}, OK},
+
+		// Query as Jane
+		exe{user{jane}, OK},
+		exe{query{s0, ltl.True{}}, ERR},
+		exe{query{s1, ltl.True{}}, OK},
+		exe{query{s2, ltl.True{}}, OK},
+
+		// Query as John
+		exe{user{john}, OK},
+		exe{query{s0, ltl.True{}}, OK},
+		exe{query{s1, ltl.True{}}, ERR},
+		exe{query{s2, ltl.True{}}, ERR},
+	}
+
+	runTableTest(t, r, tests)
+}
+
+// Confidentiality: self -> author = reader()
+func TestRepo_eight(t *testing.T) {
+
+	r := NewRepo()
+
+	phi := ltl.Impl{ltl.Self{}, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}
+	s0 := NewState()
+	s0.AddPolicy(phi)
+	s1 := NewState()
+
+	s1.addDependency(s0)
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{john}, OK},
+		exe{put{s0}, OK},
+		exe{user{jane}, OK},
+		exe{put{s1}, OK},
+
+		// Query as Jane
+		exe{user{jane}, OK},
+		exe{query{s0, ltl.True{}}, ERR},
+		exe{query{s1, ltl.True{}}, OK},
+
+		// Query as John
+		exe{user{john}, OK},
+		exe{query{s0, ltl.True{}}, OK},
+		exe{query{s1, ltl.True{}}, OK},
 	}
 
 	runTableTest(t, r, tests)

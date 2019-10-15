@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/tympanix/master-2019/ltl"
 	"github.com/tympanix/master-2019/systems/ba"
 	"github.com/tympanix/master-2019/systems/nba"
 	"github.com/tympanix/master-2019/systems/ts"
@@ -15,6 +16,7 @@ type Product struct {
 	InitialStates []*State
 	TS            ts.TS
 	NBA           *nba.NBA
+	RefTable      ltl.RefTable
 }
 
 // StringWithRenamer strings the product using a naming function
@@ -45,11 +47,12 @@ func (p *Product) String() string {
 }
 
 // New creates a new product.
-func New(t ts.TS, n *nba.NBA) *Product {
+func New(t ts.TS, n *nba.NBA, r ltl.RefTable) *Product {
 	return &Product{
-		States: make(map[StateTuple]*State),
-		TS:     t,
-		NBA:    n,
+		States:   make(map[StateTuple]*State),
+		TS:       t,
+		NBA:      n,
+		RefTable: r,
 	}
 }
 
@@ -176,7 +179,7 @@ func (p *Product) ndfs(s *State, c *Context) {
 
 func (p *Product) addInitialStates() {
 	for _, s0 := range p.TS.InitialStates() {
-		lf := p.NBA.AP.Intersection(s0.Predicates(p.NBA.AP, p.NBA.RefTable))
+		lf := p.NBA.AP.Intersection(s0.Predicates(p.NBA.AP, p.RefTable))
 		for q0 := range p.NBA.StartStates {
 			for _, t := range q0.Transitions {
 				if t.Label.Equals(lf) {
