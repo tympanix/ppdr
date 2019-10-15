@@ -195,3 +195,4 @@ func RenameSelfPredicate(phi Node, r Node) Node {
 		return n
 	})
 }
+

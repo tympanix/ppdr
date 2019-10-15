@@ -373,16 +373,19 @@ func TestRepo_six(t *testing.T) {
 
 	tests := []exe{
 		exe{user{john}, OK},
-
 		exe{put{s0}, OK},
+		exe{user{jane}, OK},
 		exe{put{s1}, OK},
 
-		exe{user{jane}, OK},
-
 		// Queries
-		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.LitString{"john"}}}, OK},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, OK},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, ERR},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
+
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, ERR},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, OK},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
 	}
 
 	runTableTest(t, r, tests)
-
 }

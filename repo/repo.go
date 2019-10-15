@@ -38,6 +38,7 @@ type Repo struct {
 func NewRepo() *Repo {
 	r := &Repo{
 		states: make(map[*State]bool),
+		users:  make(map[string]*Identity),
 	}
 
 	return r
@@ -45,6 +46,7 @@ func NewRepo() *Repo {
 
 // SetCurrentUser changes the current user
 func (r *Repo) SetCurrentUser(user *Identity) {
+	r.users[user.name] = user
 	r.currentUser = user
 }
 
@@ -54,6 +56,26 @@ func (r *Repo) addState(states ...*State) {
 			s.addDependency(s)
 		}
 		r.states[s] = true
+	}
+}
+
+// RenameUserPredicate renames all user predicates
+func (r *Repo) renameUserPredicate(phi ltl.Node) ltl.Node {
+	return phi.Map(func(n ltl.Node) ltl.Node {
+		if u, ok := n.(ltl.User); ok {
+			return ltl.Ptr{
+				Attr:    "user",
+				Pointer: unsafe.Pointer(r.users[u.Name]),
+			}
+		}
+		return n
+	})
+}
+
+func (r *Repo) getUserPredicate() ltl.Ptr {
+	return ltl.Ptr{
+		Attr:    "user",
+		Pointer: unsafe.Pointer(r.currentUser),
 	}
 }
 
@@ -68,6 +90,9 @@ func (r *Repo) Query(state *State, intr ltl.Node) (*State, error) {
 	if _, ok := r.states[state]; !ok {
 		return nil, errors.New("state not found in repo")
 	}
+
+	// Make user predicate reference appropriate identities
+	intr = r.renameUserPredicate(intr)
 
 	// Make self predicates reference the argument state
 	intr = ltl.RenameSelfPredicate(intr, state.getSelfAttr())
