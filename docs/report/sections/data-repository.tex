@@ -1,11 +1,8 @@
 \section{Data Repository}
-
 % How is the data repository modelled.
-
-
+% Create small (running) example that can be used in the following sections regarding policies
 
 \subsection{Grammar}
-
 % Explain how it extends the grammar of LTL
 % Only some propositional logic are directly implemented but the remaining can be used indirectly
 
@@ -15,12 +12,10 @@
 \paragraph{literals}
 \paragraph{mathematical equality}
 
-% TODO: fix issue with that l can be a string literal, i.e. the grammar allows value > "some string"
 \[
 \begin{array}{rcll}
     \varphi     & ::=   & a                                 & \text{(atomic proposition)} \\
                 & |     & e                                 & \text{(expression)} \\
-                & |     & f                                 & \text{(functions)} \\
                 & |     & \varphi_1 \vee \varphi_2          & \text{(disjunction)} \\
                 & |     & \varphi_1 \wedge \varphi_2        & \text{(conjunction)} \\
                 & |     & \varphi_1 \rightarrow \varphi_2   & \text{(implication)} \\
@@ -32,29 +27,33 @@
     a           & ::=   & self                              & \text{(self predicate)} \\
                 & |     & true                              & \text{(true predicate)} \\
                 & |     & p                                 & \text{(attribute name)} \\
-    e           & ::=   & a = l                             & \text{(equality)} \\
-                & |     & a = f                             & \text{(equality)} \\
-                %& |     & u > l                             & \text{(greater than)} \\
-                %& |     & u \geq l                          & \text{(greater than or equal)} \\
-                %& |     & u < l                             & \text{(less than)} \\
-                %& |     & u \leq l                          & \text{(less than or equal)} \\
+    e           & ::=   & e_{arg} = e_{arg}                 & \text{(equality)} \\
+    %            & |     & u > l                             & \text{(greater than)} \\
+    %            & |     & u \geq l                          & \text{(greater than or equal)} \\
+    %            & |     & u < l                             & \text{(less than)} \\
+    %            & |     & u \leq l                          & \text{(less than or equal)} \\
+    e_{arg}     & ::=   & a                                 & \text{(atomic proposition)} \\
+                & |     & f                                 & \text{(function)} \\
+                & |     & l                                 & \text{(literal)} \\
     f           & ::=   & user(s)                           & \text{(user function)} \\
                 & |     & reader()                          & \text{(reader function)} \\
     l           & ::=   & s                                 & \text{(string literal)} \\
                 & |     & n                                 & \text{(number literal)} \\
                 & |     & b                                 & \text{(boolean literal)}
-    %u           & ::=   & p                                 & \text{(attribute name)}
-    
 \end{array}
 \]
 
 \paragraph{Limitations of grammar}
+% Write about this if there something relevant
 
 \subsection{Confidentiality Policies}
+% What is meant by a confidentiality policy
 % Compare with Role-Based Access Control (RBAC)
 % - RBAC is a simple way to provide confidentiality
 % Compare with Access-Control List (ACL)
-
 % White and black lists of who can use your data can be achieved by author = "username" and author = !"username" respectively
+% Continue running example
 
 \subsection{Integrity Policies}
+% What is meant by an integrity policy
+% Continue running example
