@@ -436,7 +436,7 @@ func TestRepo_seven(t *testing.T) {
 	runTableTest(t, r, tests)
 }
 
-// Confidentiality: self -> author = reader()
+// Confidentiality: self -> author == reader()
 func TestRepo_eight(t *testing.T) {
 
 	r := NewRepo()
