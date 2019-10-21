@@ -4,6 +4,7 @@ package ltl
 type Resolver interface {
 	Resolve(string) Node
 	ResolveBool(string) bool
+	ResolveRef(Ref) bool
 }
 
 // Satisfiable is an interface that determines if a node is satisfiable
@@ -26,6 +27,10 @@ func (m mapResolver) ResolveBool(s string) bool {
 	return false
 }
 
+func (m mapResolver) ResolveRef(r Ref) bool {
+	return false
+}
+
 // NewResolverFromMap return a new resolver which is based on a lookup table
 func NewResolverFromMap(m map[string]Node) Resolver {
 	return mapResolver(m)
@@ -41,6 +46,10 @@ func (s setResolver) Resolve(str string) Node {
 
 func (s setResolver) ResolveBool(str string) bool {
 	return s.Contains(AP{str})
+}
+
+func (s setResolver) ResolveRef(r Ref) bool {
+	return s.Contains(r)
 }
 
 // NewResolverFromSet return a new resolver which is based on a LTL set
@@ -62,6 +71,10 @@ func (c combinedResolver) Resolve(str string) Node {
 
 func (c combinedResolver) ResolveBool(str string) bool {
 	return c.r1.ResolveBool(str) || c.r2.ResolveBool(str)
+}
+
+func (c combinedResolver) ResolveRef(r Ref) bool {
+	return c.r1.ResolveRef(r) || c.r2.ResolveRef(r)
 }
 
 // NewResolverCombined return a new resolver composed by combining two

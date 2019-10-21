@@ -247,9 +247,9 @@ func runTableTest(t *testing.T, r *Repo, tab []exe) {
 
 		if (e.r == OK) != (err == nil) {
 			if err != nil {
-				t.Errorf("operation failed: %v, error: %v", e, err)
+				t.Fatalf("operation failed: %v, error: %v", e, err)
 			} else {
-				t.Errorf("expected error on op: %v", e.o)
+				t.Fatalf("expected error on op: %v", e.o)
 			}
 		}
 	}
@@ -466,6 +466,35 @@ func TestRepo_eight(t *testing.T) {
 		exe{user{john}, OK},
 		exe{query{s0, ltl.True{}}, OK},
 		exe{query{s1, ltl.True{}}, OK},
+	}
+
+	runTableTest(t, r, tests)
+}
+
+// Confidentiality: self -> author = reader()
+func TestRepo_nine(t *testing.T) {
+
+	r := NewRepo()
+
+	phi := ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}
+	s0 := NewState()
+	s0.AddPolicy(phi)
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{jane}, OK},
+		exe{user{john}, OK},
+		exe{put{s0}, ERR},
+
+		exe{user{jane}, OK},
+		exe{put{s0}, OK},
+
+		exe{user{jane}, OK},
+		exe{query{s0, ltl.True{}}, OK},
+		exe{user{john}, OK},
+		exe{query{s0, ltl.True{}}, OK},
 	}
 
 	runTableTest(t, r, tests)

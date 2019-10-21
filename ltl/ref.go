@@ -8,7 +8,7 @@ type Ref struct {
 }
 
 func (r Ref) Compile(m *RefTable) Node {
-	panic(ErrCompile)
+	panic("ref can not be compiled")
 }
 
 func (r Ref) Len() int {
@@ -32,4 +32,8 @@ func (r Ref) Map(fn MapFunc) Node {
 
 func (r Ref) String() string {
 	return fmt.Sprintf("#%v", r.R)
+}
+
+func (r Ref) Satisfied(res Resolver) bool {
+	return res.ResolveRef(r)
 }

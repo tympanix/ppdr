@@ -44,6 +44,16 @@ func NewRepo() *Repo {
 	return r
 }
 
+func (r *Repo) replaceUserPredicate(n ltl.Node) ltl.Node {
+	if u, ok := n.(ltl.User); ok {
+		return ltl.Ptr{
+			Attr:    "user",
+			Pointer: unsafe.Pointer(r.users[u.Name]),
+		}
+	}
+	return n
+}
+
 // SetCurrentUser changes the current user
 func (r *Repo) SetCurrentUser(user *Identity) {
 	r.users[user.name] = user
@@ -61,15 +71,7 @@ func (r *Repo) addState(states ...*State) {
 
 // RenameUserPredicate renames all user predicates
 func (r *Repo) renameUserPredicate(phi ltl.Node) ltl.Node {
-	return phi.Map(func(n ltl.Node) ltl.Node {
-		if u, ok := n.(ltl.User); ok {
-			return ltl.Ptr{
-				Attr:    "user",
-				Pointer: unsafe.Pointer(r.users[u.Name]),
-			}
-		}
-		return n
-	})
+	return phi.Map(r.replaceUserPredicate)
 }
 
 func (r *Repo) getUserPredicate() ltl.Ptr {
@@ -127,6 +129,9 @@ func (r *Repo) Put(state *State) error {
 
 	// Save attribute author in this state
 	state.newAttrPtr("author", unsafe.Pointer(r.currentUser))
+
+	// Make user predicates reference actual user
+	state.replaceUserPredicate(r)
 
 	// Make self predicates reference this state
 	state.replaceSelfReferences()
