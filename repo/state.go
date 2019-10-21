@@ -102,6 +102,17 @@ func (s *State) replaceSelfReferences() {
 	s.confPolicies = set
 }
 
+func (s *State) replaceUserPredicate(r *Repo) {
+	set := ltl.NewSet()
+
+	for p := range s.confPolicies {
+		p1 := p.Map(r.replaceUserPredicate)
+		set.Add(p1)
+	}
+
+	s.confPolicies = set
+}
+
 func (s *State) getSelfAttr() ltl.Node {
 	return s.attributes["self"]
 }

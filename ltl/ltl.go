@@ -164,6 +164,8 @@ func Compile(phi Node) (n Node, t RefTable, err error) {
 		if r := recover(); r != nil {
 			if r == ErrCompile {
 				err = ErrCompile
+			} else {
+				panic(r)
 			}
 		}
 	}()

@@ -1,5 +1,7 @@
 package ltl
 
+import "fmt"
+
 // Equals is the ltl structure for the logical equals symbol
 type Equals struct {
 	LHS, RHS Node
@@ -35,13 +37,13 @@ func (e Equals) Normalize() Node {
 // Compile ensures that LHS is an AP and RHS is a literal
 func (e Equals) Compile(m *RefTable) Node {
 	if _, ok := e.LHSNode().(AP); !ok {
-		panic(ErrCompile)
+		panic(fmt.Sprintf("equals lhs invalid type : %T", e.LHSNode()))
 	}
 	switch e.RHSNode().(type) {
 	case LitString, LitBool, LitNumber, Ptr:
 		return m.NewRef(e)
 	default:
-		panic(ErrCompile)
+		panic(fmt.Sprintf("equals rhs is not valid type: %T", e.RHSNode()))
 	}
 }
 
