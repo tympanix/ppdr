@@ -36,14 +36,28 @@ func (e Equals) Normalize() Node {
 
 // Compile ensures that LHS is an AP and RHS is a literal
 func (e Equals) Compile(m *RefTable) Node {
-	if _, ok := e.LHSNode().(AP); !ok {
+
+	if !e.isValidType(e.LHSNode()) {
 		panic(fmt.Sprintf("equals lhs invalid type : %T", e.LHSNode()))
 	}
-	switch e.RHSNode().(type) {
-	case LitString, LitBool, LitNumber, Ptr:
-		return m.NewRef(e)
+
+	if !e.isValidType(e.RHSNode()) {
+		panic(fmt.Sprintf("equals rhs invalid type : %T", e.RHSNode()))
+	}
+
+	return m.NewRef(e)
+}
+
+func (e Equals) isValidType(n Node) bool {
+	switch n.(type) {
+	// Base types
+	case AP, Ptr:
+		return true
+	// Literals
+	case LitBool, LitNumber, LitString:
+		return true
 	default:
-		panic(fmt.Sprintf("equals rhs is not valid type: %T", e.RHSNode()))
+		return false
 	}
 }
 
@@ -54,20 +68,22 @@ func (e Equals) Len() int {
 
 // Satisfied returns true if LHS and RHS are equal in type and value
 func (e Equals) Satisfied(r Resolver) bool {
-	var ap AP
-	var ok bool
+	var lhs Node = e.LHSNode()
+	var rhs Node = e.RHSNode()
 
-	if ap, ok = e.LHSNode().(AP); !ok {
+	if ap, ok := e.LHSNode().(AP); ok {
+		lhs = r.Resolve(ap.Name)
+	}
+
+	if ap, ok := e.RHSNode().(AP); ok {
+		rhs = r.Resolve(ap.Name)
+	}
+
+	if lhs == nil || rhs == nil {
 		return false
 	}
 
-	lhs := r.Resolve(ap.Name)
-
-	if lhs == nil {
-		return false
-	}
-
-	return e.RHSNode().SameAs(lhs)
+	return lhs.SameAs(rhs)
 }
 
 func (e Equals) Map(fn MapFunc) Node {

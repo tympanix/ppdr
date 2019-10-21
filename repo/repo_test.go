@@ -471,12 +471,12 @@ func TestRepo_eight(t *testing.T) {
 	runTableTest(t, r, tests)
 }
 
-// Confidentiality: self -> author = reader()
+// Confidentiality: author = user("jane")
 func TestRepo_nine(t *testing.T) {
 
 	r := NewRepo()
 
-	phi := ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}
+	phi := ltl.Equals{ltl.User{"jane"}, ltl.AP{"author"}}
 	s0 := NewState()
 	s0.AddPolicy(phi)
 
@@ -495,6 +495,43 @@ func TestRepo_nine(t *testing.T) {
 		exe{query{s0, ltl.True{}}, OK},
 		exe{user{john}, OK},
 		exe{query{s0, ltl.True{}}, OK},
+	}
+
+	runTableTest(t, r, tests)
+}
+
+// Confidentiality: reader() = user("jane")
+func TestRepo_ten(t *testing.T) {
+
+	r := NewRepo()
+
+	phi0 := ltl.Equals{ltl.Reader{}, ltl.User{"jane"}}
+	s0 := NewState()
+	s0.AddPolicy(phi0)
+
+	phi1 := ltl.Equals{ltl.Reader{}, ltl.User{"john"}}
+	s1 := NewState()
+	s1.AddPolicy(phi1)
+
+	john := NewIdentity("john")
+	jane := NewIdentity("jane")
+
+	tests := []exe{
+		exe{user{jane}, OK},
+		exe{user{john}, OK},
+		exe{put{s0}, ERR},
+		exe{put{s1}, OK},
+
+		exe{user{jane}, OK},
+		exe{put{s0}, OK},
+
+		exe{user{john}, OK},
+		exe{query{s0, ltl.True{}}, ERR},
+		exe{query{s1, ltl.True{}}, OK},
+
+		exe{user{jane}, OK},
+		exe{query{s0, ltl.True{}}, OK},
+		exe{query{s1, ltl.True{}}, ERR},
 	}
 
 	runTableTest(t, r, tests)
