@@ -2,10 +2,24 @@
 \subsection{Checking for Satisfiability}
 
 \subsubsection{Determining Elementary Sets}
+The problem of finding elementary sets is essential in model checking of LTL formulae since each elementary set is represented as a state in the NBA. In this paper we present two methods of determining the elementary sets of an LTL formula, the first being a naive approach and the second being an optimized decision tree based approach.
+
+
 \paragraph{Naive approach}
 % Describe approach
+In the naive approach of finding elementary sets each subset of the closure of $\phi$ is considered as elementary. Since all subsets of $closure(\phi)$ is considered, the naive approach does not exclude any sets which are trivially not elementary (i.e. sets which are not maximal). Since $|closure(\phi)|$ is $\mathcal{O}(|\phi|)$ the number of possible elementary sets which is considered by the naive approach is $\mathcal{O}(2^{|\phi|})$. Checking whether a set is elementary or not takes $\mathcal{O}(|\phi|)$ time which results in a total time complexity of $\mathcal{O}(2^{|\phi|}\cdot |\phi|)$.
+
 \paragraph{Decision tree approach}
 % Describe approach
+The decision tree based appraoch exploits the property of elementary sets being maximal, i.e., for all $\psi \in closure(\phi)$:
+\begin{equation*}
+  \psi \notin B \rightarrow \lnot \psi \in B
+\end{equation*}
+This very fundamental property leads to a binary relationship where either the negated or the non-negated formula must be present in the elementary set for each subformula. The algorithm considers all subformulae $\psi$ of $\phi$ in ascending order of their formula length $|\phi|$. This results in the smallest subformlae being consired prior to any other subformale. The algorithm proceeds as follows: 
+
+Let $\mathcal{S}$ be the list of subformulae $\psi$ of $\phi$ sorted in ascending order according to $|\psi|$. The algorithm recursively explores a decision tree $\mathcal{T}$ where each node has exactly two decendants. A node at depth $i$ will have one child exploring the $i-1$'th element of $\mathcal{S}$ and another child exploring the negation of the $i-1$'th element of $\mathcal{S}$. A node is marked inconsistent if the path $\pi$ from the root node (corrosponding to a set of subformulae) is inconsistent with respect to propositional logic or inconsistent with respect to the until operator. An inconsistent node halts further exploration. The decision tree $\mathcal{T}$ is complete when all subformulae of $\mathcal{S}$ has been considered. The elementary sets are then the root to leaf paths $\pi$ of which there are no inconsistent nodes.
+
+Since the height of the decision tree is $\mathcal{O}(|\phi|)$ and the tree is binary the time complexity for exploring the decision tree is $\mathcal{O}(2^{|\phi|})$. This is the total time complexity of the algorithm since a new decendant of a node can be deemed inconsistent in constant time.
 
 \subsubsection{GNBA}
 
