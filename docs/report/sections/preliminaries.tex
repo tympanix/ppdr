@@ -1,9 +1,49 @@
 \section{Preliminaries}
 
-\subsection{Linear Temporal Logic}
+\subsection{Temporal Logic}
+Temporal Logics (TL) are a convenient way to specify and verify properties of the infinite behaviour of reactive systems. TL extends either propositional or predicate logic with modalities. These modalities are said to be \emph{time-abstract}, as they allow one to specify the order of which state labels occur during a system execution. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. In most TL are the following two elementary temporal modalities included\cite{baier2008principles}:
+\begin{align*}
+    &\Diamond \quad \text{``eventually'' (some time in the future)}\\
+    &\square \quad \text{``always'' (now and forever in the future)}
+\end{align*}
+\emph{Eventually} and \emph{always} will be explained more in-depth in the following section. 
+
+The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches, i.e. multiple successors. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is Linear Temporal Logic (LTL). In the remaining of this paper will the focus be on a LTL that extends propositional logic.
+
+\subsubsection{Linear Temporal Logic}
+As mentioned LTL is a TL that is based on a linear-time perspective and can be used to specify properties for path, called LTL formulae. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\neg$), and the temporal modalities \emph{next} (denoted $\bigcirc$) and \emph{until} (denoted $\cup$).
+LTL formulae are constructed by the following grammar:
+\begin{align*}
+    \varphi ::= | \enskip true \enskip | \enskip a \enskip | \enskip \varphi_1 \land \varphi_2 \enskip | \enskip \neg \varphi \enskip | \enskip \bigcirc\varphi \enskip | \enskip \varphi_1 \cup \varphi_2
+\end{align*}
+where $a \in AP$ and $AP$ is a set of atomic propositions. From the temporal operators 
+% Notes:
+% - Determine if we should talk about fairness
+% - LTL => linear-time perspective
+% - CTL => branching-time perspective
+
+% Introduce LTL
+
+% Mention SPIN
+
+
 % Cover the temporal logic operators
 % - Including that they can be combined
+
+\begin{align*}
+    &\square\Diamond\varphi \quad \text{``always eventually'' or ``infinitely often''}\\
+    &\Diamond\square\varphi \quad \text{``eventually always'' or ``eventually forever''}
+\end{align*}
+
+
+
 % Cover rewrite rules
+\begin{align*}
+    &\Diamond \varphi \eqdef \text{true} \cup \varphi \\
+    &\square \varphi \eqdef \neg \Diamond \neg \varphi \\
+\end{align*}
+
 % Insert example (not one from the book)
 % Associativity
 % Precedence
+
