@@ -32,12 +32,39 @@
 \usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
 \usepackage{cleveref}
 \usepackage[nottoc,numbib]{tocbibind}
-\usepackage{pgf,tikz}
+\usepackage{pgf}
+\usepackage{tikz}
 \usepackage{mathrsfs}
+\usepackage{amsthm}
+\usepackage{lipsum}
+\usepackage{forest}
+\usepackage{algorithm2e}
+\RestyleAlgo{boxed}
 
-\usetikzlibrary{arrows}
+\usetikzlibrary{automata,arrows.meta,positioning}
+
+\theoremstyle{definition}
+\newtheorem{example}{Example}[section]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
 
 \newcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+
+% Temporal operators
+\newcommand{\X}{\bigcirc} % next
+\newcommand{\G}{\square} % always
+\newcommand{\F}{\Diamond} % eventually
+\newcommand{\U}{\cup} % until
+
+% Propositional logic operators
+\newcommand{\imply}{\rightarrow} % implication
+\newcommand{\biimply}{\leftrightarrow} % bi-implication
+
+\newcommand{\conf}{\chi}
+\newcommand{\inte}{\iota}
+\renewcommand{\phi}{\varphi} % phi
 
 %Code for DTU logo as background picture.
 \usepackage{eso-pic}

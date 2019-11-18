@@ -1,59 +1,347 @@
 \section{Data Repository}
 % How is the data repository modelled.
-% Create small (running) example that can be used in the following sections regarding policies
+When thinking of a what a data repository is, words like ``tuple spaces'', ``data bases'' or even ``comma separated files'' might spring to mind. However to utilise LTL formulae to specify properties about the data in the repository and verify if the properties are satisfied, it is necessary to carefully consider what data repository abstraction to use. 
 
-\subsection{Grammar}
-% Explain how it extends the grammar of LTL
-% Only some propositional logic are directly implemented but the remaining can be used indirectly
+% Paragraph:
+% - Make the connection to transition systems
+In the literature (Baier and Katoen, 2008)\cite{baier2008principles} use a Transition System (TS) without terminal states as a reactive system, for which they are checking LTL formulae against. Where they use the following definition of a TS:
+\begin{definition}[Transitions System (TS)\cite{baier2008principles}]\label{def:ts}
+A \emph{transition system} $TS$ is a tuple $\left(S, Act, \longrightarrow, AP, L \right)$, where
+\begin{itemize}
+  \item $S$ is a set of data states
+  \item $Act$ is a set of actions
+  \item $\longrightarrow \subseteq S \times Act \times S$ is a transition relation
+  \item $AP$ is a set of atomic propositions
+  \item $L : S \rightarrow 2^{AP}$ is a labelling function
+\end{itemize}
+\end{definition}
+Some of the key elements of a TS are that it contains states and transitions between the states, furthermore that transitions are labelled with an action. 
+
+% Paragraph:
+% - States == Data resources
+% - Transition == Dependency
+To model a data repository as a TS, one could consider data resources or data points from the data repository as states in the TS and dependencies between data resources would be the transitions between states. A dependency between two data resources can be seen as if a data resource $r_1$ was created by using information from another data resource $r_2$ or is dependant $r_2$ in another way, then a dependency exists from $r_1$ to $r_2$. For instance in a data repository of scientific papers, i.e. each paper is a data resources, would this paper have a dependency to each of the papers it references, as the information from those references were used when composing this paper. It could also be that a dependency existed to a resource that defines rules about the format of the paper. This is what is referred to as a policy and will be introduced in a later section.
+\begin{definition}[Dependency Between Data Resources]
+Let $r_i$ and $r_j$ be data resources in the same data repository $DR$, and let $r_i$ be derived fully or partially from $r_j$, i.e. information from $r_j$ was used when creating $r_i$. Then there exists a dependency from $r_i$ to $r_j$.
+\end{definition}
+Modelling dependencies in this way inherently describes the past and if you were to follow the dependencies from a data resource they would paint a picture of how that resource got to be.
+
+% Paragraph: 
+% - No terminal states
+As mentioned (Baier and Katoen, 2008) uses a TS without any terminal states to ensure that all paths and traces in the TS are infinite. The reason being that it simplifies the model-checking algorithm. However it is possible to define the semantics of LTL for finite paths~\cite{baier2008principles}. To achieve infinite paths and thereby traces in the data repository modelled as a TS, all data resources without any dependencies to other data resources have a dependency to itself, a so called \emph{self-dependency}. A self-dependency implies that the data resource was created independently from any other data resource. By introducing self-dependencies ensure that no terminal state can ever be reached or will even exists in the data repository and as a result all paths in the data repository are infinite.
+
+% Paragraph:
+% - Actions
+In a TS transitions can have an action as a label, which describes what action was taken in order to make that transition from one state to another in the TS. As suggested placing some data resource in the data repository can gives rise to dependencies between resources and thus every dependency is a result of the same action. Therefore adding the same action as label to every dependency is considered redundant and they can be left empty. In other words dependencies between data resources merely specifies the relationship between them.
+
+% Paragraph: 
+% - AP
+% - Labelling function
+The set of atomic propositions and labelling function for a TS can be considered the same for a data repository. The labelling function will relate a set of atomic propositions to any data resource in the data repository, where the set only contains the atomic propositions that are satisfied by the data resource. More intuitively the labelling function describes the values of the data resource.
+
+% Paragraph: 
+% - Initial states
+According to Definition~\ref{def:ts} should the initial states of a TS be explicitly defined. However it is not desirable, that the data repository itself should restrict, which data resources can and can not be read. Therefore should the every data resource be considered as an initial state.
+
+% Summarise the definition of a data repository
+Given all of the above descriptions of how the parts of a TS could be modelled in a data repository, it is possible to define a data repository as follows:
+\begin{definition}[Data Repository (DR)]
+A \emph{data repository} $DR$ is a tuple $\left(R, \longrightarrow', AP', L' \right)$, where
+\begin{itemize}
+  \item $R$ is a set of data resources
+  \item $\longrightarrow \subseteq R \times R$ is a dependency relation
+  \item $AP'$ is a set of atomic propositions
+  \item $L' : R \rightarrow 2^{AP}$ is a labelling function
+\end{itemize}
+Let $DR=\left(R, \longrightarrow, AP', L' \right)$ and $TS=\left(S, Act, \longrightarrow, I, AP, L \right)$, then $DR$ can be modelled as a $TS$ where
+\begin{equation*}
+    S = R, \quad Act = \emptyset, \quad \longrightarrow = \longrightarrow', \quad I = R, \quad AP = AP', \quad L = L'
+\end{equation*}
+\end{definition}
+
+\begin{example}[Data repository]\label{ex:data-repo}
+Let us consider how a data repository of five data resources could look like. \autoref{fig:data-repo} shows how the five data resources could depend on each other. $r_5$ has dependencies to $r_3$ and $r_4$, $r_3$ has a dependency to $r_1$ and $r_4$ has a dependency to $r_2$. $r_1$ and $r_2$ was created completely independently and thus have no dependency to other resources, thus they have a \emph{self-dependency}.
+\begin{figure}[!ht] 
+    \begin{center}
+        \input{figs/data-repository-example.tex}
+        \caption{Sample data repository containing five data resources, their dependencies and atomic propositions.}
+        \label{fig:data-repo}
+    \end{center}
+\end{figure}
+The set of atomic propositions is defined as $AP = \left\{ a_1, a_2, a_3, a_4, a_4 \right\}$ and from \autoref{fig:data-repo} it can be seen what data resource has been labelled with what atomic propositions. That is $L(r_3) = \left\{ a_1, a_3 \right\}$.
+\end{example}
+
+% Content:
+% - Explain how it extends the grammar of LTL
+% - Only some propositional logic are directly implemented but the remaining can be used indirectly
+% - Explain that the grammar is abstract and somethings are not explicitly mentioned
+\subsection{Grammar}\label{sec:grammar}
+
+\input{tables/ambiguous-grammar.tex}
 
 \paragraph{self predicate}
+A predicate called \emph{self} is introduced, where the semantics of the satisfaction relation look like:
+\begin{align*}
+    self &\models self
+\end{align*}
+More informally, the predicate can only be satisfied by itself. As a result of this it can be used to create LTL formulae that for instance check some properties if self is satisfied or not satisfied. Consider the following simple LTL formulae:
+\begin{align*}
+    \phi_1 = self \imply \left( a \land b \right)
+\end{align*}
+$\phi_1$ specifies that if there is a data resource where self holds under, then $a$ and $b$ should also hold under the data resource. Contrary consider the following LTL formulae:
+\begin{align*}
+    \phi_2 = \neg self \imply \left( a \land b \right)
+\end{align*}
+Here $\phi_2$ specifies that if self does not hold under a data resource then $a$ and $b$ should hold under the data resource.
+
 \paragraph{user function}
+
 \paragraph{reader function}
+
+
 \paragraph{literals}
+The grammar contains three literal variables, namely \emph{string}, \emph{number} and \emph{bool}. The explicit grammar for each of the literals have been omitted
+
 \paragraph{mathematical equality}
 
-\[
-\begin{array}{rcll}
-    \varphi     & ::=   & a                                 & \text{(atomic proposition)} \\
-                & |     & e                                 & \text{(expression)} \\
-                & |     & \varphi_1 \vee \varphi_2          & \text{(disjunction)} \\
-                & |     & \varphi_1 \wedge \varphi_2        & \text{(conjunction)} \\
-                & |     & \varphi_1 \rightarrow \varphi_2   & \text{(implication)} \\
-                & |     & \neg \varphi                      & \text{(negation)} \\
-                & |     & \bigcirc \varphi                  & \text{(next)} \\
-                & |     & \varphi_1 \cup \varphi_2       & \text{(until)} \\
-                & |     & \Diamond \varphi                  & \text{(eventually)} \\
-                & |     & \square \varphi                   & \text{(always)} \\
-    a           & ::=   & self                              & \text{(self predicate)} \\
-                & |     & true                              & \text{(true predicate)} \\
-                & |     & p                                 & \text{(attribute name)} \\
-    e           & ::=   & e_{arg} = e_{arg}                 & \text{(equality)} \\
-    %            & |     & u > l                             & \text{(greater than)} \\
-    %            & |     & u \geq l                          & \text{(greater than or equal)} \\
-    %            & |     & u < l                             & \text{(less than)} \\
-    %            & |     & u \leq l                          & \text{(less than or equal)} \\
-    e_{arg}     & ::=   & a                                 & \text{(atomic proposition)} \\
-                & |     & f                                 & \text{(function)} \\
-                & |     & l                                 & \text{(literal)} \\
-    f           & ::=   & user(s)                           & \text{(user function)} \\
-                & |     & reader()                          & \text{(reader function)} \\
-    l           & ::=   & s                                 & \text{(string literal)} \\
-                & |     & n                                 & \text{(number literal)} \\
-                & |     & b                                 & \text{(boolean literal)}
-\end{array}
-\]
-
+% Content:
+% - Write about this if there something relevant
 \paragraph{Limitations of grammar}
-% Write about this if there something relevant
 
+% Content:
+% - What is meant by a confidentiality policy
+% - Inheritance of policies
+% - Compare with Role-Based Access Control (RBAC)
+%   - RBAC is a simple way to provide confidentiality
+% - Compare with Access-Control List (ACL)
+% - White and black lists of who can use your data can be achieved by author = "username" and author = !"username" respectively
 \subsection{Confidentiality Policies}
-% What is meant by a confidentiality policy
-% Compare with Role-Based Access Control (RBAC)
-% - RBAC is a simple way to provide confidentiality
-% Compare with Access-Control List (ACL)
-% White and black lists of who can use your data can be achieved by author = "username" and author = !"username" respectively
-% Continue running example
+The concept of confidentiality polices are introduced in an attempt to allow the user of the system to control how information flows in the future. A confidentiality policy is defined as:
+\begin{definition}[Confidentiality policy]\label{def:cp}
+A confidentiality policy $\conf$ is an LTL formulae $\phi$ where the formulae is constructed from the language described by the grammar in \autoref{tab:grammar}.
+\end{definition}
+It should be noted that like any other LTL formulae, can multiple policies be defined and concatenated with conjunction.
 
+As shown later in \autoref{sec:put} can a data resource be associated with a confidentiality policy once the resource is being placed in the data repository. There are no restrictions on who can depend on a data resource, however a confidentiality policy will impose constraint on who can read the data resource through a query operation. One might wonder why it makes sense to have one data resource depend on another if the confidentiality policy restricts one from querying it. However this does opens up for the possibility to have a data resource with a corresponding confidentiality policy defined, where the policy can be used as a template for dependant resources through inheritance.
+
+\begin{definition}[Semantics of confidentiality policies]\label{def:scp}
+\end{definition}
+
+% - Inheritance of policies
+Before looking into how one can create these constraints and take advantage of them, it is necessary to explain how confidentiality policies are inherited. The dependencies of a data resource implies that it inherits the dependencies' confidentiality policy, which are inherited policies themselves. The inherited policies are concatenated with conjunction to form one composite policy. As the concatenation is done with conjunction means, that all inherited policies and the policy that is directly associated to the data resource must be satisfied. Due to the fact that confidentiality policies are concatenated with conjunction, will result in that the composite confidentiality policy will always be as or more restrictive compared to its individual policies. More formally can the confidentiality policy inheritance be defined as:
+\begin{definition}[Confidentiality policy inheritance]\label{def:cpi}
+\end{definition}
+
+Let us look at an example to visualise the inheritance.
+\begin{example}[Confidentiality policy inheritance]
+Consider the data repository containing five data resources $r_{1,\ldots,5}$ illustrated in \autoref{fig:policy-inher}. The data repository is similar to the one used in Example~\ref{ex:data-repo}. The data resources $r_1$ $r_2$ do not have any dependencies, $r_3$ has a dependency to $r_1$, $r_4$ has one to $r_2$ and finally $r_5$ has a dependency to both $r_3$ and $r_4$. Each data resource was placed in the data repository with a single confidentiality policy $\conf_i$.
+\begin{figure}[!ht]
+    \begin{center}
+        \input{figs/policy-inheritance-example.tex}
+        \caption{Inheritance of confidentiality policies.}
+        \label{fig:policy-inher}
+    \end{center}
+\end{figure}
+As seen in \autoref{fig:policy-inher} $r_1$ only has its own confidentiality policy, which is expected as it has no dependencies (ignoring the self-dependency). Looking at $r_3$ it has two confidentiality policies namely $\conf_1$ and $\conf_3$, as it has inherited its dependencies' policies. Similarly with $r_4$ and $r_5$, however it should be noted that $r_5$ has all five confidentiality policies as a data resource inherit its dependencies' inherited policies as well.
+\end{example}
+
+Now that it is clear how confidentiality policies are inherited, we can consider how to create constraints. Creating constraints are achieved by utilising the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:grammar}. In the following will a bunch of examples be given to illustrate how constraints can be created through confidentiality policies and to give an idea of what kinds of constraints are possible to create and how to exploit them. The examples will use the simple data repository shown in \autoref{fig:conf-policy} as reference if needed.
+
+\begin{figure}[!ht]
+    \begin{center}
+        \input{figs/confidentiality-policy-examples.tex}
+        \caption{Data repository $DR$ containing 3 data resources $r_1, r_2, r_3$.}
+        \label{fig:conf-policy}
+    \end{center}
+\end{figure}
+
+\begin{example}[Constraints about reader]\label{ex:conf-reader-constraints}
+Let us start by looking at how one could introduce constraints about who can use a data resource, i.e. query the data resources in the repository and read the contents of it. This can be achieved by introducing a blacklist containing the names of those users who are not allowed to query the data resource. Here will the \emph{user} and \emph{reader} functions become useful. Considering the data repository $DR$ in \autoref{fig:conf-policy} and say that \emph{Alice} placed $r_1$ in $DR$ and she wish that the users \emph{Mallory} and \emph{Monroe} are restricted from querying the data resource. Adding the confidentiality policy 
+\begin{align*}
+    \conf_{black} = \lnot \left( reader() == user(Mallory) \right) \land \lnot \left( reader() == user(Monroe) \right)
+\end{align*}
+solves this desire. However with $\conf_{black}$ every other user is allowed to query the resources, which might not be a desired outcome. Instead one could take an approach that is commonly used when defining IP tables, blacklist every IP address by default and explicitly define the allowed ones, i.e. whitelist trusted IP addresses. Taking such an approach and assume that \emph{Alice} would allow herself and \emph{Bob} to query $r_1$, results in the confidentiality policy
+\begin{align*}
+    \conf_{white} = reader() == user(Alice) \lor reader() == user(Bob)
+\end{align*}
+Note that the equalities in $\conf_{black}$ are concatenated with conjunction whereas they are concatenated with disjunction in $\conf_{white}$. The reason for using conjunction is that the reader must not match any of the specified users in $\conf_{black}$ whereas in $\conf_{white}$ it is just necessary to check that the reader matches one of specified users.
+\end{example}
+
+\begin{example}[Avoid inheritance]
+Let us start off by clarifying that inheritance can not be avoided, however it is possible to create a confidentiality policy such that it is relevant in the data resource to which it was added but irrelevant when inherited. To achieve this it will be necessary to utilise the $self$ predicate and implication. As explained previously in \autoref{sec:grammar} the \emph{self} predicate will be resolved to a static value being a reference to a data resource. With this the following confidentiality policy can be created 
+\begin{align*}
+    \conf = self \imply \conf_1
+\end{align*}
+where $\conf_1$ is an arbitrary policy. Say $r_1$ was placed in $DR$, shown in \autoref{fig:conf-policy}, with $\conf$. This means that $\conf_1$ should hold under $r_1$ to successfully query it. However when querying $r_2$ or $r_3$, which has a dependency to $r_1$, $\conf$ is trivially true, i.e. satisfied. This is because of the implication as the left hand side of is only true in $r_1$ and false elsewhere and when the left hand side of an implication is false the implication is trivially true.
+\end{example}
+
+\begin{example}[Author is only reader]\label{ex:conf-reader-author}
+A way of ensuring that the author and only the author can query a data resource in a data repository, can be achieved by using the \emph{author} predicate and \emph{reader} function. Say that $r_1$ is placed in $DR$ as shown in \autoref{fig:conf-policy} with the confidentiality policy 
+\begin{align*}
+    \conf = reader() == author
+\end{align*}
+Then only author of the resource $r_1$ is allowed to query and read $r_1$. The author attribute is added to a data resource automatically during a put operation as will be further explained in \autoref{sec:put}. With the given policy $\conf$, $r_1$ can be considered a template and as a result of inheritance $r_2$ and $r_3$ in $DR$ can only be read by their authors, i.e. the person who performed the put operation to place them in the data repository.
+\end{example}
+
+\begin{example}[Anonymised data resources]
+Now consider the case of constructing a confidentiality policy that ensures that some property is satisfied between two data resources in $DR$. Say the confidentiality policy $\conf$ is associated to $r_1$, and when querying for $r_3$ it is desired that $\conf$ should ensure that $r_2$ is anonymised. This can be achieved by using the \emph{self} predicate, implication as well as the temporal operators \emph{next} and \emph{until}. Defining the policy as 
+\begin{align*}
+    \conf = \lnot self \imply \X \left( anonymised \U self \right)
+\end{align*}
+and assuming that $r_2$ has a atomic proposition \emph{anonymised}, it is possible to achieve exactly that. Let us break it down and justify the construction of it by investigating the behaviour when querying $r_1$ through $r_3$. 
+
+When querying for $r_1$, the left side of the implication is false and the implication is trivially true, thus $r_1 \models \conf$. 
+
+When querying for $r_2$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_1$, as it is the direct dependency of $r_2$, $r_1$ should satisfy $anonymised \U self$. As \emph{self} is a reference to $r_1$ it follows that $r_1 \models anonymised \U self$ and thus $r_2 \models \conf$.
+
+When querying for $r_3$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_2$, as it is the direct dependency of $r_3$, $r_2$ should satisfy $anonymised \U self$. \emph{Self} refers to $r_1$ and can not be satisfied in $r_2$, thus should the left side of the \emph{until} be true, which it is as $r_2$ has the atomic proposition $anonymised$. It was shown that $r_1 \models anonymised \U self$ and from this it follows that $r_2 \models anonymised \U self$, which finally means $r_3 \models \conf$.
+\end{example}
+
+\subsubsection{Comparison with Alternatives}
+\paragraph{Role-Based Access Control (RBAC)}
+\paragraph{Access-Control List (ACL)}
+
+% Content:
+% - What is meant by an integrity policy
+% - Continue running example
 \subsection{Integrity Policies}
-% What is meant by an integrity policy
-% Continue running example
+Confidentiality policies are concerned with imposing constraints on those reading data resources from the data repository and composing templates for such constraints. On the other hand integrity policies are concerned with imposing constraint on the quality of the data resources once querying for them. By ``imposing constraints on the quality'' it is meant that an integrity policy can compose a number of criteria on a data resource's atomic propositions and the data resource's dependencies' atomic propositions.
+\begin{definition}[Integrity policy]\label{def:ip}
+A integrity policy $\inte$ is an LTL formulae $\phi$ where the formulae is constructed from the language described by the grammar in \autoref{tab:grammar}.
+\end{definition}
+It should be noted that like any other LTL formulae or confidentiality policies, can multiple policies be defined and concatenated with conjunction, to construct a single integrity policy.
+
+As already suggested is an integrity policy associated with a query operation, as opposed to a confidentiality policy which is associated to a data resource. This means that an integrity policy is not persistent in the data repository but its lifespan is as long as the query operation. This will be explained further in \autoref{sec:query}.
+
+\begin{definition}[Semantics of integrity policies]\label{def:sip}
+\end{definition}
+
+Let us now consider how integrity policies can be constructed by utilising the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:grammar}. In the following will a bunch of examples be given to illustrate how constraints can be created through integrity policies and to give an idea of what kinds of constraints are possible to create and how to exploit them.
+
+\begin{example}[]\label{ex:mutual-exclusion}
+Let us start by considering how one could formulate an integrity policy that ensures that the data resource and its dependencies does not have two given atomic propositions at the same time. Say that it desired to query a data resource if it or any of its dependencies does not contain the atomic proposition $a$ and $b$ at the same time. The following integrity policy $\inte$ specifies exactly that utilising the temporal operator \emph{always}
+\begin{align*}
+    \inte =  \G \left( \lnot a \lor \lnot b \right)
+\end{align*}
+Consider the data repository $DR$ shown in \autoref{fig:inte-policy-mutual-exclusion}.
+\begin{figure}[!ht]
+    \begin{center}
+        \input{figs/integrity-policy-mutual-exclusion-example.tex}
+        \caption{Data repository $DR$ containing four data resources $r_1, r_2, r_3, r_4$.}
+        \label{fig:inte-policy-mutual-exclusion}
+    \end{center}
+\end{figure}
+Given the data repository $DR$ and integrity policy $\inte$ it is possible to query for $r_1, r_2$ and $r_3$ as $\inte$ holds under those data resources in $DR$. However $\inte$ does not hold under $r_4$ in $DR$ as $r_4$ has contains $a$ and $b$.
+\end{example}
+
+\begin{example}[Independent of author]
+It could very well be that it is desired to query a data resource with some restrictions on the author of the dependencies. Say that when querying for a data resource $r_i$, one wants the resource to have a dependency to some other resource $r_j$ which was created by the user \emph{Bob}, where no resource in between $r_i$ and $r_j$ was created by the user \emph{Mallory}. Utilising \emph{author} attribute and the \emph{until} operator can an integrity policy be formulated that specifies this
+\begin{align*}
+    \inte =  \lnot (author == user(Mallory)) \U author == user(Bob)
+\end{align*}
+Consider the data repository $DR$ given in \autoref{fig:inte-policy-independent-author}.
+\begin{figure}[!ht]
+    \begin{center}
+        \input{figs/integrity-policy-independent-author-example.tex}
+        \caption{Data repository $DR$ containing six data resources $r_1, \ldots, r_6$.}
+        \label{fig:inte-policy-independent-author}
+    \end{center}
+\end{figure}
+Let us start by considering if $\inte$ holds under $DR$ when querying for $r_5$. As no data resource on the path from $r_5$ to $r_2$ was created by \emph{Mallory} and $r_2$ was created by \emph{Bob}, then $\inte$ is satisfied. As $\inte$ is satisfied when reaching $r_2$ it is unnecessary to consider the remaining of the path being $r_1$. For the same reasons $\inte$ holds under $DR$ when querying for $r_3$ and $r_2$ as well.
+
+Now consider if $\inte$ holds under $DR$ when querying for $r_6$. As the direct dependency $r_4$ of $r_6$ was created by \emph{Mallory} the integrity policy $\inte$ is violated and thus $\inte$ does not hold under $DR$ when querying for $r_6$, as well as for $r_4$.
+\end{example}
+
+\begin{example}[Trusted authors]
+A data repository is naive in the sense that it does not take the trustworthyness of the authors into consideration, That is up the user performing the query to specify the users that it trust or does not trust. This can be done in a few different ways, all of which has its advantages and disadvantages.
+
+The first way is to take the blacklist approach, the same concept as was used in Example~\ref{ex:conf-reader-constraints}. Assuming that the user performing the query for a data resource does not trust the users \emph{Mallory} and \emph{Monroe} and thus does not trust any data resources they have placed in the data repository. The following integrity policy $\inte_1$ ensures that a data resource is not returned if it was created by those users or have a dependency to a resource that they created.
+\begin{align*}
+    \inte_1 = \G( \lnot (author==user(Mallory) \lor author==user(Monroe)))
+\end{align*}
+
+Another way is the whitelist approach which was also introduced in Example~\ref{ex:conf-reader-constraints}. Assuming that the user performing the query only consider \emph{Alice} and \emph{Bob} for trustworthy authors of data resources and thus only wants to query a data resource if it and all its dependencies was created by one of them. This can be achieved by using the integrity policy $\inte_2$.
+\begin{align*}
+    \inte_2 = \G(author==user(Alice) \lor author==user(Bob))
+\end{align*}
+
+% Eventually a trusted author
+Finally it could be that the user performing the query is not too concerned if the data resources being queried and its dependencies was created by trustworthy authors as long as either the resources itself or one of it dependencies was. Again assuming that \emph{Alice} and \emph{Bob} are considered trustworthy the following integrity policy $\inte_3$ impose exactly that constraint.
+\begin{align*}
+    \inte_3 = \F(author==user(Alice) \lor author==user(Bob))
+\end{align*}
+
+\end{example}
+
+\subsection{Operations}
+In the following will the allowed operations on the data repository be introduced
+% Content:
+% - User has to be defined in context before any operations can be performed
+\subsubsection{Context}
+Before considering the operations that can be performed on the data repository, it is necessary to consider the context in which the operations operate. The context is not part of the operations as such but having it configured properly is a prerequisite for performing the operations. The main purpose of the context is to populate values that can be used in resolving LTL formulae following the grammar introduced in \autoref{sec:grammar}. The primary value of concern is that a user is set, i.e. the name of the user/person performing the operations. The implementation abstracts away from authenticating the user, i.e. ensuring that the user is who it claims to be. However it should be trivial to see that an authentication system could be placed as a layer on top of the data repository.
+
+In theory there is no limit to what the context could be extended with, e.g. the system that the operation is performed from, the name of the system etc.
+
+% Content:
+% - Author is automatically added as an attribute to the state
+% Flow of PUT operation:
+% - Check if user is set
+% - Check if resource already exists
+% - Add author attribute to the resource
+% - Replace user predicate
+% - Replace self reference
+% - Concatenate policies
+% - Check that policies are satisfied
+\subsubsection{Put}\label{sec:put}
+A data repository is initially empty but can be populated with data resources by utilising the \emph{put} operation. The put operation works directly on the data repository and does not as such needs a reference for it.
+\begin{definition}[Put operation]
+A operation $put(r, \conf, d)$ where
+\begin{itemize}
+  \item $r$ is a data resources
+  \item $\conf$ is a confidentiality policy
+  \item $d$ is a set of dependencies of $r$
+\end{itemize}
+\end{definition}
+For a put operation to be carried out successfully a few things needs to be resolved and satisfied. Here by successfully it is meant that the data resource $r$ is successfully added to the set of data resources $R$ of the data repository $DR$. A prerequisite for carrying out a put operation is that the user is set in the context and that the data resource does not already exists in the data repository. Next is a new attribute automatically generated for the data resource. The new attribute is \emph{author} and its value is set to the user that is defined in the context, i.e. the author of the data resource is the user who performed the put operation. This ensures that every data resource in the repository has an author and it was shown to be useful in Example~\ref{ex:conf-reader-author}. Now the confidentiality policy needs to be considered, meaning that if it contains any \emph{self} predicates they need to be replaced with an internal unique reference to the data resource itself. The only thing left to handle before the data resource can be added to the data repository is to verify:
+\begin{align*}
+    DR = R \cup r \models \conf \land \left( \bigwedge\limits_{\conf_d \in d} \conf_d \right)
+\end{align*}
+More informally it should be checked that the confidentiality policy $\conf$ of the data resource $r$ and all the inherited confidentiality policies from the dependencies of $r$ holds under the data repository $DR$. That is with the assumption that $r$ is added to the set of resources and $r$ is considered an initial state. If the confidentiality polices hold under the data repository the data resource is added to the set of resources and the operation can be considered complete.
+
+% Explain why confidentiality is checked here
+The main reason why confidentiality policies are checked for satisfiability once they are being placed in the data repository, is to avoid that a user can not query the data resource that it just put and to avoid having data resources in the repository that is infeasible to query. Let us consider the first case more specifically.
+
+\begin{example}
+\end{example}
+
+% Content:
+% - Confidentiality polices are checked every time (not efficient)
+% Flow of QUERY operation:
+% - Check if user is set
+% - Check if resource exists
+% - Replace user predicate
+% - Replace self reference
+% - Check that integrity policies are satisfied
+% - Check that confidentiality policies are satisfied
+\subsubsection{Query}\label{sec:query}
+Once data has been put in the data repository it might be interesting to query some of the resources again later on. To allow for this has the \emph{query} operation been introduced:
+\begin{definition}[Query operation]
+A operation $query(r, \inte)$ where
+\begin{itemize}
+  \item $r$ is a data resources
+  \item $\inte$ is an integrity policy
+\end{itemize}
+\end{definition}
+As with the put operation is an explicit reference for the data repository $DR$, not needed as it is performed directly on the data repository. For a query operation to be carried out successfully a few things needs to be resolved and satisfied. A query operation is consider successful if the the requested data resource is returned from the data repository. A prerequisite for carrying out a query operation is that the user is set in the context, just like for the put operation, and that the data resource does exists in the data repository. Now both the integrity and confidentiality policies need to be considered. For the integrity policy $\inte$ this means that if it contains any \emph{self} predicates they need to be replaced with the internal unique reference to the data resource $r$, i.e. the data resource that is attempted to be queried. Once that is complete is should be checked that:
+\begin{align*}
+    DR \models \inte \text{, where $r$ is considered as initial state}
+\end{align*}
+The only thing left to handle before the data resource $r$ can be returned to the user, is to check if the confidentiality policy $\conf$ of $r$ and the inherited confidentiality policies of $r$'s dependencies are satisfied under the data repository $DR$ where $r$ is considered as the initial state. More formally:
+\begin{align*}
+    DR = R \cup r \models \conf \land \left( \bigwedge\limits_{\conf_d \in d} \conf_d \right)
+\end{align*}
+
+% Explain that a resource is not removed, i.e. DR.R (pre query) = DR.R (post query)
+
+\begin{example}
+\end{example}

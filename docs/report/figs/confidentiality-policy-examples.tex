@@ -1,0 +1,9 @@
+\begin{forest}
+    for tree={circle, draw, s sep=50pt, grow=west,edge={->}}
+    [$r_3$, name=r3
+        [$r_2$, name=r2
+            [$r_1$, name=r1]
+        ] 
+    ]
+    \draw[->] (r1) to [out=north west,in=north east,looseness=4] (r1);
+\end{forest}

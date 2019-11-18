@@ -1,0 +1,49 @@
+\begin{forest}
+for tree={circle, draw, s sep=14pt}
+[, 
+    [,edge label={node[midway,left] {$a$}}  
+      [,edge label={node[midway,left] {$b$}}
+        [,edge label={node[midway,left] {$a \land b$}}
+            [,edge label={node[midway,left] {$\varphi$}}]
+            [,cross out, edge label={node[midway,right] {$\lnot\varphi$}}]
+        ]
+        [,cross out, edge label={node[midway,right] {$\lnot (a \land b)$}}
+            [,draw=none,edge={draw=none}]
+            [,draw=none,edge={draw=none}]
+        ] 
+      ] 
+      [,edge label={node[midway,right] {$\lnot b$}}
+        [,cross out, edge label={node[midway,left] {$a \land b$}}
+            [,draw=none,edge={draw=none}]
+            [,draw=none,edge={draw=none}]
+        ] 
+        [, edge label={node[midway,right] {$\lnot (a \land b)$}}
+            [,edge label={node[midway,left] {$\varphi$}}]
+            [,edge label={node[midway,right] {$\lnot\varphi$}}]
+        ] 
+      ] 
+    ]
+    [,edge label={node[midway,right] {$\lnot a$}}
+      [,edge label={node[midway,left] {$b$}}
+        [,cross out, edge label={node[midway,left] {$a \land b$}}
+            [,draw=none,edge={draw=none}]
+            [,draw=none,edge={draw=none}]
+        ]
+        [,edge label={node[midway,right] {$\lnot (a \land b)$}}
+            [,cross out, edge label={node[midway,left] {$\varphi$}}]
+            [,edge label={node[midway,right] {$\lnot\varphi$}}]
+        ] 
+      ] 
+      [,edge label={node[midway,right] {$\lnot b$}}
+        [,cross out, edge label={node[midway,left] {$a \land b$}}
+            [,draw=none,edge={draw=none}]
+            [,draw=none,edge={draw=none}]
+        ]
+        [,edge label={node[midway,right] {$\lnot (a \land b)$}}
+            [,cross out, edge label={node[midway,left] {$\varphi$}}]
+            [,edge label={node[midway,right] {$\lnot\varphi$}}]
+        ]
+      ]  
+  ] 
+]
+\end{forest}
