@@ -14,15 +14,11 @@ The time in TL can be either \emph{linear} or \emph{branching}, where in the lin
 
 % Notes:
 % - Determine if we should talk about fairness
-% - Should we talk about figure 5.7
 \subsubsection{Linear Temporal Logic}
+\label{sec:ltl}
 % Introduce LTL
-% - Mention SPIN
-As mentioned is LTL a TL that is based on a linear-time perspective and can be used to specify properties of paths. These property specifications are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of a LTL formula $\phi$ is described by the grammar:
-% TODO: Look into Backus Naur Form (BNF) and see if it's relevant
-\begin{align*}
-    \phi ::= | \enskip true \enskip | \enskip a \enskip | \enskip \phi_1 \land \phi_2 \enskip | \enskip \lnot \phi \enskip | \enskip \X\phi \enskip | \enskip \phi_1 \U \phi_2
-\end{align*}
+As mentioned is LTL a temporal logic that is based on a linear-time perspective and can be used to specify properties of paths. These property specifications are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of a LTL formula $\phi$ is described by the grammar:
+\input{tables/ltl-grammar.tex}
 where $a \in AP$ and $AP$ is a set of atomic propositions. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly are the temporal operators \emph{eventually} and \emph{always} omitted as they can be derived from the \emph{until} operator using the following rules:
 \begin{align}
     &\F \phi \eqdef true \U \phi \label{eq:eventually} \\
@@ -44,16 +40,16 @@ LTL formulae are used so specify properties of paths and a path is said to eithe
     Words(\phi) = \left\{ \sigma \in \left( 2^{AP} \right)^\omega | \sigma \models \phi \right\}
 \end{align*}
 For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the suffix of $\sigma$ starting at the $j$\textsuperscript{th} symbol is denoted by $\sigma \left[ i \ldots \right] = A_i A_{j+1} A_{j+2} \ldots$. Given the definition of the words that satisfy an LTL formula, the semantics of the satisfaction relation $\models$ for the grammar of an LTL formula and the derived operators $\F$ and $\G$ can be listed:
-\begin{align*}
-    \sigma &\models true                &&\\
+\begin{align}
+    \sigma &\models true                && \label{eq:sem-true}\\
     \sigma &\models a                   &\text{iff }& a \in A_0 \\
     \sigma &\models \phi_1 \land \phi_2 &\text{iff }& \sigma \models \phi_1 \text{ and } \sigma \models \phi_2 \\
     \sigma &\models \lnot \phi          &\text{iff }& \sigma \not\models \phi\\
     \sigma &\models \X \phi             &\text{iff }& \sigma\left[1\ldots\right] = A_1 A_2 A_3\ldots \models \phi\\
     \sigma &\models \phi_1 \U \phi_2    &\text{iff }& \exists j \geq 0.\enskip \sigma\left[j\ldots\right] \models \phi_2 \text{ and } \sigma\left[i\ldots\right] \models \phi_1, \text{ for all } 0 \leq i < j \\
     \sigma &\models \F \phi             &\text{iff }& \exists i \geq 0.\enskip \sigma\left[i\ldots\right] \models \phi \\
-    \sigma &\models \G \phi             &\text{iff }& \forall i \geq 0.\enskip \sigma\left[i\ldots\right] \models \phi
-\end{align*}
+    \sigma &\models \G \phi             &\text{iff }& \forall i \geq 0.\enskip \sigma\left[i\ldots\right] \models \phi \label{eq:sem-always}
+\end{align}
 
 More informally the above semantics can be described as follows. True will hold under every word. An atomic proposition $a$ will hold under a word if and only if the first symbol of the words satisfies $a$. A conjunction $\phi_1 \land \phi_2$ will hold under a word if and only if both subformulae $\phi_1$ and $\phi_2$ holds under the word. $\lnot \phi$ will hold under a word if and only if $\phi$ does not hold under the word. $\X\phi$ will hold under a word if and only if $\phi$ holds under the suffix starting at the next symbol of the word. $\phi_1 \U \phi_2$ holds under a word if and only if $\phi_2$ holds under some symbol of the word and $\phi_1$ holds under every symbol of the prefix of the word up until the point where $\phi_2$ holds. $\F \phi$ holds under a word if and only if $\phi$ holds under some suffix of the word. Finally $\G \phi$ holds under a word if and only if $\phi$ holds under every suffix of the word.
 
@@ -68,8 +64,6 @@ The informal semantics of $\G\F\phi$ is that it will hold under a word if and on
     \sigma &\models \G\F \phi &\text{iff }& \forall i \geq 0.\enskip \exists j \geq i.\enskip \sigma\left[j\ldots\right] \models \phi \\
     \sigma &\models \F\G \phi &\text{iff }& \exists i \geq 0.\enskip \forall j \geq i.\enskip \sigma\left[j\ldots\right] \models \phi
 \end{align*}
-
-% Insert example (not one from the book)
 
 \subsection{Closure of $\phi$}
 The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi$ of $\phi$ and their negation $\lnot \psi$ together with the formula itself and its negation. For example

@@ -1,19 +1,46 @@
-\begin{tikzpicture}
-    \node[shape=circle,draw=black] (B1) at (0,0) {$B_1$};
-    \node[shape=circle,draw=black] (B2) at (-2,-2) {$B_2$};
-    \node[shape=circle,draw=black] (B3) at (2,-2) {$B_3$};
-    \node[shape=circle,draw=black] (B4) at (0,-4) {$B_4$};
-    \node[shape=circle,draw=black] (B5) at (-2,-6) {$B_5$};
-    \node[shape=circle,draw=black] (B6) at (2,-6) {$B_6$};
-    \node[shape=circle,draw=black] (B7) at (0,-8) {$B_7$};
+\begin{tikzpicture}[initial text = \empty, style={tikz-ts}]
+    \node[state,accepting] (B1) at (0,-2) {$B_1$};
+    \node[state,accepting] (B2) at (-2,.6) {$B_2$};
+    \node[state,accepting] (B3) at (2,.6) {$B_3$};
+    \node[state,initial,accepting] (B4) at (0,-4) {$B_4$};
+    \node[state,initial] (B5) at (-3,-7) {$B_5$};
+    \node[state,initial right] (B6) at (3,-7) {$B_6$};
+    \node[state,initial] (B7) at (0,-10) {$B_7$};
 
-    \path [->] (B1) edge[bend left=15] node[left] {$b$} (B2);
-    \path [->] (B2) edge[bend left=15] node[left] {$a$} (B1);
-    
+    \path [->] (B1) edge[loop right, looseness=5] node[below] {$b$} (B1);
+    \path [->] (B1) edge[bend left=15] node[right] {$b$} (B2);
     \path [->] (B1) edge[bend left=15] node[left] {$b$} (B3);
-    \path [->] (B3) edge[bend left=15] node[left] {$\varnothing$} (B1);
     
+    \path [->] (B2) edge[bend left=15] node[right] {$a$} (B1);
+    \path [->] (B2) edge[loop left] node[left] {$a$} (B2);
+    \path [->] (B2) edge[bend left=15] node[above] {$a$} (B3);
+    
+    \path [->] (B3) edge[bend left=15] node[left] {$\varnothing$} (B1);
     \path [->] (B3) edge[bend left=15] node[above] {$\varnothing$} (B2);
-    \path [->] (B2) edge[bend left=15] node[below] {$a$} (B3);
+    \path [->] (B3) edge[loop right] node[right] {$\varnothing$} (B3);
+    
+    \path [->] (B4) edge[] node[left] {$a,b$} (B1);
+    \path [->] (B4) edge[bend left=15] node[left] {$a,b$} (B2);
+    \path [->] (B4) edge[bend right=15] node[right] {$a,b$} (B3);
+    \path [->] (B4) edge[loop right] node[right] {$a,b$} (B4);
+    \path [->] (B4) edge[bend left=15] node[left] {$a,b$} (B5);
+    \path [->] (B4) edge[bend left=15] node[left] {$a,b$} (B6);
+    \path [->] (B4) edge[bend left=15] node[right] {$a,b$} (B7);
+    
+    \path [->] (B5) edge[bend left=15] node[left] {$b$} (B4);
+    \path [->] (B5) edge[loop below] node[below] {$b$} (B5);
+    \path [->] (B5) edge[bend left=15] node[above] {$b$} (B6);
+    \path [->] (B5) edge[bend left=15] node[left] {$b$} (B7);
+    
+    \path [->] (B6) edge[bend left=15] node[left] {$a$} (B4);
+    \path [->] (B6) edge[bend left=15] node[below] {$a$} (B5);
+    \path [->] (B6) edge[loop below] node[below] {$a$} (B6);
+    \path [->] (B6) edge[bend left=15] node[left] {$a$} (B7);
+    
+    \path [->] (B7) edge[bend left=15] node[left] {$\varnothing$} (B4);
+    \path [->] (B7) edge[bend left=15] node[left] {$\varnothing$} (B5);
+    \path [->] (B7) edge[bend left=15] node[left] {$\varnothing$} (B6);
+    \path [->] (B7) edge[loop below] node[below] {$\varnothing$} (B7);
+
 
 \end{tikzpicture}

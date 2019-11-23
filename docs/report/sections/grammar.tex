@@ -1,0 +1,78 @@
+% Content:
+% - Explain how it extends the grammar of LTL
+% - Only some propositional logic are directly implemented but the remaining can be used indirectly
+% - Explain that the grammar is abstract and somethings are not explicitly mentioned
+\subsection{Grammar}\label{sec:grammar}
+In the following is a new type of formula introduced. The new formula type is named Policy Formula (\emph{PF}), which is an extension of the LTL formula, thus is the grammar of PR, shown in \autoref{tab:pf-grammar}, extended from the grammar of LTL, previously introduced in \autoref{tab:pf-grammar}.
+\input{tables/pf-grammar.tex}
+
+To increase the ease of use of the policy formulae, can they be defined with derived operators. This includes the temporal operators \emph{eventually} and \emph{always}, any composite temporal operators, as well as the propositional logic operators; \emph{disjunction} and \emph{implication}. The grammar in \autoref{tab:pf-grammar} does omit atomic propositions from the LTL grammar and introduces \emph{attribute name} instead. To keep the extension, will the policy formulae still support atomic propositions but it will be represented as an attribute name instead. How this is done specifically will be explained later in this section.
+
+A policy formula $PF$ can be transformed into a corresponding LTL formula $\phi$, using the following lemma:
+\begin{lemma}[Transformation from PF to LTL]\label{lemma:pf-to-ltl}
+Given the policy formula $\pf$ the transformation into LTL formula $\phi$ and transformation table $\tau$ is performed by the following. For each subformulae $\psi$ of $\phi$ perform the following substitution:
+\begin{itemize}
+    \item If $\psi$ is $\phi_1 == \phi_2$, then introduce atomic proposition $ap_\psi$, set $\tau(ap_\psi) \rightarrow \psi$ and substitute $\psi$ with $ap_\psi$
+    \item If $\psi$ is $self$, then 
+    \item If $\psi$ is $a$, then introduce atomic proposition $ap_\psi$, set $\tau(ap_\psi) \rightarrow \psi$ and substitute $\psi$ with $ap_\psi$
+\end{itemize}
+After transformation the resulting LTL formula $\phi$ only contains semantics as defined in \autoref{sec:ltl}.
+\end{lemma}
+
+
+
+\paragraph{self predicate}
+A predicate called \emph{self} is introduced, where the semantics of the satisfaction relation look like:
+\begin{align*}
+    r &\models self \quad \text{iff } self = r
+\end{align*}
+More informally, the predicate can only be satisfied by itself. As a result of this it can be used to create LTL formulae that for instance check some properties if self is satisfied or not satisfied. Consider the following simple LTL formulae:
+\begin{align*}
+    \phi_1 = self \imply \left( a \land b \right)
+\end{align*}
+$\phi_1$ specifies that if there is a data resource where self holds under, then $a$ and $b$ should also hold under the data resource. Contrary consider the following LTL formulae:
+\begin{align*}
+    \phi_2 = \neg self \imply \left( a \land b \right)
+\end{align*}
+Here $\phi_2$ specifies that if self does not hold under a data resource then $a$ and $b$ should hold under the data resource.
+
+\paragraph{attribute name}
+\begin{lemma}[Evaluation of user function]
+An attribute name $a$ can be evaluated with the $eval()$ function under a data repository $DR=\left(R, \longrightarrow', A, L, M \right)$ and a data resource $r \in R$:
+\begin{align*}
+    eval(a) = M(r, a) 
+\end{align*}
+\end{lemma}
+
+\paragraph{user function}
+% Can only be part of an equality
+\begin{lemma}[Evaluation of user function]
+A user function $user(s)$ can be evaluated with the $eval()$ function:
+\begin{align*}
+    eval(user(s)) = 
+\end{align*}
+\end{lemma}
+
+\paragraph{operator function}
+% Can only be part of an equality
+\begin{lemma}[Evaluation of operator function]
+A operator function $operator()$ can be evaluated with the $eval()$ function under a context $c$:
+\begin{align*}
+    eval(operator()) = 
+\end{align*}
+\end{lemma}
+
+\paragraph{literals}
+% Can only be part of an equality
+The grammar contains three literal variables, namely \emph{string}, \emph{number} and \emph{bool}. The explicit grammar for each of the literals have been omitted
+
+\paragraph{mathematical equality}
+
+\begin{align*}
+    r \models e_{arg_1} == e_{arg_2} \quad \text{iff } eval(e_{arg_1}) = eval(e_{arg_2})
+\end{align*}
+
+
+% Content:
+% - Write about this if there something relevant
+\paragraph{Limitations of grammar}

@@ -43,20 +43,18 @@ for tree={draw, minimum size=5mm, anchor=center}
 \begin{example}
 We consider the AST for the formula $\phi = a \U b \U c$ which can be seen in \autoref{fig:ast-exampl2}. Because the until operator ($\U$) is right-associative, which is conveyed by the AST, the subformula $b \U c$ is evaluated first, and therefore not the root of the tree.
 
-
-
 \begin{figure}[!ht]
     \centering
     \begin{forest}
-for tree={draw, minimum size=5mm, anchor=center}  
-[$\U$,
-    [$a$]
-    [$\U$,
-        [$b$]
-        [$c$]
-    ]
-]
-\end{forest}
+        for tree={draw, minimum size=5mm, anchor=center}  
+        [$\U$,
+            [$a$]
+            [$\U$,
+                [$b$]
+                [$c$]
+            ]
+        ]
+    \end{forest}
     \caption{The AST for $\phi = a \U b \U c$}
     \label{fig:ast-exampl2}
 \end{figure}
@@ -140,7 +138,8 @@ After exploration of the decision tree one can find the elementary sets of $\phi
 
 \subsubsection{GNBA}
 The method of model checking the confidentiality and integrity policies involves constructing a generalised non-deterministic Büchi automaton (GNBA) over the formula $\lnot\phi$ (read; the negation of phi). The GNBA functions as a monitor for the transition system for which its accepting states serves to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for a LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalised as follows:
-\begin{definition}[Construction of GNBA from LTL]
+\begin{definition}[Construction of GNBA from LTL\cite{baier2008principles}]
+\label{def:ltl-to-gnba}
 Given an LTL formula $\phi$ over AP a GNBA $\mathcal{G}=(Q,2^{AP},\delta,Q_0,\mathcal{F})$ can be constructed in space and time $\mathcal{O}(2^{|\phi|})$ as follows:
 \begin{itemize}
     \item $Q = B \subseteq closure(\phi) \mid \text{ set is elementary}$,
@@ -165,9 +164,23 @@ With the transition function $\delta : Q \times 2^{AP} \imply 2^Q$:
 \end{definition}
 
 \begin{example}
-We consider the formula $\phi=true \U (a \land b)$ and the construction of the GNBA $\mathcal{G}_\phi$.
+We consider the confidentiality policy from Example~\ref{ex:mutual-exclusion} with the formula $\conf = \G(\lnot a \lor \lnot b)$ and the construction of the GNBA $\mathcal{G}_\phi$. First the formula is negated and then transformed.
+\begin{equation*}
+    \phi = \lnot \conf = \lnot \G(\lnot a \lor \lnot b) \quad\Longleftrightarrow\quad true \U (a \land b)
+\end{equation*}
+We then determine the elementary sets of $\phi$:
+\begin{align*}
+    B_1 &= \{\lnot a, b, true, \lnot(a \land b), \lnot\phi\} \\
+    B_2 &= \{a, \lnot b, true, \lnot(a \land b), \lnot\phi\} \\
+    B_3 &= \{\lnot a, \lnot b, true, \lnot(a \land b), \lnot\phi\} \\
+    B_4 &= \{a, b, true, a \land b, \phi\} \\
+    B_5 &= \{\lnot a, b, true, \lnot(a \land b), \phi\} \\
+    B_6 &= \{a, \lnot b, true, \lnot(a \land b), \phi\} \\
+    B_7 &= \{\lnot a, \lnot b, true, \lnot(a \land b), \phi\}
+\end{align*}
+The GNBA can now be constructed following \autoref{def:ltl-to-gnba} which can be seen in \autoref{fig:gnba-example1}. Lets inspect the state $B_4$ in more detail. The set of atomic propositions with which one can move from this state is $B_4 \cup AP = \{a,b\}$. Since $true \U (a \land b) \in B_4$ and $a \land b \in B_4$, the transition function trivially returns $Q$, thus $B_4$ can transition to all states.
 
-\begin{figure}
+\begin{figure}[!ht]
     \centering
     \input{docs/report/figs/gnba-example.tex}
     \caption{The GNBA for $\phi=true\U (a \land b)$}

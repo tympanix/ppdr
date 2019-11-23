@@ -1,4 +1,4 @@
-\RequirePackage[12tabu, orthodox]{nag}
+%\RequirePackage[12tabu, orthodox]{nag}
 
 \documentclass[a4paper]{article}
 \usepackage[table,xcdraw]{xcolor}
@@ -39,16 +39,27 @@
 \usepackage{lipsum}
 \usepackage{forest}
 \usepackage{algorithm2e}
+\usepackage{mdframed}
 \RestyleAlgo{boxed}
 
 \usetikzlibrary{automata,arrows.meta,positioning}
 
+\tikzstyle{tikz-ts}=[every loop/.style={looseness=5}]
+
 \theoremstyle{definition}
 \newtheorem{example}{Example}[section]
+\newcommand{\exampleautorefname}{Example}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+\newcommand{\definitionautorefname}{Definition}
 
+\theoremstyle{definition}
+\newtheorem{lemma}{Lemma}[section]
+\newcommand{\lemmaautorefname}{Lemma}
+
+% Thick centred dot
+\newcommand{\tcdot}{\raisebox{.4ex}{\tiny $\bullet$}}
 
 \newcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
 
@@ -64,7 +75,9 @@
 
 \newcommand{\conf}{\chi}
 \newcommand{\inte}{\iota}
+\newcommand{\pf}{\alpha}
 \renewcommand{\phi}{\varphi} % phi
+\newcommand{\Tau}{\mathcal{T}}
 
 %Code for DTU logo as background picture.
 \usepackage{eso-pic}
