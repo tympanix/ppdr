@@ -21,8 +21,8 @@ As mentioned is LTL a temporal logic that is based on a linear-time perspective 
 \input{tables/ltl-grammar.tex}
 where $a \in AP$ and $AP$ is a set of atomic propositions. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly are the temporal operators \emph{eventually} and \emph{always} omitted as they can be derived from the \emph{until} operator using the following rules:
 \begin{align}
-    &\F \phi \eqdef true \U \phi \label{eq:eventually} \\
-    &\G \phi \eqdef \lnot \F \lnot \phi \label{eq:always} \\
+    &\F \phi = true \U \phi \label{eq:eventually} \\
+    &\G \phi = \lnot \F \lnot \phi \label{eq:always}
 \end{align}
 It will become apparent later, why the remaining propositional and temporal operators were omitted.
 
@@ -134,5 +134,3 @@ Below are all sets $B \subseteq closure(\phi)$ listed that satisfy property (\re
 \end{align*}
 Thus are the sets $B_1$, $B_7$, $B_{14}$, $B_{15}$ and $B_{16}$ elementary.
 \end{example}
-
-\subsection{Transition System}

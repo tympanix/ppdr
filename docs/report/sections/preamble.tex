@@ -40,23 +40,35 @@
 \usepackage{forest}
 \usepackage{algorithm2e}
 \usepackage{mdframed}
+
 \RestyleAlgo{boxed}
 
 \usetikzlibrary{automata,arrows.meta,positioning}
 
 \tikzstyle{tikz-ts}=[every loop/.style={looseness=5}]
 
+\renewcommand\qedsymbol{$\blacksquare$}
+
 \theoremstyle{definition}
 \newtheorem{example}{Example}[section]
 \newcommand{\exampleautorefname}{Example}
 
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}[section]
-\newcommand{\definitionautorefname}{Definition}
+%\theoremstyle{definition}
+%\newtheorem{definition}{Definition}[section]
+%\newcommand{\definitionautorefname}{Definition}
 
 \theoremstyle{definition}
 \newtheorem{lemma}{Lemma}[section]
 \newcommand{\lemmaautorefname}{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{XdefX}{Definition}[section]
+\newenvironment{definition}{
+    \renewcommand{\qedsymbol}{$\square$}
+    \pushQED{\qed}
+    \begin{XdefX}
+}{\popQED\end{XdefX}}
+\newcommand{\XdefXautorefname}{Definition}
 
 % Thick centred dot
 \newcommand{\tcdot}{\raisebox{.4ex}{\tiny $\bullet$}}
@@ -73,11 +85,19 @@
 \newcommand{\imply}{\rightarrow} % implication
 \newcommand{\biimply}{\leftrightarrow} % bi-implication
 
-\newcommand{\conf}{\chi}
-\newcommand{\inte}{\iota}
+\newcommand{\conf}{\rho}
+\newcommand{\iconf}{\rho^{\ast}}
+\newcommand{\inte}{\mu}
 \newcommand{\pf}{\alpha}
+\newcommand{\pfn}{\beta}
+\newcommand{\upf}{\pf_u}
 \renewcommand{\phi}{\varphi} % phi
 \newcommand{\Tau}{\mathcal{T}}
+
+\newcommand{\CON}{  c = \left( s, U, I, N \right)}
+\newcommand{\DR}{   DR= \left( R, \longrightarrow, A, L, M, F, P \right)}
+\newcommand{\PUT}{  put \left( r, \conf, T, D \right)}
+\newcommand{\QRY}{  query \left( r, \inte \right)}
 
 %Code for DTU logo as background picture.
 \usepackage{eso-pic}

@@ -5,7 +5,7 @@ When thinking of a what a data repository is, words like ``tuple spaces'', ``dat
 % Paragraph:
 % - Make the connection to transition systems
 In the literature (Baier and Katoen, 2008)\cite{baier2008principles} use a Transition System (TS) without terminal states as a reactive system, for which they are checking LTL formulae against. Where they use the following definition of a TS:
-\begin{definition}[Transitions System (TS)\cite{baier2008principles}]\label{def:ts}
+\begin{definition}[Transition System (TS)\cite{baier2008principles}]\label{def:ts}
 A \emph{transition system} $TS$ is a tuple $\left(S, Act, \longrightarrow, I, AP, L \right)$, where
 \begin{itemize}
   \item $S$ is a set of data states
@@ -21,15 +21,11 @@ Some of the key elements of a TS are that it contains states and transitions bet
 % Paragraph:
 % - States == Data resources
 % - Transition == Dependency
-To model a data repository as a TS, one could consider data resources or data points from the data repository as states in the TS and dependencies between data resources would be the transitions between states. A dependency between two data resources can be seen as if a data resource $r_1$ was created by using information from another data resource $r_2$ or is dependant $r_2$ in another way, then a dependency exists from $r_1$ to $r_2$. For instance in a data repository of scientific papers, i.e. each paper is a data resources, would this paper have a dependency to each of the papers it references, as the information from those references were used when composing this paper. It could also be that a dependency existed to a resource that defines rules about the format of the paper. This is what is referred to as a policy and will be introduced in a later section.
-\begin{definition}[Dependency Between Data Resources]
-Let $r_i$ and $r_j$ be data resources in the same data repository $DR$, and let $r_i$ be derived fully or partially from $r_j$, i.e. information from $r_j$ was used when creating $r_i$. Then there exists a dependency from $r_i$ to $r_j$.
-\end{definition}
-Modelling dependencies in this way inherently describes the past and if you were to follow the dependencies from a data resource they would paint a picture of how that resource got to be.
+To model a data repository as a TS, one could consider data resources from the data repository as states in the TS and dependencies between data resources would be the transitions between states. Let $r_i$ and $r_j$ be data resources in the same data repository $DR$, and let $r_i$ be derived fully or partially from $r_j$, i.e. information from $r_j$ was used when creating $r_i$. Then there exists a dependency from $r_i$ to $r_j$. As an example consider a data repository of scientific papers, i.e. each paper is a data resource. Say the this paper is the data resource $r$ in the data repository. Then $r$ would have a dependency to each of the papers it references, as the information from those references were used when composing this paper. It could also be that a dependency exists to a resource that defines rules about the format of the paper. This is what is referred to as a policy and will be introduced in a later section. Modelling dependencies in this way inherently describes the past and if you were to follow the dependencies from a data resource they would paint a picture of how that resource got to be. This is contrary to transitions in a TS, which describes something about the future.
 
 % Paragraph: 
 % - No terminal states
-As mentioned (Baier and Katoen, 2008) uses a TS without any terminal states to ensure that all paths and traces in the TS are infinite. The reason being that it simplifies the model-checking algorithm. However it is possible to define the semantics of LTL for finite paths~\cite{baier2008principles}. To achieve infinite paths and thereby traces in the data repository modelled as a TS, all data resources without any dependencies to other data resources have a dependency to itself, a so called \emph{self-dependency}. A self-dependency implies that the data resource was created independently from any other data resource. By introducing self-dependencies ensure that no terminal state can ever be reached or will even exists in the data repository and as a result all paths in the data repository are infinite.
+As mentioned (Baier and Katoen, 2008)\cite{baier2008principles} use a TS without any terminal states to ensure that all paths and traces in the TS are infinite. To achieve infinite paths and thereby traces in the data repository modelled as a TS, all data resources without any dependencies to other data resources have a dependency to itself, a so called \emph{self-dependency}. A self-dependency implies that the data resource was created independently from any other data resource. By introducing self-dependencies ensure that no terminal state can ever be reached or will even exists in the data repository and as a result all paths in the data repository are infinite.
 
 % Paragraph:
 % - Actions
@@ -38,149 +34,61 @@ In a TS transitions can have an action as a label, which describes what action w
 % Paragraph: 
 % - AP
 % - Labelling function
-The set of atomic propositions and labelling function for a TS can be considered the same for a data repository. The labelling function will relate a set of atomic propositions to any data resource in the data repository, where the set only contains the atomic propositions that are satisfied by the data resource. More intuitively the labelling function describes the values of the data resource.
+In a TS is a set of atomic propositions related to a state by the labelling function. On the other hand in a data repository is it desired to have attribute names and values being mapped to a data resource. Attribute names are simply names that map to a value that is given by a literal.
 
 % Paragraph: 
 % - Initial states
-According to Definition~\ref{def:ts} should the initial states of a TS be explicitly defined. However it is not desirable, that the data repository itself should restrict, which data resources can and can not be read. Therefore should the every data resource be considered as an initial state.
+According to Definition~\ref{def:ts} should the initial states of a TS be explicitly defined. However it is not desirable, that the data repository itself should restrict, which data resources can and can not be read. Therefore is there no need for the data repository to keep track of the initial data resources.
+
+Whereas a TS does not store the LTL formulae themselves, it is desired to keep track of the policy formulae, which are introduced in \autoref{sec:grammar}, as well as being able to map a data resource to a policy formula.
 
 % Summarise the definition of a data repository
-Given all of the above descriptions of how the parts of a TS could be modelled in a data repository, it is possible to define a data repository as follows:
+Given all of the above descriptions it is possible to define a data repository as follows:
 \begin{definition}[Data Repository (DR)]
-A \emph{data repository} $DR$ is a tuple $\left(R, \longrightarrow', A, L, M \right)$, where
+A \emph{data repository} $DR$ is a tuple $\DR$, where
 \begin{itemize}
   \item $R$ is a set of data resources
   \item $\longrightarrow \subseteq R \times R$ is a dependency relation
-  \item $A$ is a set of attribute names
+  \item $A$ is a finite set of attribute names
   \item $L$ is a set of literals
   \item $M : R \times A \rightarrow L$ is a mapping between data resources and attributes to literals
+  \item $F$ is a set of policy formulae
+  \item $P : R \rightarrow F$ is a mapping between data resources and policy formulae
 \end{itemize}
 \end{definition}
 
 \begin{example}[Data repository]\label{ex:data-repo}
-Let us consider how a data repository of five data resources could look like. \autoref{fig:data-repo} shows how the five data resources could depend on each other. $r_5$ has dependencies to $r_3$ and $r_4$, $r_3$ has a dependency to $r_1$ and $r_4$ has a dependency to $r_2$. $r_1$ and $r_2$ was created completely independently and thus have no dependency to other resources, thus they have a \emph{self-dependency}.
+Let us consider how a data repository $\DR$ with five data resources, that is $R = \left\{ r_1, r_2, r_3, r_4, r_4 \right\}$, could look like. \autoref{fig:data-repo} shows how the five data resources could depend on each other, i.e. how $\longrightarrow$ is defined. The data resource $r_5$ has dependencies to $r_3$ and $r_4$, $r_3$ has a dependency to $r_1$ and $r_4$ has a dependency to $r_2$. The data resources $r_1$ and $r_2$ was created completely independently and thus have no dependency to other resources, thus they have a \emph{self-dependency}.
 \begin{figure}[!ht] 
     \begin{center}
         \input{figs/data-repository-example.tex}
-        \caption{Sample data repository containing five data resources, their dependencies and atomic propositions.}
+        \caption{Sample data repository containing five data resources, their dependencies, attribute names and literals.}
         \label{fig:data-repo}
     \end{center}
 \end{figure}
-The set of atomic propositions is defined as $AP = \left\{ a_1, a_2, a_3, a_4, a_4 \right\}$ and from \autoref{fig:data-repo} it can be seen what data resource has been labelled with what atomic propositions. That is $L(r_3) = \left\{ a_1, a_3 \right\}$.
+The set of attribute names $A$ and the set of literals $L$ are defined as follows
+\begin{align*}
+    A &= \left\{ a_1, a_2, a_3, a_4, a_4 \right\} \\
+    L &= \left\{ l_1, l_2, l_3, l_4, l_4 \right\}
+\end{align*}
+From \autoref{fig:data-repo} the mapping of a data resource and an attribute name to a literal can be seen, e.g. $M(r_1, a_1) = l_1$. As $M$ is a total function the omitted attribute names for each data resource implies that the corresponding literal is false, e.g. $M(r_1, a_2) = false$. Note the set of policy formulae $F$ and the mapping from data resources to policy formulae $P$ has been omitted in this example as it will be introduced in \autoref{sec:policies}.
 \end{example}
 
-% Insert Transition System stuff here
-
-\begin{lemma}[Transformation from DR to TS]\label{lemma:dr-to-ts}
-Let $DR=\left(R, \longrightarrow', A, L, M \right)$ and $TS=\left(S, Act, \longrightarrow, I, AP, L \right)$, then $DR$ can be transformed into a $TS$ with respect to a data resource $r \in R$ and a policy formula $\pf$. Let this transformation be denoted $DR \xrightarrow{r,\pf} TS$. We start by transforming $\pf$ into a corresponding LTL $\phi$ following \autoref{lemma:pf-to-ltl}, thus $\pf \xrightarrow{} \left(\phi, \tau\right)$ where $\phi$ over $AP_\phi$. The transformation of DR is then as follows:
+\subsection{Context}
+A context is introduced, where its main purpose of the context is to populate values that can be used in resolving policy formulae that follow the grammar in \autoref{sec:grammar}. The context is defined as follows:
+\begin{definition}[Context]
+A \emph{context} $c$ is a tuple $\CON$, where
 \begin{itemize}
-  \item $S = R$
-  \item $Act = \varnothing$
-  \item $\longrightarrow = \longrightarrow'$
-  \item $I = \{r\}$
-  \item $AP = AP_\phi$
+    \item $o$ is a $user$ literal corresponding to the current subject
+    \item $U$ is a set of $usr$ literal
+    \item $I$ is a set of $str$ literal
+    \item $N : I \rightarrow U$ is a mapping between user identities and user literals
 \end{itemize}
-Lastly the labelling function $L: R \rightarrow 2^{AP}$ is defined by the following. Given a resource $r$ then for each $ap \in AP$:
-\begin{itemize}
-    \item If $M(r, ap)$ is a boolean literal $b$ and $b = true$, then $ap \in L(r)$
-    \item If $r \models \tau(ap)$, then $ap \in L(r)$
-    \item Otherwise $ap \not\in L(r)$
-\end{itemize}
-\end{lemma}
-
-% Definition of labelling function:
-% Traverse every m of M:
-
-\input{sections/grammar.tex}
-\input{sections/policies.tex}
-
-\subsection{Operations}
-In the following will the allowed operations on the data repository be introduced
-% Content:
-% - User has to be defined in context before any operations can be performed
-\subsubsection{Context}
-Before considering the operations that can be performed on the data repository, it is necessary to consider the context in which the operations operate. The context is not part of the operations as such but having it configured properly is a prerequisite for performing the operations. The main purpose of the context is to populate values that can be used in resolving LTL formulae following the grammar introduced in \autoref{sec:grammar}. The primary value of concern is that a user is set, i.e. the name of the user/person performing the operations. The implementation abstracts away from authenticating the user, i.e. ensuring that the user is who it claims to be. However it should be trivial to see that an authentication system could be placed as a layer on top of the data repository.
+\end{definition}
+The primary value of concern is that the current subject $s$ is set, i.e. the name of the user/person performing the operations. The implementation abstracts away from authenticating the user, i.e. ensuring that the user is who it claims to be. However it should be trivial to see that an authentication system could be placed as a layer on top of the data repository.
 
 In theory there is no limit to what the context could be extended with, e.g. the system that the operation is performed from, the name of the system etc.
 
-% Content:
-% - Author is automatically added as an attribute to the state
-% Flow of PUT operation:
-% - Check if user is set
-% - Check if resource already exists
-% - Add author attribute to the resource
-% - Replace user predicate
-% - Replace self reference
-% - Concatenate policies
-% - Check that policies are satisfied
-% \item if $put(r, \conf, D)$ then $I' = \{ r \}$
-\subsubsection{Put}\label{sec:put}
-A data repository $DR=\left(R, \longrightarrow, I, AP, L \right)$ is initially empty but can be populated with data resources by utilising the \emph{put} operation. The put operation works directly on the data repository and does not as such needs a reference for it.
-\begin{definition}[Put operation]
-A operation $put(r, \conf, D)$ where
-\begin{itemize}
-  \item $r$ is a data resource
-  \item $\conf$ is a confidentiality policy
-  \item $D$ is a set of dependencies of $r$
-\end{itemize}
-\end{definition}
-To consider a put operation successful means that the data resource $r$ is added to the set of data resources $R$ of $DR$. A prerequisite for carrying out a put operation is that the user is set in the context, furthermore that $r$ does not already exists in $R$. Next is a new attribute automatically generated for the data resource $r$. The new attribute is \emph{author} and its value is set to the user that is defined in the context, i.e. the author of the data resource is the user who performs the put operation. This ensures that every data resource in the repository has an author and it was shown in \autoref{ex:conf-reader-author} how it could be used. Now the confidentiality policy $\conf$ needs to be considered. Should it contain any \emph{self} predicates they need to be replaced with an internal unique reference to the data resource itself. The only thing left to handle before the data resource can be added to the data repository is to verify that the confidentiality policy is satisfied. More formally with the confidentiality policy $$\phi = \conf \land \bigwedge\limits_{d \in D} \conf_d$$ and a data repository copy $DR' = \left(R', \longrightarrow', I', AP', L' \right)$ of the data repository $DR$ where $R' = R \cup r$ and $I' = \left\{ r \right\}$:
-\begin{itemize}
-    \item if $DR' \models \phi$, then $R = R'$
-    \item if $DR' \not\models \phi$, then $R = R$
-\end{itemize}
-More informally it should be checked that the confidentiality policy $\conf$ of the data resource $r$ and all the inherited confidentiality policies from the dependencies of $r$ holds under the data repository $DR$. That is with the assumption that $r$ is added to the set of resources and $r$ is considered an initial state. If the confidentiality polices hold under the data repository the data resource is added to the set of resources and the operation can be considered complete.
-
-% Explain why confidentiality is checked here
-The main reason why confidentiality policies are checked for satisfiability once they are being placed in the data repository, is to avoid that a user can not query the data resource that it just put and to avoid having data resources in the repository that is infeasible to query. Let us consider the two cases more specifically with some examples.
-
-\begin{example}[Unable to query self-placed resource]
-Consider that the user \emph{John} had placed a data resource $r$ in a data repository $DR$ with the corresponding confidentiality policy $\conf = reader() == user("Jane")$. Even though John made the data resource himself, he will never be able to satisfy $\conf$ when querying for $r$, thus making it infeasible for him to read it again.
-\end{example}
-
-\begin{example}[Infeasible to query resource]
-Consider a data repository $DR$ containing two data resources $r_1$ and $r_2$, where $r_2$ has a dependency to $r_1$ and thus inherit the confidentiality policy $\conf_1$ that is associated to $r_1$. Say $\conf_1 = \phi$ where $\phi$ is some policy formula and $r_2$ has the confidentiality policy $\conf_2 = \lnot \phi$ associated to it. When querying for $r_2$ will both $\conf_1$ and $\conf_2$ have to be satisfied, i.e. $\phi \land \lnot \phi$. The two policies clearly contradicts each other and can never be satisfied, thus making it infeasible to query $r_2$ and any data resources that has a dependency to $r_2$.
-\end{example}
-
-% Content:
-% - Confidentiality polices are checked every time (not efficient)
-% Flow of QUERY operation:
-% - Check if user is set
-% - Check if resource exists
-% - Replace user predicate
-% - Replace self reference
-% - Check that integrity policies are satisfied
-% - Check that confidentiality policies are satisfied
-% \item if $query(r, \inte)$ then $I' = \{ r \}$
-\subsubsection{Query}\label{sec:query}
-Once data has been put in the data repository it might be interesting to query some of the resources again later on. To allow for this has the \emph{query} operation been introduced:
-\begin{definition}[Query operation]
-A operation $query(r, \inte)$ where
-\begin{itemize}
-  \item $r$ is a data resource
-  \item $\inte$ is an integrity policy
-\end{itemize}
-\end{definition}
-As with the put operation is an explicit reference for the data repository $DR$, not needed as it is performed directly on the data repository. For a query operation to be carried out successfully a few things needs to be resolved and satisfied. A query operation is considered successful if the the requested data resource is returned from the data repository. A prerequisite for carrying out a query operation is that the user is set in the context, just like for the put operation, and that the data resource does exists in the data repository. Now both the integrity and confidentiality policies need to be considered. For the integrity policy $\inte$ this means that if it contains any \emph{self} predicates they need to be replaced with the internal unique reference to the data resource $r$, i.e. the data resource that is attempted to be queried. Once that is complete is should be checked that:
-\begin{align*}
-    DR \models \inte \text{, where $r$ is considered as initial state}
-\end{align*}
-The only thing left to handle before the data resource $r$ can be returned to the user, is to check if the confidentiality policy $\conf$ of $r$ and the inherited confidentiality policies of $r$'s dependencies are satisfied under the data repository $DR$ where $r$ is considered as the initial state. More formally with the confidentiality policy $$\phi = \conf \land \bigwedge\limits_{d \in D} \conf_d$$:
-
-\begin{itemize}
-    \item if $DR' \models \conf$, then $r$ is returned
-    \item if $DR' \not\models \conf$, then $\varnothing$ is returned
-\end{itemize}
-
-Regardless of if a query operation was carried out successfully or not, does not modify the data repository in any way. Thus a query operation will return the queried data resource but it will remain in the data repository. Consider the following example:
-
-\begin{example}
-Having a data repository $DR$ shown in \autoref{fig:query}
-\begin{figure}[!ht]
-    \begin{center}
-        \input{figs/query-example.tex}
-        \caption{Data repository $DR$ containing three data resources $r_1, r_2, r_3$.}
-        \label{fig:query}
-    \end{center}
-\end{figure}
-\end{example}
+\input{sections/grammar.tex}
+\input{sections/policies.tex}
+\input{sections/operations.tex}

@@ -1,4 +1,5 @@
 \section{Methods}
+\label{sec:methods}
 
 \subsection{Parsing LTL formulae}
 % Include abstract syntax tree
@@ -22,7 +23,7 @@ Parsing an LTL formula from a text based representation into an abstract syntax 
 A procedure for the $i'th$ production rule generally parses its left-hand side with the production rule following itself (i.e. the production rules with higher associativity). The procedure then recurses on the right hand side, as long as the operator matching the current production rule can be found in the input stream. Recursing on the right-hand side makes the parsing right-associative. 
 
 \begin{example}
-We consider the AST for the formula $\phi = a \U b \land c$ which can be seen in \autoref{fig:ast-exampl1}. The precedence rule of the until operator ($\U$) is stronger than that of the logical and operator ($\land$), which is explicitly shown in the AST.
+We consider the AST for the formula $\phi \eqdef a \U b \land c$ which can be seen in \autoref{fig:ast-exampl1}. The precedence rule of the until operator ($\U$) is stronger than that of the logical and operator ($\land$), which is explicitly shown in the AST.
 \begin{figure}[!ht]
     \centering
     \begin{forest}
@@ -35,13 +36,13 @@ for tree={draw, minimum size=5mm, anchor=center}
     [$c$]
 ]
 \end{forest}
-    \caption{The AST for $\phi = a \U b \land c$}
+    \caption{The AST for $\phi \eqdef a \U b \land c$}
     \label{fig:ast-exampl1}
 \end{figure}
 \end{example}
 
 \begin{example}
-We consider the AST for the formula $\phi = a \U b \U c$ which can be seen in \autoref{fig:ast-exampl2}. Because the until operator ($\U$) is right-associative, which is conveyed by the AST, the subformula $b \U c$ is evaluated first, and therefore not the root of the tree.
+We consider the AST for the formula $\phi \eqdef a \U b \U c$ which can be seen in \autoref{fig:ast-exampl2}. Because the until operator ($\U$) is right-associative, which is conveyed by the AST, the subformula $b \U c$ is evaluated first, and therefore not the root of the tree.
 
 \begin{figure}[!ht]
     \centering
@@ -55,7 +56,7 @@ We consider the AST for the formula $\phi = a \U b \U c$ which can be seen in \a
             ]
         ]
     \end{forest}
-    \caption{The AST for $\phi = a \U b \U c$}
+    \caption{The AST for $\phi \eqdef a \U b \U c$}
     \label{fig:ast-exampl2}
 \end{figure}
 \end{example}
@@ -118,7 +119,7 @@ Because we have shown the elementary set properties to hold for a path $\pi$ wit
 \end{proof}
 
 \begin{example}
-We now consider the decision tree algorithm for finding elementary sets for $\phi = a \cup (a \land b)$. In figure~\ref{fig:elemset} the fully explored decision tree can be seen. Nodes which have been marked as inconsistent are displayed as a cross.
+We now consider the decision tree algorithm for finding elementary sets for $\phi \eqdef a \cup (a \land b)$. In figure~\ref{fig:elemset} the fully explored decision tree can be seen. Nodes which have been marked as inconsistent are displayed as a cross.
 \begin{figure}[!ht]
 \begin{center}
     \input{figs/elem-set-example.tex}
@@ -164,7 +165,7 @@ With the transition function $\delta : Q \times 2^{AP} \imply 2^Q$:
 \end{definition}
 
 \begin{example}
-We consider the confidentiality policy from Example~\ref{ex:mutual-exclusion} with the formula $\conf = \G(\lnot a \lor \lnot b)$ and the construction of the GNBA $\mathcal{G}_\phi$. First the formula is negated and then transformed.
+We consider the confidentiality policy from Example~\ref{ex:mutual-exclusion} with the formula $\conf \eqdef \G(\lnot a \lor \lnot b)$ and the construction of the GNBA $\mathcal{G}_\phi$. First the formula is negated and then transformed.
 \begin{equation*}
     \phi = \lnot \conf = \lnot \G(\lnot a \lor \lnot b) \quad\Longleftrightarrow\quad true \U (a \land b)
 \end{equation*}
@@ -183,7 +184,7 @@ The GNBA can now be constructed following \autoref{def:ltl-to-gnba} which can be
 \begin{figure}[!ht]
     \centering
     \input{docs/report/figs/gnba-example.tex}
-    \caption{The GNBA for $\phi=true\U (a \land b)$}
+    \caption{The GNBA for $\phi \eqdef true\U (a \land b)$}
     \label{fig:gnba-example1}
 \end{figure}
 \end{example}
