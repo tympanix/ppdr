@@ -1,4 +1,4 @@
-\section{Future Work}
+\section{Future Work}\label{sec:future-work}
 \subsection{Minimise NBA}
 \cite{fritz2002state, hopcroft1971n, kan2016partial}
 \subsubsection{Reachability in NBA}
@@ -11,3 +11,4 @@ Depth-first search
 
 \subsection{Caching of formula results}
 % We could cache the results of formulae that does not depend on the context
+The current implementation does not perform any caching of whether policies holds under a data repository with respect to some given data resource, that is for both confidentiality and integrity policies. As the dependency tree, i.e. the tree that forms when following the dependencies of data resource to their roots, will only grow bigger as more resources are added the data repository, the time to determine if the inherited confidentiality policy holds will only increase. The time complexity of the automata-based model-checking algorithm that was described in \autoref{sec:methods} is linear in the size of the transition system, i.e. the transformed data repository, and exponential in the length of the LTL formulae, i.e. the transformed PF~\cite{baier2008principles}. The most significant part here is the exponential growth in the length of the formulae. To overcome this caching could be introduced. As parts of the grammar in \autoref{tab:pf-grammar-user} have a strong relation to the data resource that is associated with the formulae as well as the subject, it will be necessary to store the results of the formulae for a given data resource as well as subject of the context. Using the proper data structure for this will allow constant time of the model-checking, the next time the same formula, resource and subject is met 

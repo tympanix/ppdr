@@ -1,11 +1,11 @@
-\section{Data Repository}
+\section{Data Repository}\label{sec:data-repository}
 % How is the data repository modelled.
 When thinking of a what a data repository is, words like ``tuple spaces'', ``data bases'' or even ``comma separated files'' might spring to mind. However to utilise LTL formulae to specify properties about the data in the repository and verify if the properties are satisfied, it is necessary to carefully consider what data repository abstraction to use. 
 
 % Paragraph:
 % - Make the connection to transition systems
 In the literature (Baier and Katoen, 2008)\cite{baier2008principles} use a Transition System (TS) without terminal states as a reactive system, for which they are checking LTL formulae against. Where they use the following definition of a TS:
-\begin{definition}[Transition System (TS)\cite{baier2008principles}]\label{def:ts}
+\begin{definition}[Transition System (TS){\cite[p.~20, def.~2.1]{baier2008principles}}]\label{def:ts}
 A \emph{transition system} $TS$ is a tuple $\left(S, Act, \longrightarrow, I, AP, L \right)$, where
 \begin{itemize}
   \item $S$ is a set of data states

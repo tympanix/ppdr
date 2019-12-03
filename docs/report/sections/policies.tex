@@ -7,12 +7,12 @@
 % - White and black lists of who can use your data can be achieved by author = "username" and author = !"username" respectively
 \subsection{Policies}\label{sec:policies}
 The grammar of policy formulae has been introduced in \autoref{sec:grammar} for which we can express properties of paths in a data repository. Checking policy formulae for satisfiability in a data repository is performed using a well-known approach of transforming the formula to a Büchi automaton and perceiving the data repository as a transition system. We perform the transformation from a $DR$ to a $TS$ with the following definition:
-\begin{definition}[Transformation from DR to TS]\label{lemma:dr-to-ts}
+\begin{definition}[Transformation from DR to TS]\label{def:dr-to-ts}
 Given a data repository $\DR$ and a transition system $TS=\left(S, Act, \longrightarrow', I', AP, L \right)$, then $DR$ can be transformed into a $TS$ with respect to a data resource $r \in R$ and a policy formula $\pf$. Let this transformation be denoted by
 \begin{align*}
     TS = [DR]_{r,\pf}    
 \end{align*}
-Initially $\pf$ is transformed into a corresponding LTL formula $\phi$ following \autoref{lemma:pf-to-ltl}, thus $\pf \xrightarrow{} \left(\phi, \tau\right)$ where $\phi$ over $AP_\phi$ is the set of all atomic proposition appearing in $\phi$. The transformation of DR to TS is then as follows:
+Initially $\pf$ is transformed into a corresponding LTL formula $\phi$ following \autoref{def:pf-to-ltl}, thus $\pf \xrightarrow{} \left(\phi, \tau\right)$ where $\phi$ over $AP_\phi$ is the set of all atomic proposition appearing in $\phi$. The transformation of DR to TS is then as follows:
 \begin{itemize}
   \item $S = \{ r' \in R \mid r \longrightarrow^\ast r' \}$
   \item $Act = \varnothing$
@@ -25,7 +25,7 @@ Initially $\pf$ is transformed into a corresponding LTL formula $\phi$ following
 
 A policy formulae is said to hold under a data repository $DR$ and a data resource $r \in R$ given the following definition:
 \begin{definition}[Satisfaction of policy formulae]
-Given a data repository $\DR$, a data resource $r \in R$, a context of execution $\CON$ and a policy formula $\pf$, transform $DR$ with respect to $r$ and $\pf$ (i.e. $TS = [DR]_{r,\pf}$) using \autoref{lemma:dr-to-ts} yielding transition system $TS$ and LTL formula $\phi$ over AP. Then $TS \models \phi$, if $Traces(TS) \subseteq Words(\phi)$. For readability we say that:
+Given a data repository $\DR$, a data resource $r \in R$, a context of execution $\CON$ and a policy formula $\pf$, transform $DR$ with respect to $r$ and $\pf$ (i.e. $TS = [DR]_{r,\pf}$) using \autoref{def:dr-to-ts} yielding transition system $TS$ and LTL formula $\phi$ over AP. Then $TS \models \phi$, if $Traces(TS) \subseteq Words(\phi)$. For readability we say that:
 \begin{equation*}
     DR \models_{c,r} \pf
 \end{equation*}

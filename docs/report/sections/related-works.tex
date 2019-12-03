@@ -1,9 +1,11 @@
 \section{Related Works}
 The problem this paper addresses requires that a property formula is verified against a transition system. Multiple approaches can be used to check if a transition system satisfy the properties, when the properties are defined by LTL formulae.
 
-Two solutions has been implemented by \cite{jpsember} and \cite{serejke}. The solutions verify whether a LTL formula holds under a transition system or not by transforming the negation of the formulae themselves and the model of the system, which is described as a Kripke model, to equivalent Büchi automatons. The product of the two automatons is then created and checked if it accepts infinite strings.
+A popular and widely used implementation of a model checking system is the Spin verification tool \cite{spin}, which is used to verify multi-threaded software. Spin solves related problems of model checking which are presented in this paper, in particular satisfiability of properties expressed as LTL formulae. Another honourable mention is the UPPAAL verification system \cite{uppaal} for modelling of real-time system. UPPAAL works with networks of timed automata and implements a model checking algorithm for a formal language closely inspired by LTL.
 
+Furthermore two solutions has been implemented by \cite{jpsember} and \cite{serejke}. The solutions verify whether a LTL formula holds under a transition system or not by transforming the negation of the formulae themselves and the model of the system, which is described as a Kripke model, to equivalent Büchi automatons. The product of the two automatons is then created and checked if it accepts infinite strings.
 
-% SPIN
+Although the topic of LTL model checking has been visited by researchers and computer scientists on many occasions, exemplified by the mentions above, we have found no related works which combines LTL as a formal language for verifying integrity and confidentiality policies in a graph-based data repository. Similar works, as presented in this paper, has therefore, by the knowledge of the authors, not been published before.
 
-% UPPAAL
+% https://findit.dtu.dk/en/catalog/2465575738
+% https://findit.dtu.dk/en/catalog/2348956930

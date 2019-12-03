@@ -1,4 +1,4 @@
-\section{Preliminaries}
+\section{Preliminaries}\label{sec:preliminaries}
 
 \subsection{Temporal Logic}
 Temporal Logics (TL) are a convenient way to specify and verify properties of the infinite behaviour of reactive systems. TL extend either propositional or predicate logic with modalities. These modalities are said to be \emph{time-abstract}, as they allow one to specify the order of which state labels occur during a system execution. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
@@ -19,7 +19,7 @@ The time in TL can be either \emph{linear} or \emph{branching}, where in the lin
 % Introduce LTL
 As mentioned is LTL a temporal logic that is based on a linear-time perspective and can be used to specify properties of paths. These property specifications are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of a LTL formula $\phi$ is described by the grammar:
 \input{tables/ltl-grammar.tex}
-where $a \in AP$ and $AP$ is a set of atomic propositions. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly are the temporal operators \emph{eventually} and \emph{always} omitted as they can be derived from the \emph{until} operator using the following rules:
+where $a \in AP$ and $AP$ is a set of atomic propositions. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly are the temporal operators \emph{eventually} and \emph{always} omitted as they can be derived from the \emph{until} operator using the following rules~\cite[p.~232]{baier2008principles}:
 \begin{align}
     &\F \phi = true \U \phi \label{eq:eventually} \\
     &\G \phi = \lnot \F \lnot \phi \label{eq:always}
@@ -31,15 +31,15 @@ It will become apparent later, why the remaining propositional and temporal oper
 In the given grammar is the operator precedence that unary operators bind stronger than binary ones. \emph{Until} (binary) binds stronger than the binary operators from propositional logic ($\land$, $\lor$ and $\to$). Furthermore is the \emph{until} operator right-associative, e.g. $\phi_1 \U \phi_2 \U \phi_3 \equiv \phi_1 \U \left(\phi_2 \U \phi_3\right)$~\cite{baier2008principles}.
 
 % Mention length of formulae
-The length of an LTL formula $\phi$ is denoted by $| \phi |$ and is determined by the number of operators in $\phi$, being both propositional and temporal operators. For instance, let $\phi= true$ or $\phi= a$ then $| \phi | = 0$. Let $\phi= true \U \left( a \land \X b \right)$ then $| \phi | = 3$.
+The length of an LTL formula $\phi$ is denoted by $| \phi |$ and is determined by the number of operators in $\phi$, being both propositional and temporal operators~\cite{baier2008principles}. For instance, let $\phi= true$ or $\phi= a$ then $| \phi | = 0$. Let $\phi= true \U \left( a \land \X b \right)$ then $| \phi | = 3$.
 
 % Cover semantics of the temporal logic operators
 % - Including composite
-LTL formulae are used so specify properties of paths and a path is said to either satisfy an LTL formula or not.  To say whether or not a path satisfy an LTL formulae $\phi$, the formula is defined as a language $Words(\phi)$ which is all infinite words over $2^{AP}$ that satisfies $\phi$. $Words(\phi)$ can be described more formally as
+LTL formulae are used to specify properties of paths and a path is said to either satisfy an LTL formula or not.  To say whether or not a path satisfy an LTL formulae $\phi$, the formula is defined as a language $Words(\phi)$ which is all infinite words over $2^{AP}$ that satisfies $\phi$. $Words(\phi)$ can be described more formally as~\cite[p.~235, def. 5.6]{baier2008principles}
 \begin{align*}
     Words(\phi) = \left\{ \sigma \in \left( 2^{AP} \right)^\omega | \sigma \models \phi \right\}
 \end{align*}
-For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the suffix of $\sigma$ starting at the $j$\textsuperscript{th} symbol is denoted by $\sigma \left[ i \ldots \right] = A_i A_{j+1} A_{j+2} \ldots$. Given the definition of the words that satisfy an LTL formula, the semantics of the satisfaction relation $\models$ for the grammar of an LTL formula and the derived operators $\F$ and $\G$ can be listed:
+For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the suffix of $\sigma$ starting at the $j$\textsuperscript{th} symbol is denoted by $\sigma \left[ i \ldots \right] = A_i A_{j+1} A_{j+2} \ldots$. Given the definition of the words that satisfy an LTL formula, the semantics of the satisfaction relation $\models$ for the grammar of an LTL formula and the derived operators $\F$ and $\G$ can be listed~\cite{baier2008principles}:
 \begin{align}
     \sigma &\models true                && \label{eq:sem-true}\\
     \sigma &\models a                   &\text{iff }& a \in A_0 \\
@@ -59,14 +59,14 @@ As the grammar of an LTL formula might suggest, it is possible to create composi
     &\F\G\phi \quad \text{``eventually always'' or ``eventually forever''}
 \end{align*}
 
-The informal semantics of $\G\F\phi$ is that it will hold under a word if and only if every suffix of the word contains a symbol for which $\phi$ holds under. Furthermore will $\F\G\phi$ hold under a word if and only if there exists a suffix for which $\phi$ holds under every suffix of the suffix. More formally it can be written as
+The informal semantics of $\G\F\phi$ is that it will hold under a word if and only if every suffix of the word contains a symbol for which $\phi$ holds under. Furthermore will $\F\G\phi$ hold under a word if and only if there exists a suffix for which $\phi$ holds under every suffix of the suffix. More formally it can be written as~\cite{baier2008principles}
 \begin{align*}
     \sigma &\models \G\F \phi &\text{iff }& \forall i \geq 0.\enskip \exists j \geq i.\enskip \sigma\left[j\ldots\right] \models \phi \\
     \sigma &\models \F\G \phi &\text{iff }& \exists i \geq 0.\enskip \forall j \geq i.\enskip \sigma\left[j\ldots\right] \models \phi
 \end{align*}
 
 \subsection{Closure of $\phi$}
-The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi$ of $\phi$ and their negation $\lnot \psi$ together with the formula itself and its negation. For example
+The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi$ of $\phi$ and their negation $\lnot \psi$ together with the formula itself and its negation~\cite[p.~276, def. 5.34]{baier2008principles}. For example
 \begin{align*}
     \phi &= true \U \left( a \land \X b \right) \\
     closure(\phi) &= \left\{ \phi, \lnot \phi, a \land \X b, \lnot \left( a \land \X b \right), \X b, \lnot \left( \X b \right), a, \lnot a, b, \lnot b, true \right\}
@@ -77,20 +77,20 @@ The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi
 \label{sec:elemesets}
 A set $B \subseteq closure(\phi)$ is said to be \emph{elementary} if it satisfies the following properties.
 
-The first set of properties guarantee that the set $B$ is \emph{consistent} with respect to propositional logic. That is for all conjunctions $\phi_1 \land \phi_2 \in closure(\phi)$ and subformulae $\psi \in closure(\phi)$ the following properties should be satisfied:
+The first set of properties guarantee that the set $B$ is \emph{consistent} with respect to propositional logic. That is for all conjunctions $\phi_1 \land \phi_2 \in closure(\phi)$ and subformulae $\psi \in closure(\phi)$ the following properties should be satisfied~\cite{baier2008principles}:
 \begin{align}
     \phi_1 \land \phi_2 \in B &\Leftrightarrow \phi_1 \in B \text{ and } \phi_2 \in B \label{eq:elem1.1} \\
     \psi \in B &\imply \lnot \psi \notin B \label{eq:elem1.2} \\
     true \in closure(\phi) &\imply true \in B \label{eq:elem1.3}
 \end{align}
 
-The second set of properties guarantee that the set $B$ is \emph{locally consistent} with respect to the temporal operator \emph{until}. That is for all $\phi_1 \U \phi_2 \in closure(\phi)$ the following properties should be satisfied:
+The second set of properties guarantee that the set $B$ is \emph{locally consistent} with respect to the temporal operator \emph{until}. That is for all $\phi_1 \U \phi_2 \in closure(\phi)$ the following properties should be satisfied~\cite{baier2008principles}:
 \begin{align}
     \phi_2 \in B &\imply \phi_1 \U \phi_2 \in B \label{eq:elem2.1} \\
     \phi_1 \U \phi_2 \in B \text{ and } \phi_2 \notin B &\imply \phi_1 \in B \label{eq:elem2.2}
 \end{align}
 
-The third and final set of properties is the ensure that the set $B$ is \emph{maximal}, i.e. all subformula $\psi$ of $closure(\phi)$ should either be in $B$ or not be in $B$. That is for all $\psi \in closure(\phi)$ the following property should be satisfied:
+The third and final set of properties is the ensure that the set $B$ is \emph{maximal}, i.e. all subformula $\psi$ of $closure(\phi)$ should either be in $B$ or not be in $B$. That is for all $\psi \in closure(\phi)$ the following property should be satisfied~\cite{baier2008principles}:
 \begin{align}
     \psi \notin B \imply \lnot \psi \in B \label{eq:elem3.1}
 \end{align}

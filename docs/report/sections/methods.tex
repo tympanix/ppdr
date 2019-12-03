@@ -139,7 +139,7 @@ After exploration of the decision tree one can find the elementary sets of $\phi
 
 \subsubsection{GNBA}
 The method of model checking the confidentiality and integrity policies involves constructing a generalised non-deterministic Büchi automaton (GNBA) over the formula $\lnot\phi$ (read; the negation of phi). The GNBA functions as a monitor for the transition system for which its accepting states serves to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for a LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalised as follows:
-\begin{definition}[Construction of GNBA from LTL\cite{baier2008principles}]
+\begin{definition}[Construction of GNBA from LTL{\cite[p.~274, def.~5.33]{baier2008principles}}]
 \label{def:ltl-to-gnba}
 Given an LTL formula $\phi$ over AP a GNBA $\mathcal{G}=(Q,2^{AP},\delta,Q_0,\mathcal{F})$ can be constructed in space and time $\mathcal{O}(2^{|\phi|})$ as follows:
 \begin{itemize}
@@ -192,7 +192,7 @@ The GNBA can now be constructed following \autoref{def:ltl-to-gnba} which can be
 \subsubsection{NBA}
 The non-deterministic Büchi automaton (NBA) is derived from the GNBA by a well-defined transformation. The equivalent NBA accepts the same language as the GNBA but simplifies the model checking algorithm. We say that for a GNBA $\mathcal{G}$ there exists a NBA $\mathcal{A}$ such that $\mathcal{L}_\omega(\mathcal{G})=\mathcal{L}_\omega(\mathcal{A})$. The transformation for $\mathcal{G}=(Q,\Sigma,\delta,Q_0,\mathcal{F})$ and $\mathcal{F}=\{F_1,\ldots,F_k\}$ is constructed by creating $k$ copies of the GNBA. Then, for the $i$th copy, the acceptance states are connected to the equivalent states in the $(i+1)$th copy. Because a run can only move from the $i$th copy to the next through an acceptance state $q \in F_i$, the construction ensures that an accepting run visits an acceptance state in each copy infinitely often. The construction of the NBA $\mathcal{A}=(Q',\Sigma',\delta',Q_0',F')$ is formalised as follows:
 
-\begin{definition}[Construction of NBA from GNBA]
+\begin{definition}[Construction of NBA from GNBA{\cite[p.~278, thm.~5.37]{baier2008principles}}]
 Given an GNBA an equivalent NBA can be constructed in time and space $\mathcal{O}(|\mathcal{G}|\cdot|\mathcal{F}|)$. Let $\mathcal{G}=(Q,\Sigma,\delta,Q_0,\mathcal{F})$ with acceptance states $\mathcal{F}=\{F_1,\ldots,F_k\}$ then the NBA $\mathcal{A}=(Q',\Sigma',\delta',Q_0',F')$ can be constructed as:
 \begin{itemize}
     \item $Q'=Q\times \{1,\ldots,k\}$,
