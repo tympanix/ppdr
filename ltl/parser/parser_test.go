@@ -27,7 +27,7 @@ func TestParser(t *testing.T) {
 		"<>[]a":    ltl.Eventually{ltl.Always{ltl.AP{"a"}}},
 
 		// Literals
-		"\"ok\"": ltl.LitString{"ok"},
+		//"false":  ltl.LitBool{false},
 
 		// Negations
 		"!Oa":        ltl.Not{ltl.Next{ltl.AP{"a"}}},
@@ -50,8 +50,8 @@ func TestParser(t *testing.T) {
 		"a and b or c -> d":         ltl.Impl{ltl.Or{ltl.And{ltl.AP{"a"}, ltl.AP{"b"}}, ltl.AP{"c"}}, ltl.AP{"d"}},
 		"[]<> crit1 and []<> crit2": ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"crit1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"crit2"}}}},
 		"<> green and <> red":       ltl.And{ltl.Eventually{ltl.AP{"green"}}, ltl.Eventually{ltl.AP{"red"}}},
-		"a -> b = c":                ltl.Equals{ltl.Impl{ltl.AP{"a"}, ltl.AP{"b"}}, ltl.AP{"c"}},
-		"[]a = b":                   ltl.Equals{ltl.Always{ltl.AP{"a"}}, ltl.AP{"b"}},
+		"a -> b = c":                ltl.Impl{ltl.AP{"a"}, ltl.Equals{ltl.AP{"b"}, ltl.AP{"c"}}},
+		"[]a = b":                   ltl.Always{ltl.Equals{ltl.AP{"a"}, ltl.AP{"b"}}},
 	}
 
 	var i int
