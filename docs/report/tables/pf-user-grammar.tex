@@ -4,14 +4,14 @@
     \begin{array}{rcll}
         \pf_u   & ::=   & true              & \text{(true predicate)} \\
                 & |     & \pfn              & \text{(extension)} \\
-                & |     & \pf_1 \land \pf_2 & \text{(conjunction)} \\
-                & |     & \pf_1 \lor \pf_2  & \text{(disjunction)} \\
-                & |     & \pf_1 \imply \pf_2 & \text{(implication)} \\
-                & |     & \neg \pf          & \text{(negation)} \\
-                & |     & \X \pf            & \text{(next)} \\
-                & |     & \pf_1 \U \pf_2    & \text{(until)} \\
-                & |     & \F \pf            & \text{(eventually)} \\
-                & |     & \G \pf            & \text{(always)} \\
+                & |     & \pf_{u_1} \land \pf_{u_2} & \text{(conjunction)} \\
+                & |     & \pf_{u_1} \lor \pf_{u_2}  & \text{(disjunction)} \\
+                & |     & \pf_{u_1} \imply \pf_{u_2} & \text{(implication)} \\
+                & |     & \neg \pf_u          & \text{(negation)} \\
+                & |     & \X \pf_u            & \text{(next)} \\
+                & |     & \pf_{u_1} \U \pf_{u_2}    & \text{(until)} \\
+                & |     & \F \pf_u            & \text{(eventually)} \\
+                & |     & \G \pf_u            & \text{(always)} \\
         \pfn    & ::=   & e_1 \bowtie e_2   & \text{(expression)} \\
                 & |     & ap                & \text{(atomic proposition)} \\
                 & |     & self              & \text{(self predicate)} \\
