@@ -2,53 +2,53 @@ package ltl
 
 import "fmt"
 
-// Equals is the ltl structure for the logical equals symbol
-type Equals struct {
+// Less is the ltl structure for the logical equals symbol
+type Less struct {
 	LHS, RHS Node
 }
 
 // SameAs returns true if both nodes are equals and has identical sub-trees
-func (e Equals) SameAs(node Node) bool {
-	if e2, ok := node.(Equals); ok {
+func (e Less) SameAs(node Node) bool {
+	if e2, ok := node.(Less); ok {
 		return e.LHS.SameAs(e2.LHS) && e.RHS.SameAs(e2.RHS)
 	}
 	return false
 }
 
 // LHSNode returns the LHS of the equals operator
-func (e Equals) LHSNode() Node {
+func (e Less) LHSNode() Node {
 	return e.LHS
 }
 
 // RHSNode returns the RHS of the equals operator
-func (e Equals) RHSNode() Node {
+func (e Less) RHSNode() Node {
 	return e.RHS
 }
 
-func (e Equals) String() string {
-	return binaryNodeString(e, "=")
+func (e Less) String() string {
+	return binaryNodeString(e, "<")
 }
 
 // Normalize for equals performs nothing
-func (e Equals) Normalize() Node {
+func (e Less) Normalize() Node {
 	return e
 }
 
 // Compile ensures that LHS is an AP and RHS is a literal
-func (e Equals) Compile(m *RefTable) Node {
+func (e Less) Compile(m *RefTable) Node {
 
 	if !e.isValidType(e.LHSNode()) {
-		panic(fmt.Sprintf("equals lhs invalid type : %T", e.LHSNode()))
+		panic(fmt.Sprintf("less lhs invalid type : %T", e.LHSNode()))
 	}
 
 	if !e.isValidType(e.RHSNode()) {
-		panic(fmt.Sprintf("equals rhs invalid type : %T", e.RHSNode()))
+		panic(fmt.Sprintf("less rhs invalid type : %T", e.RHSNode()))
 	}
 
 	return m.NewRef(e)
 }
 
-func (e Equals) isValidType(n Node) bool {
+func (e Less) isValidType(n Node) bool {
 	switch n.(type) {
 	// Base types
 	case AP, Ptr:
@@ -62,12 +62,12 @@ func (e Equals) isValidType(n Node) bool {
 }
 
 // Len returns the length of the equals operator and its children
-func (e Equals) Len() int {
+func (e Less) Len() int {
 	return 1 + e.LHSNode().Len() + e.RHSNode().Len()
 }
 
 // Satisfied returns true if LHS and RHS are equal in type and value
-func (e Equals) Satisfied(r Resolver) bool {
+func (e Less) Satisfied(r Resolver) bool {
 	lhs := e.LHSNode()
 	rhs := e.RHSNode()
 
@@ -83,9 +83,15 @@ func (e Equals) Satisfied(r Resolver) bool {
 		return false
 	}
 
-	return lhs.SameAs(rhs)
+	if e, ok := lhs.(Comparable); ok {
+		if d, err := e.Compare(rhs); err == nil {
+			return d < 0
+		}
+	}
+	return false
 }
 
-func (e Equals) Map(fn MapFunc) Node {
-	return fn(Equals{e.LHSNode().Map(fn), e.RHSNode().Map(fn)})
+// Map maps the grater operator with a function
+func (e Less) Map(fn MapFunc) Node {
+	return fn(Less{e.LHSNode().Map(fn), e.RHSNode().Map(fn)})
 }

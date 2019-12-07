@@ -19,6 +19,19 @@ func (l LitNumber) Normalize() Node {
 	return l
 }
 
+func (l LitNumber) Compare(n Node) (int, error) {
+	if l2, ok := n.(LitNumber); ok {
+		diff := l.Num - l2.Num
+		if diff > 0 {
+			return 1, nil
+		} else if diff < 0 {
+			return -1, nil
+		}
+		return 0, nil
+	}
+	return 0, ErrNotComparable
+}
+
 func (l LitNumber) Map(fn MapFunc) Node {
 	return fn(l)
 }

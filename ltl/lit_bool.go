@@ -19,6 +19,18 @@ func (l LitBool) Normalize() Node {
 	return l
 }
 
+func (l LitBool) Compare(n Node) (int, error) {
+	if l2, ok := n.(LitBool); ok {
+		if l.Bool == l2.Bool {
+			return 0, nil
+		} else if l.Bool == true {
+			return 1, nil
+		}
+		return -1, nil
+	}
+	return 0, ErrNotComparable
+}
+
 func (l LitBool) SameAs(n Node) bool {
 	if l2, ok := n.(LitBool); ok {
 		return l.Bool == l2.Bool

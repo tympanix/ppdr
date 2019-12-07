@@ -536,3 +536,72 @@ func TestRepo_ten(t *testing.T) {
 
 	runTableTest(t, r, tests)
 }
+
+func TestRepo_eleven(t *testing.T) {
+
+	r := NewRepo()
+
+	s0 := NewState(
+		"str1", "bbb",
+		"str2", "aaa",
+		"num1", 7,
+		"num2", 3.1415,
+		"bol1", true,
+		"bol2", false,
+	)
+	s1 := NewState()
+
+	s1.addDependency(s0)
+
+	str1 := ltl.AP{"str1"}
+	str2 := ltl.AP{"str2"}
+	num1 := ltl.AP{"num1"}
+	num2 := ltl.AP{"num2"}
+	bol1 := ltl.AP{"bol1"}
+	bol2 := ltl.AP{"bol2"}
+
+	john := NewIdentity("john")
+
+	tests := []exe{
+		exe{user{john}, OK},
+		exe{put{s0}, OK},
+		exe{put{s1}, OK},
+
+		// Compare strings
+		exe{query{s1, ltl.Eventually{ltl.Equals{str1, str2}}}, ERR},
+		exe{query{s1, ltl.Eventually{ltl.NotEqual{str1, str2}}}, OK},
+		exe{query{s1, ltl.Eventually{ltl.Greater{str1, str2}}}, OK},
+		exe{query{s1, ltl.Eventually{ltl.GreaterEqual{str1, str2}}}, OK},
+		exe{query{s1, ltl.Eventually{ltl.GreaterEqual{str1, str1}}}, OK},
+		exe{query{s1, ltl.Eventually{ltl.Less{str1, str2}}}, ERR},
+		exe{query{s1, ltl.Eventually{ltl.LessEqual{str1, str2}}}, ERR},
+		exe{query{s1, ltl.Eventually{ltl.LessEqual{str1, str1}}}, OK},
+
+		// Compare numbers
+		exe{query{s0, ltl.Eventually{ltl.Equals{num1, num2}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.NotEqual{num1, num2}}}, OK},
+		exe{query{s0, ltl.Eventually{ltl.Greater{num1, num2}}}, OK},
+		exe{query{s0, ltl.Eventually{ltl.GreaterEqual{num1, num2}}}, OK},
+		exe{query{s0, ltl.Eventually{ltl.Less{num1, num2}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.LessEqual{num1, num2}}}, ERR},
+
+		// Compare booleans
+		exe{query{s0, ltl.Eventually{ltl.Equals{bol1, bol2}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.NotEqual{bol1, bol2}}}, OK},
+		exe{query{s0, ltl.Eventually{ltl.Greater{bol1, bol2}}}, OK},
+		exe{query{s0, ltl.Eventually{ltl.GreaterEqual{bol1, bol2}}}, OK},
+		exe{query{s0, ltl.Eventually{ltl.Less{bol1, bol2}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.LessEqual{bol1, bol2}}}, ERR},
+
+		// Compare different types
+		exe{query{s0, ltl.Eventually{ltl.Greater{str1, num1}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.Greater{str1, bol1}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.Greater{num1, bol1}}}, ERR},
+
+		exe{query{s0, ltl.Eventually{ltl.NotEqual{str1, num1}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.NotEqual{str1, bol1}}}, ERR},
+		exe{query{s0, ltl.Eventually{ltl.NotEqual{num1, bol1}}}, ERR},
+	}
+
+	runTableTest(t, r, tests)
+}

@@ -27,6 +27,15 @@ func (p Ptr) Compile(m *RefTable) Node {
 	return m.NewRef(p)
 }
 
+func (p Ptr) Compare(n Node) (int, error) {
+	if p2, ok := n.(Ptr); ok {
+		if p.Pointer == p2.Pointer {
+			return 0, nil
+		}
+	}
+	return 0, ErrNotComparable
+}
+
 func (p Ptr) String() string {
 	return fmt.Sprintf("ptr(%v)", p.Attr)
 }

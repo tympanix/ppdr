@@ -1,6 +1,9 @@
 package ltl
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // LitString is a string literal
 type LitString struct {
@@ -17,6 +20,13 @@ func (l LitString) Len() int {
 
 func (l LitString) Normalize() Node {
 	return l
+}
+
+func (l LitString) Compare(n Node) (int, error) {
+	if l2, ok := n.(LitString); ok {
+		return strings.Compare(l.Str, l2.Str), nil
+	}
+	return 0, ErrNotComparable
 }
 
 func (l LitString) Map(fn MapFunc) Node {

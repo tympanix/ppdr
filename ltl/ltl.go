@@ -17,6 +17,9 @@ var ErrNotPropositional = errors.New("not propositional logic")
 // ErrCompile is an error for when compilations has failed
 var ErrCompile = errors.New("compile error")
 
+// ErrNotComparable is an error for when literals can not be compared
+var ErrNotComparable = errors.New("literal not comparable")
+
 // Node is any node of an LTL formula
 type Node interface {
 	SameAs(Node) bool
@@ -38,6 +41,11 @@ type BinaryNode interface {
 type UnaryNode interface {
 	Node
 	ChildNode() Node
+}
+
+// Comparable is used to compare LTL nodes to each other
+type Comparable interface {
+	Compare(Node) (int, error)
 }
 
 // RefTable references other propositional logic
