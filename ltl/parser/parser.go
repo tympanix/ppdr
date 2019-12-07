@@ -124,7 +124,7 @@ func (p *Parser) parseAnd() ltl.Node {
 }
 
 func (p *Parser) parseUntil() ltl.Node {
-	lhs := p.parseExpression()
+	lhs := p.parseAtomic()
 
 	if p.have(token.UNTIL) {
 		return ltl.Until{lhs, p.parseUntil()}
@@ -157,58 +157,43 @@ func (p *Parser) parseExpressionArg() ltl.Node {
 }
 
 func (p *Parser) parseExpression() ltl.Node {
-	if p.seeExpression() {
-		lhs := p.parseExpressionArg()
-		if p.have(token.EQUALS) {
-			return ltl.Equals{lhs, p.parseExpressionArg()}
-		} else if p.have(token.NEQ) {
-			return ltl.NotEqual{lhs, p.parseExpressionArg()}
-		} else if p.have(token.GT) {
-			return ltl.Greater{lhs, p.parseExpressionArg()}
-		} else if p.have(token.GTEQ) {
-			return ltl.GreaterEqual{lhs, p.parseExpressionArg()}
-		} else if p.have(token.LT) {
-			return ltl.Less{lhs, p.parseExpressionArg()}
-		} else if p.have(token.LTEQ) {
-			return ltl.LessEqual{lhs, p.parseExpressionArg()}
-		}
+	lhs := p.parseExpressionArg()
+	if p.have(token.EQUALS) {
+		return ltl.Equals{lhs, p.parseExpressionArg()}
+	} else if p.have(token.NEQ) {
+		return ltl.NotEqual{lhs, p.parseExpressionArg()}
+	} else if p.have(token.GT) {
+		return ltl.Greater{lhs, p.parseExpressionArg()}
+	} else if p.have(token.GTEQ) {
+		return ltl.GreaterEqual{lhs, p.parseExpressionArg()}
+	} else if p.have(token.LT) {
+		return ltl.Less{lhs, p.parseExpressionArg()}
+	} else if p.have(token.LTEQ) {
+		return ltl.LessEqual{lhs, p.parseExpressionArg()}
 	}
-
-	return p.parseAtomic()
+	p.unexpectedToken()
+	return nil
 }
 
 func (p *Parser) parseAtomic() ltl.Node {
 	if p.have(token.ALWAYS) {
-		if p.see(token.LPAR) {
-			return ltl.Always{p.parseParenthesis()}
-		}
 		return ltl.Always{p.parseAtomic()}
 	} else if p.have(token.EVENTUALLY) {
-		if p.see(token.LPAR) {
-			return ltl.Eventually{p.parseParenthesis()}
-		}
 		return ltl.Eventually{p.parseAtomic()}
-	} else if p.have(token.LPAR) {
-		exp := p.parseExpression()
-		p.expect(token.RPAR)
-		return exp
+	} else if p.seeExpression() {
+		return p.parseExpression()
+	} else if p.see(token.LPAR) {
+		return p.parseParenthesis()
 	} else if p.have(token.NOT) {
-		if p.see(token.LPAR) {
-			return ltl.Not{p.parseParenthesis()}
-		}
 		return ltl.Not{p.parseAtomic()}
 	} else if p.have(token.NEXT) {
-		if p.see(token.LPAR) {
-			return ltl.Next{p.parseParenthesis()}
-		}
 		return ltl.Next{p.parseAtomic()}
 	} else if p.have(token.SELF) {
 		return ltl.Self{}
 	} else if p.have(token.TRUE) {
 		return ltl.True{}
 	} else if p.have(token.AP) {
-		s := p.last().String()
-		return ltl.AP{s}
+		return ltl.AP{p.last().String()}
 	}
 	p.unexpectedToken()
 	return nil
