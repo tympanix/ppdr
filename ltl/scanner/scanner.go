@@ -151,6 +151,13 @@ func (s *Scanner) unexpectedToken() {
 	panic(fmt.Sprintf("unknown token: %s\n", s.get()))
 }
 
+func (s *Scanner) expect(r rune) {
+	if !s.see(r) {
+		s.unexpectedToken()
+	}
+	s.discard()
+}
+
 // NextToken retrieves the next token from the scanner
 func (s *Scanner) NextToken() *token.Token {
 	for {
@@ -170,6 +177,20 @@ func (s *Scanner) NextToken() *token.Token {
 			return s.newToken(token.IMPL)
 		} else if s.hasString("true") {
 			return s.newToken(token.TRUE)
+		} else if s.hasString("false") {
+			return s.newToken(token.FALSE)
+		} else if s.hasString("self") {
+			return s.newToken(token.SELF)
+		} else if s.has('>') {
+			if s.has('=') {
+				return s.newToken(token.GTEQ)
+			}
+			return s.newToken(token.GT)
+		} else if s.has('<') {
+			if s.has('=') {
+				return s.newToken(token.LTEQ)
+			}
+			return s.newToken(token.LT)
 		} else if s.has('=') {
 			return s.newToken(token.EQUALS)
 		} else if s.has('O') {
@@ -177,17 +198,27 @@ func (s *Scanner) NextToken() *token.Token {
 		} else if s.has('U') {
 			return s.newToken(token.UNTIL)
 		} else if s.has('!') {
+			if s.has('=') {
+				return s.newToken(token.NEQ)
+			}
 			return s.newToken(token.NOT)
 		} else if s.see('"') {
 			s.discard()
 			for s.hasLetter() || s.hasDigit() {
 				// noop
 			}
-			if !s.see('"') {
-				panic("expected \"")
-			}
-			s.discard()
+			s.expect('"')
 			return s.newToken(token.LITSTRING)
+		} else if s.hasDigit() {
+			for s.hasDigit() {
+				// noop
+			}
+			if s.has('.') {
+				for s.hasDigit() {
+					// noop
+				}
+			}
+			return s.newToken(token.LITNUMBER)
 		} else if s.hasLetter() {
 			for s.hasLetter() || s.hasDigit() {
 				// noop

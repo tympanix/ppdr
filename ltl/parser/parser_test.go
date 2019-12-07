@@ -27,7 +27,23 @@ func TestParser(t *testing.T) {
 		"<>[]a":    ltl.Eventually{ltl.Always{ltl.AP{"a"}}},
 
 		// Literals
-		"\"ok\"": ltl.LitString{"ok"},
+		"false = a":             ltl.Equals{ltl.LitBool{false}, ltl.AP{"a"}},
+		"b = true":              ltl.Equals{ltl.AP{"b"}, ltl.LitBool{true}},
+		"3.1415 = pi":           ltl.Equals{ltl.LitNumber{3.1415}, ltl.AP{"pi"}},
+		"5 = 7":                 ltl.Equals{ltl.LitNumber{5}, ltl.LitNumber{7}},
+		"\"hello\" = \"world\"": ltl.Equals{ltl.LitString{"hello"}, ltl.LitString{"world"}},
+
+		// Expressions
+		"2 = 5":  ltl.Equals{ltl.LitNumber{2}, ltl.LitNumber{5}},
+		"2 != 5": ltl.NotEqual{ltl.LitNumber{2}, ltl.LitNumber{5}},
+		"2 > 5":  ltl.Greater{ltl.LitNumber{2}, ltl.LitNumber{5}},
+		"2 >= 5": ltl.GreaterEqual{ltl.LitNumber{2}, ltl.LitNumber{5}},
+		"2 < 5":  ltl.Less{ltl.LitNumber{2}, ltl.LitNumber{5}},
+		"2 <= 5": ltl.LessEqual{ltl.LitNumber{2}, ltl.LitNumber{5}},
+
+		// Functions
+		"a = reader()":       ltl.Equals{ltl.AP{"a"}, ltl.Reader{}},
+		"a = user(\"john\")": ltl.Equals{ltl.AP{"a"}, ltl.User{"john"}},
 
 		// Negations
 		"!Oa":        ltl.Not{ltl.Next{ltl.AP{"a"}}},
@@ -50,8 +66,9 @@ func TestParser(t *testing.T) {
 		"a and b or c -> d":         ltl.Impl{ltl.Or{ltl.And{ltl.AP{"a"}, ltl.AP{"b"}}, ltl.AP{"c"}}, ltl.AP{"d"}},
 		"[]<> crit1 and []<> crit2": ltl.And{ltl.Always{ltl.Eventually{ltl.AP{"crit1"}}}, ltl.Always{ltl.Eventually{ltl.AP{"crit2"}}}},
 		"<> green and <> red":       ltl.And{ltl.Eventually{ltl.AP{"green"}}, ltl.Eventually{ltl.AP{"red"}}},
-		"a -> b = c":                ltl.Equals{ltl.Impl{ltl.AP{"a"}, ltl.AP{"b"}}, ltl.AP{"c"}},
-		"[]a = b":                   ltl.Equals{ltl.Always{ltl.AP{"a"}}, ltl.AP{"b"}},
+		"a -> b = c":                ltl.Impl{ltl.AP{"a"}, ltl.Equals{ltl.AP{"b"}, ltl.AP{"c"}}},
+		"[]a = b":                   ltl.Always{ltl.Equals{ltl.AP{"a"}, ltl.AP{"b"}}},
+		"[]a = b and c":             ltl.And{ltl.Always{ltl.Equals{ltl.AP{"a"}, ltl.AP{"b"}}}, ltl.AP{"c"}},
 	}
 
 	var i int

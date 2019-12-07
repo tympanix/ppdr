@@ -32,10 +32,16 @@ type Kind int
 const (
 	EOF Kind = iota
 	EQUALS
+	GT
+	GTEQ
+	LT
+	LTEQ
+	NEQ
 	AP
 	EVENTUALLY
 	ALWAYS
 	UNTIL
+	SELF
 	NEXT
 	AND
 	OR
@@ -44,5 +50,7 @@ const (
 	RPAR
 	NOT
 	TRUE
+	FALSE
 	LITSTRING
+	LITNUMBER
 )
