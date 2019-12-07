@@ -65,7 +65,7 @@ func (p *Parser) see(t token.Kind) bool {
 
 func (p *Parser) expect(t token.Kind) *token.Token {
 	if !p.have(t) {
-		panic(fmt.Sprintf("expected token: %s\n", t.String()))
+		panic(fmt.Sprintf("unexpected token: %s, expected: %s\n", p.current().String(), t.String()))
 	}
 	return p.last()
 }
@@ -85,9 +85,13 @@ func (p *Parser) Parse() (exp ltl.Node, err error) {
 			err = errors.New(fmt.Sprint(r))
 		}
 	}()
-	exp = p.parseImpl()
+	exp = p.parseTopLevel()
 	p.expect(token.EOF)
 	return exp, nil
+}
+
+func (p *Parser) parseTopLevel() ltl.Node {
+	return p.parseImpl()
 }
 
 func (p *Parser) parseImpl() ltl.Node {
@@ -238,7 +242,7 @@ func (p *Parser) parseFunction() ltl.Node {
 
 func (p *Parser) seeLiteral() bool {
 	switch p.current().Kind() {
-	case token.LITSTRING, token.LITBOOL, token.LITNUMBER:
+	case token.LITSTRING, token.LITNUMBER, token.FALSE, token.TRUE:
 		return true
 	}
 	return false
@@ -264,7 +268,7 @@ func (p *Parser) parseLiteral() ltl.Node {
 
 func (p *Parser) parseParenthesis() ltl.Node {
 	p.expect(token.LPAR)
-	exp := p.parseExpression()
+	exp := p.parseTopLevel()
 	p.expect(token.RPAR)
 	return exp
 }
