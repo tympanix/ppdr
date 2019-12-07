@@ -1,7 +1,7 @@
 \section{Preliminaries}\label{sec:preliminaries}
 
 \subsection{Temporal Logic}
-Temporal Logics (TL) are a convenient way to specify and verify properties of the infinite behaviour of reactive systems. TL extend either propositional or predicate logic with modalities. These modalities are said to be \emph{time-abstract}, as they allow one to specify the order of which state labels occur during a system execution. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
+Temporal Logics (TL) are a convenient way to specify and verify properties of the infinite behaviour of reactive systems like a transition system. TL extends either propositional or predicate logic with modalities, where the modalities are said to be \emph{time-abstract}, as they allow one to specify the order in which state labels occur during a system execution. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
 \begin{align*}
     &\F \quad \text{``eventually'' (some time in the future)}\\
     &\G \quad \text{``always'' (now and forever in the future)}
@@ -10,16 +10,16 @@ Temporal Logics (TL) are a convenient way to specify and verify properties of th
 
 % - LTL => linear-time perspective
 % - CTL => branching-time perspective
-The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is Linear Temporal Logic (LTL). In the remaining of this paper will the focus be on a LTL that extends propositional logic.
+The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is Linear Temporal Logic (LTL). In the remaining of this paper will the focus be on LTL that extends propositional logic.
 
 % Notes:
 % - Determine if we should talk about fairness
 \subsubsection{Linear Temporal Logic}
 \label{sec:ltl}
 % Introduce LTL
-As mentioned is LTL a temporal logic that is based on a linear-time perspective and can be used to specify properties of paths. These property specifications are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of a LTL formula $\phi$ is described by the grammar:
+As mentioned is LTL a temporal logic, that is based on a linear-time perspective and can be used to specify properties of paths. These property specifications are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of a LTL formula $\phi$ is described by the grammar:
 \input{tables/ltl-grammar.tex}
-where $a \in AP$ and $AP$ is a set of atomic propositions. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly are the temporal operators \emph{eventually} and \emph{always} omitted as they can be derived from the \emph{until} operator using the following rules~\cite[p.~232]{baier2008principles}:
+where $a \in AP$ and $AP$ is a set of atomic propositions. It should be noted that the grammar in \autoref{tab:ltl-grammar} is not in Backus Naur Form (BNF) but is rather an \emph{abstract} syntax~\cite{baier2008principles}. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly the temporal operators \emph{eventually} and \emph{always} are omitted as they can be derived from the \emph{until} operator using the following rules~\cite[p.~232]{baier2008principles}:
 \begin{align}
     &\F \phi = true \U \phi \label{eq:eventually} \\
     &\G \phi = \lnot \F \lnot \phi \label{eq:always}
@@ -28,18 +28,18 @@ It will become apparent later, why the remaining propositional and temporal oper
 
 % Associativity
 % Precedence
-In the given grammar is the operator precedence that unary operators bind stronger than binary ones. \emph{Until} (binary) binds stronger than the binary operators from propositional logic ($\land$, $\lor$ and $\to$). Furthermore is the \emph{until} operator right-associative, e.g. $\phi_1 \U \phi_2 \U \phi_3 \equiv \phi_1 \U \left(\phi_2 \U \phi_3\right)$~\cite{baier2008principles}.
+In the given grammar the operator precedence is that unary operators binds stronger than binary ones. \emph{Until} (binary) binds stronger than the binary operators from propositional logic ($\land$, $\lor$ and $\imply$). Furthermore the \emph{until} operator is right-associative, e.g. $\phi_1 \U \phi_2 \U \phi_3 \equiv \phi_1 \U \left(\phi_2 \U \phi_3\right)$~\cite{baier2008principles}.
 
 % Mention length of formulae
-The length of an LTL formula $\phi$ is denoted by $| \phi |$ and is determined by the number of operators in $\phi$, being both propositional and temporal operators~\cite{baier2008principles}. For instance, let $\phi= true$ or $\phi= a$ then $| \phi | = 0$. Let $\phi= true \U \left( a \land \X b \right)$ then $| \phi | = 3$.
+The length of an LTL formula $\phi$ is denoted by $| \phi |$ and is determined by the number of operators in $\phi$, being both propositional and temporal operators~\cite{baier2008principles}. For instance, let $\phi= true$ or $\phi= a$ then $| \phi | = 0$. Let $\phi= true \U \left( \lnot a \land \X b \right)$ then $| \phi | = 4$.
 
 % Cover semantics of the temporal logic operators
 % - Including composite
-LTL formulae are used to specify properties of paths and a path is said to either satisfy an LTL formula or not.  To say whether or not a path satisfy an LTL formulae $\phi$, the formula is defined as a language $Words(\phi)$ which is all infinite words over $2^{AP}$ that satisfies $\phi$. $Words(\phi)$ can be described more formally as~\cite[p.~235, def. 5.6]{baier2008principles}
+LTL formulae are used to specify properties of paths and a path is said to either satisfy an LTL formula or not. To say whether or not a path satisfy an LTL formulae $\phi$, the formula is defined as a language $Words(\phi)$ which is all infinite words over $2^{AP}$ that satisfies $\phi$. $Words(\phi)$ can be described more formally as~\cite[def. 5.6]{baier2008principles}
 \begin{align*}
-    Words(\phi) = \left\{ \sigma \in \left( 2^{AP} \right)^\omega | \sigma \models \phi \right\}
+    Words(\phi) = \left\{ \sigma \in \left( 2^{AP} \right)^\omega \mid \sigma \models \phi \right\}
 \end{align*}
-For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the suffix of $\sigma$ starting at the $j$\textsuperscript{th} symbol is denoted by $\sigma \left[ i \ldots \right] = A_i A_{j+1} A_{j+2} \ldots$. Given the definition of the words that satisfy an LTL formula, the semantics of the satisfaction relation $\models$ for the grammar of an LTL formula and the derived operators $\F$ and $\G$ can be listed~\cite{baier2008principles}:
+For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the suffix of $\sigma$ starting at the $i$\textsuperscript{th} symbol is denoted by $\sigma \left[ i \ldots \right] = A_i A_{i+1} A_{i+2} \ldots$. Given the definition of the words that satisfy an LTL formula, the semantics of the satisfaction relation $\models$ for the grammar of an LTL formula and the derived operators $\F$ and $\G$ can be listed~\cite{baier2008principles}:
 \begin{align}
     \sigma &\models true                && \label{eq:sem-true}\\
     \sigma &\models a                   &\text{iff }& a \in A_0 \\
@@ -53,25 +53,24 @@ For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the su
 
 More informally the above semantics can be described as follows. True will hold under every word. An atomic proposition $a$ will hold under a word if and only if the first symbol of the words satisfies $a$. A conjunction $\phi_1 \land \phi_2$ will hold under a word if and only if both subformulae $\phi_1$ and $\phi_2$ holds under the word. $\lnot \phi$ will hold under a word if and only if $\phi$ does not hold under the word. $\X\phi$ will hold under a word if and only if $\phi$ holds under the suffix starting at the next symbol of the word. $\phi_1 \U \phi_2$ holds under a word if and only if $\phi_2$ holds under some symbol of the word and $\phi_1$ holds under every symbol of the prefix of the word up until the point where $\phi_2$ holds. $\F \phi$ holds under a word if and only if $\phi$ holds under some suffix of the word. Finally $\G \phi$ holds under a word if and only if $\phi$ holds under every suffix of the word.
 
-As the grammar of an LTL formula might suggest, it is possible to create composite operators like
+As the grammar of LTL formulae might suggest, it is possible to create composite operators like
 \begin{align*}
     &\G\F\phi \quad \text{``always eventually'' or ``infinitely often''}\\
     &\F\G\phi \quad \text{``eventually always'' or ``eventually forever''}
 \end{align*}
-
-The informal semantics of $\G\F\phi$ is that it will hold under a word if and only if every suffix of the word contains a symbol for which $\phi$ holds under. Furthermore will $\F\G\phi$ hold under a word if and only if there exists a suffix for which $\phi$ holds under every suffix of the suffix. More formally it can be written as~\cite{baier2008principles}
+The informal semantics of $\G\F\phi$ is that it will hold under a word if and only if every suffix of the word contains a symbol for which $\phi$ holds under. Furthermore $\F\G\phi$ will hold under a word if and only if there exists a suffix for which $\phi$ holds under every suffix of the suffix. More formally it can be written as~\cite{baier2008principles}
 \begin{align*}
     \sigma &\models \G\F \phi &\text{iff }& \forall i \geq 0.\enskip \exists j \geq i.\enskip \sigma\left[j\ldots\right] \models \phi \\
     \sigma &\models \F\G \phi &\text{iff }& \exists i \geq 0.\enskip \forall j \geq i.\enskip \sigma\left[j\ldots\right] \models \phi
 \end{align*}
 
 \subsection{Closure of $\phi$}
-The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi$ of $\phi$ and their negation $\lnot \psi$ together with the formula itself and its negation~\cite[p.~276, def. 5.34]{baier2008principles}. For example
+The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi$ of $\phi$ and their negation $\lnot \psi$ together with the formula itself and its negation~\cite[def. 5.34]{baier2008principles}. Consider the following example
 \begin{align*}
     \phi &= true \U \left( a \land \X b \right) \\
     closure(\phi) &= \left\{ \phi, \lnot \phi, a \land \X b, \lnot \left( a \land \X b \right), \X b, \lnot \left( \X b \right), a, \lnot a, b, \lnot b, true \right\}
 \end{align*}
-The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi)| \in \mathcal{O}\left(|\phi|\right)$. Reason being that for every subformulae $\psi$ of $\phi$, there is a constant amount of elements added to $closure(\phi)$, i.e. $\psi$ and $\lnot \psi$. Furthermore does every every $\psi$ add at most a constant amount of $true$ or atomic propositions to the $closure(\phi)$, i.e. for $\psi = true \land a$ adds $true$, $a$ and $\lnot a$.
+The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi)| \in \mathcal{O}\left(|\phi|\right)$. Reason being that for every subformulae $\psi$ of $\phi$, there is a constant amount of elements added to $closure(\phi)$, i.e. $\psi$ and $\lnot \psi$. Furthermore every $\psi$ adds at most a constant amount of $true$ or atomic propositions to the $closure(\phi)$, i.e. for $\psi = true \land a$ adds $true$, $a$ and $\lnot a$.
 
 \subsection{Elementary Sets}
 \label{sec:elemesets}
@@ -90,30 +89,30 @@ The second set of properties guarantee that the set $B$ is \emph{locally consist
     \phi_1 \U \phi_2 \in B \text{ and } \phi_2 \notin B &\imply \phi_1 \in B \label{eq:elem2.2}
 \end{align}
 
-The third and final set of properties is the ensure that the set $B$ is \emph{maximal}, i.e. all subformula $\psi$ of $closure(\phi)$ should either be in $B$ or not be in $B$. That is for all $\psi \in closure(\phi)$ the following property should be satisfied~\cite{baier2008principles}:
+The third and final set of properties is that the set $B$ is \emph{maximal}, i.e. all subformula $\psi$ of $closure(\phi)$ should either be in $B$ or not be in $B$. That is for all $\psi \in closure(\phi)$ the following property should be satisfied~\cite{baier2008principles}:
 \begin{align}
     \psi \notin B \imply \lnot \psi \in B \label{eq:elem3.1}
 \end{align}
 
 % Refer back to why grammar only contains what it does
-Given the above properties for determining whether or not a set is elementary, it is possible to justify the limitations in the grammar for LTL formulae. That is to justify why the propositional logic and temporal operators besides from conjunction, negation, next and until were excluded. Starting with the excluded propositional logic operators disjunction ($\lor$), implication ($\to$), biconditional ($\leftrightarrow$) and exclusive disjunction ($\oplus$). Had the grammar allowed for disjunction, implication, biconditional and exclusive disjunction explicitly, would the properties for elementary sets have to consider them explicitly as well. As an example, say the grammar allowed for implication explicitly, then the first set of properties would have to be expanded with
+Given the above properties for determining whether or not a set is elementary, it is possible to justify the limitations in the grammar for LTL formulae. That is to justify why the propositional logic and temporal operators besides from conjunction, negation, next and until were excluded. Starting with the excluded propositional logic operators disjunction ($\lor$), implication ($\to$), biconditional ($\leftrightarrow$) and exclusive disjunction ($\oplus$). Had the grammar allowed for disjunction, implication, biconditional and exclusive disjunction explicitly, the properties for elementary sets would have to consider them explicitly as well. As an example, say the grammar allowed for disjunction explicitly, then the first set of properties would have to be expanded with
 \begin{align*}
     \phi_1 \lor \phi_2 \in B &\Leftrightarrow \phi_1 \in B \text{ or } \phi_2 \in B
 \end{align*}
-As disjunction, implication, biconditional and exclusive disjunction explicitly can be derived from negation and conjunction, can the properties be written more compact and express the same using the three properties (\ref{eq:elem1.1}), (\ref{eq:elem1.2}) and (\ref{eq:elem3.1}). Similarly for temporal operators eventually and always and composite operators, would the properties had to account for those in case the grammar allowed for them explicitly. As an example, say the grammar allowed for eventually explicitly, then the properties would have to be expanded with the following set of properties for all eventually in $closure(\phi)$
+As disjunction, implication, biconditional and exclusive disjunction can be derived from negation and conjunction, can the properties be written more compact and express the same using the three properties (\ref{eq:elem1.1}), (\ref{eq:elem1.2}) and (\ref{eq:elem3.1}). Similarly for temporal operators eventually and always and composite operators, would the properties had to account for those in case the grammar allowed for them explicitly. As an example, say the grammar allowed for eventually explicitly, then the properties would have to be expanded with the following set of properties for all eventually in $closure(\phi)$
 \begin{align*}
     \phi \in B &\imply \F \phi \in B \\
     \F \phi \in B \text{ and } \phi \notin B &\imply true \in B \label{eq:elem2.2}
 \end{align*}
-As eventually, always and composite operators can be derived from until using rule (\ref{eq:eventually}) and (\ref{eq:always}), can the properties be written more compact and property (\ref{eq:elem2.1}) and (\ref{eq:elem2.2}) are sufficient.
+As eventually, always and composite operators can be derived from until using rule (\ref{eq:eventually}) and (\ref{eq:always}), the properties can be written more compact and property (\ref{eq:elem2.1}) and (\ref{eq:elem2.2}) are sufficient.
 
 \begin{example}
-Consider the following LTL formula its closure:
+Consider the following LTL formula and its closure:
 \begin{align*}
     \phi &= a \U \left( a \land b \right) \\
     closure(\phi) &= \left\{ a \U \left( a \land b \right), \lnot \left( a \U \left( a \land b \right) \right), a \land b, \lnot \left( a \land b \right), a, \lnot a, b, \lnot b \right\}
 \end{align*}
-Below are all sets $B \subseteq closure(\phi)$ listed that satisfy property (\ref{eq:elem3.1}). Each set marked whether or not it is elementary. In case a set is not marked as elementary, the property that was violated by the set will be identified. Only maximal subsets are considered as it trivial to see that non-maximal subsets can not be elementary according to property~(\ref{eq:elem3.1}).
+Below are all sets $B \subseteq closure(\phi)$ listed that satisfy property (\ref{eq:elem3.1}). Each set is marked whether or not it is elementary. In case a set is not marked as elementary, the property that was violated by the set will be identified. Only maximal subsets are considered as it is trivial to see that non-maximal subsets can not be elementary according to property~(\ref{eq:elem3.1}).
 \begin{align*}
     B_1    &= \left\{ a,       b,       a\land b,         \phi       \right\} &\text{Elementary} \\
     B_2    &= \left\{ \lnot a, b,       a\land b,         \phi       \right\} &\text{Violates property (\ref{eq:elem1.1})} \\

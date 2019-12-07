@@ -1,4 +1,38 @@
 \section{Discussion}\label{sec:discussion}
-\subsection{Linear Temporal Logic compared to other logics}
-\subsubsection{First-Order Logic (FOL)}
-\subsubsection{Computational Tree Logic (CTL)}
+\subsection{Limitations of Policy Formulae}
+The grammar used to express confidentiality and integrity policies in DR is an extension of LTL which, although the grammar introduces helpful syntactic sugar and equality expressions, is inherently limited by the domain of properties expressible by LTL. If we consider the total set of all properties we can express about paths in a graph, this limitation results in only only subset of of these properties being able to be expressed in LTL and therefore consequently in PF.
+
+\begin{example}[Limitations of PF]
+    \label{ex:limitations-of-pf}
+    This examples shows how PF fails to express some properties of dependencies in DR. Observe the DR shown in figure \ref{fig:pf-limitations} and the following description of a property: ''\emph{The resource must depend on two resources produced independently by Alice and Bob},,. As a probable solution to this query, one might consider the integrity policy below:
+    \begin{equation*}
+        \inte \eqdef \F author = Alice \land \F author = Bob
+    \end{equation*}
+    This integrity policy does verify that the resource depends on resources from Alice and Bob. It however fails the depict the independence relationship of the two resources. Consider \autoref{fig:pf-limitations-counter}. We then observe that:
+    \begin{equation*}
+        DR \lnot \models_{c,r_1} \inte \enskip \text{and} \enskip DR' \models_{c,r_1'} \inte
+    \end{equation*}
+    Following the description of the policy above, we would expect that the policy is satisfied in $DR$ but not in $DR'$. However $\inte$ is satisfied because the path $r_1' \longrightarrow r_2' \longrightarrow r_3'$ in $DR'$ satisfies both $author = Alice$ and $author = Bob$.
+    \begin{figure}[!ht]
+    \begin{minipage}{.6\textwidth}
+        \centering
+        \input{figs/limitations-example.tex}
+        \caption{Independence example ($DR$)}
+        \label{fig:pf-limitations}
+    \end{minipage}%
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \input{figs/limitations-counter-example.tex}
+        \caption{Counter example ($DR'$)}
+        \label{fig:pf-limitations-counter}
+    \end{minipage}
+    \end{figure}
+\end{example}
+
+As an alternative to LTL one might consider a formal language for confidentiality and integrity policies based on \emph{First-Order Logic} (FOL). The expressiveness of such a language would allow properties like the one presented in \autoref{ex:limitations-of-pf} to be formalised. Consider the following solution to \autoref{ex:limitations-of-pf} (written ad-hoc):
+\begin{gather*}
+    \exists x.\exists y. x \neq y \enskip\land\enskip author(x) = Alice \enskip\land\enskip author(y) = Bob \enskip\land\enskip\\ r \longrightarrow^\ast x \enskip\land\enskip r \longrightarrow^\ast y \enskip\land\enskip \lnot(x \longrightarrow^\ast y \enskip\lor\enskip y \longrightarrow^\ast x) 
+\end{gather*}
+While the FOL inspired policy formula is certainly expressive is also introduces complexity of model checking algorithms. Because we can formalise any graph problem with FOL, including even NP-complete problems, the complexity of the model checking may be very time consuming. Furthermore one could not guarantee termination of the model checking algorithm since no such system can be implemented for FOL\cite{church1936note}.
+
+\paragraph{Computational Tree Logic (CTL)}

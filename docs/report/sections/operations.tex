@@ -1,5 +1,5 @@
 \subsection{Operations}
-In the following will the allowed operations on a data repository be introduced. The data repository supports two operations, \emph{put} which places a data resource in the repository and thus modifies it, and \emph{query} which retrieves a data resource from the repository but does not removes it and thus query does not modify the repository.
+In the following are the allowed operations on a data repository introduced. The data repository supports two operations, \emph{put} which places a data resource in the repository and thus modifies it, and \emph{query} which retrieves a data resource from the repository but does not remove it and thus query does not modify the repository.
 
 % Content:
 % - Author is automatically added as an attribute to the state
@@ -15,15 +15,15 @@ In the following will the allowed operations on a data repository be introduced.
 \subsubsection{Put}\label{sec:put}
 A data repository $\DR$ is initially empty, meaning that $R, \longrightarrow, M, P = \varnothing$. However it can be populated with data resources by utilising the \emph{put} operation. The put operation works directly on the data repository and does not as such need a reference for it.
 \begin{definition}[Put operation]
-A \emph{put} operation is a tuple $\PUT$ with regards to a data repository $\DR$ where
+A \emph{put} operation is a function $\PUT$ with regards to a data repository $\DR$ where
 \begin{itemize}
   \item $r$ is a data resource
   \item $\conf$ is a confidentiality policy
   \item $T : A \rightarrow L$ maps attribute names to literals
-  \item $D$ is a set of dependencies of resource literals $r'$
+  \item $D$ is a set of dependencies of resource literals
 \end{itemize}
 \end{definition}
-To consider a put operation successful means that the data resource $r$ is added to the set of data resources $R$ of $DR$. A prerequisite for carrying out a put operation is that the user is set in the context of execution, furthermore that $r$ does not already exists in $R$. During the operation are attributes automatically generated for the data resource $r$. The new attributes are \emph{author} and \emph{self}. The value of \emph{author} is the user that is defined in the context, i.e. the author of the data resource is the user who performs the put operation. The value of \emph{self} is the resource itself. This ensures that every data resource in the repository has an author and it was shown in \autoref{ex:conf-reader-author} how it could be used. Furthermore that the \emph{self} predicate from the user policy formula grammar in \autoref{tab:pf-grammar-user} can be resolved. Now the inherited confidentiality policies $\iconf$ needs to be considered, meaning that it should be checked if $\iconf(DR,r)$ is satisfied under the data repository given a context of execution and the data resource $r$. Note that the policy requires to be transformed from the user policy formula grammar to the internal policy formula grammar. If the confidentiality polices hold under the data repository, the data resource is added to the set of resources and the operation can be considered complete.
+To consider a put operation successful means that the data resource $r$ is added to the set of data resources $R$ of $DR$. A prerequisite for carrying out a put operation is that the subject is set in the context of execution and that $r$ does not already exist in $R$. During the operation attributes are automatically generated for the data resource $r$. The new attributes are \emph{author} and \emph{self}. The value of \emph{author} is the subject that is defined in the context, i.e. the author of the data resource is the user who performs the put operation. The value of \emph{self} is the resource itself. This ensures that every data resource in the repository has an author (it was shown in \autoref{ex:conf-reader-author} how it could be used). Furthermore this ensures that the \emph{self} predicate from the user policy formula grammar in \autoref{tab:pf-grammar-user} can be resolved. Now the inherited confidentiality policies $\iconf$ needs to be considered, meaning that it should be checked if $\iconf(DR,r)$ is satisfied under the data repository given a context of execution and the data resource $r$. Note that the policy requires to be transformed from the user policy formula grammar to the internal policy formula grammar. If the confidentiality polices hold under the data repository, the data resource is added to the set of resources and the operation can be considered complete.
 The semantics of a \emph{put} operation is formally described in the following:
 \begin{definition}[Semantics of put operation]
 Let $\DR$ be a data repository and $\CON$ be the context of execution of the operation $\PUT$. The confidentiality policy $\conf$ is defined as a UPF and thus needs to be transformed to a IPF using \autoref{def:pf-user-to-internal}. The mapping between attributes names and literals $T$ of put is extended with: 
@@ -49,18 +49,18 @@ The operation of \emph{put} is well-defined if $r$ did not exist in the data rep
     \item $r \not\in R$
     \item $DR' \models_{c,r} \iconf(DR',r)$
 \end{itemize}
-Assume $DR$ is acyclic, then $DR'$ is also acyclic, since $r \notin R$ and $D \subseteq R$. Furthermore $r$ can only depend on resources already contained in $DR$. Therefore $\iconf(DR,r)$ is well-defined.
+Assume $DR$ is acyclic (apart from self-dependencies), then $DR'$ is also acyclic, since $r \notin R$ and $D \subseteq R$, as$r$ can only depend on resources already contained in $DR$. Therefore $\iconf(DR,r)$ is well-defined.
 \end{definition}
 
 % Explain why confidentiality is checked here
 The main reason why confidentiality policies are checked for satisfiability once they are being placed in the data repository, is to avoid that a user can not query the data resource that it just put and to avoid having data resources in the repository that is infeasible to query. Let us consider the two cases more specifically with some examples.
 
 \begin{example}[Unable to query self-placed resource]
-Consider that the user \emph{John} had placed a data resource $r$ in a data repository $DR$ with the corresponding confidentiality policy $\conf \eqdef reader() = user("Jane")$. Even though John made the data resource himself, he will never be able to satisfy $\conf$ when querying for $r$, thus making it infeasible for him to read it again.
+Consider that the user \emph{John} had placed a data resource $r$ in a data repository $DR$ with the corresponding confidentiality policy $\conf \eqdef reader() = user(Jane)$. Even though John made the data resource himself, he will never be able to satisfy $\conf$ when querying for $r$, thus making it infeasible for him to read it again.
 \end{example}
 
 \begin{example}[Infeasible to query resource]
-Consider a data repository $DR$ containing two data resources $r_1$ and $r_2$, where $r_2$ has a dependency to $r_1$ and thus inherit the confidentiality policy $\conf_1$ that is associated to $r_1$. Say $\conf_1 \eqdef \phi$ where $\phi$ is some policy formula and $r_2$ has the confidentiality policy $\conf_2 \eqdef \lnot \phi$ associated to it. When querying for $r_2$ will both $\conf_1$ and $\conf_2$ have to be satisfied, i.e. $\iconf(DR,r_2) = \phi \land \lnot \phi$. The two policies clearly contradicts each other and can never be satisfied, thus making it infeasible to query $r_2$ and any data resources that has a dependency to $r_2$.
+Consider a data repository $DR$ containing two data resources $r_1$ and $r_2$, where $r_2$ has a dependency to $r_1$ and thus inherit the confidentiality policy $\conf_1$ that is associated to $r_1$. Say $\conf_1 \eqdef \upf$ where $\upf$ is some policy formula and $r_2$ has the confidentiality policy $\conf_2 \eqdef \lnot \upf$ associated to it. When querying for $r_2$ will both $\conf_1$ and $\conf_2$ have to be satisfied, i.e. $\iconf(DR,r_2) = \upf \land \lnot \upf$. The two policies clearly contradicts each other and can never be satisfied, thus making it infeasible to query $r_2$ and any data resources that has a dependency to $r_2$.
 \end{example}
 
 % Content:
@@ -76,17 +76,17 @@ Consider a data repository $DR$ containing two data resources $r_1$ and $r_2$, w
 \subsubsection{Query}\label{sec:query}
 Once data has been put in the data repository it might be interesting to query some of the resources again later on. To allow for this the \emph{query} operation has been introduced:
 \begin{definition}[Query operation]
-A \emph{query} operation is a tuple $\QRY$ with regards to a data repository $\DR$ where
+A \emph{query} operation is a function $\QRY$ with regards to a data repository $\DR$ where
 \begin{itemize}
   \item $r$ is a data resource
   \item $\inte$ is an integrity policy
 \end{itemize}
 \end{definition}
-As with the put operation is an explicit reference for the data repository $DR$, not needed as it is performed directly on the data repository. For a query operation to be carried out successfully a few things needs to be resolved and satisfied. A query operation is considered successful if the the requested data resource is returned from the data repository. A prerequisite for carrying out a query operation is that the user is set in the context, just like for the put operation, and that the data resource does exists in the data repository. Now both the integrity and confidentiality policies need to be considered. This means that they have to be transformed from the user policy formula grammar to corresponding formulae following the internal policy formula grammar. Once that is done it can be checked if the integrity policy and the inherited confidentiality policy of the data resource $\iconf(DR,r)$ are satisfied under the data repository $DR$ given a context of execution $c$ and a data resource $r$. If that is the case the data resource is returned to the user.
+As with the put operation an explicit reference for the data repository $DR$ is not needed as it is performed directly on the data repository. For a query operation to be carried out successfully a few things need to be resolved and satisfied. A query operation is considered successful if the requested data resource is returned from the data repository. A prerequisite for carrying out a query operation is that the subject is set in the context, just like for the put operation, and that the data resource exists in the data repository. Now both the integrity and confidentiality policies need to be satisfied. This means that they have to be transformed from the user policy formula grammar to corresponding formulae following the internal policy formula grammar. Once that is done it can be checked if the integrity policy and the inherited confidentiality policy of the data resource $\iconf(DR,r)$ are satisfied under the data repository $DR$ given a context of execution $c$ and a data resource $r$. If that is the case the data resource is returned to the user.
 The semantics of a \emph{query} operation is formally described in the following:
 \begin{definition}[Semantics of query operation]
 Let $\DR$ be a data repository and $\CON$ be the context of execution of the operation $\QRY$. The integrity policy $\inte$ is defined as a UPF and thus needs to be transformed to a IPF using \autoref{def:pf-user-to-internal}.
-The \emph{query} is well-defined if $r$ did exist in the data repository before the operation, and both the inherited confidentiality policy and integrity policy are satisfied:
+The \emph{query} is well-defined if $r$ exists in the data repository prior to the operation, and both the inherited confidentiality policy and integrity policy are satisfied:
 \begin{itemize}
     \item $r \in R$
     \item $DR \models_{c,r} \iconf(DR, r)$
@@ -94,15 +94,4 @@ The \emph{query} is well-defined if $r$ did exist in the data repository before 
 \end{itemize}
 \end{definition}
 
-Regardless of whether a query operation was carried out successfully or not, it does not modify the data repository in any way. Thus a query operation will return the queried data resource but it will remain in the data repository. Consider the following example:
-
-\begin{example}
-Having a data repository $DR$ shown in \autoref{fig:query}
-\begin{figure}[!ht]
-    \begin{center}
-        \input{figs/query-example.tex}
-        \caption{Data repository $DR$ containing three data resources $r_1, r_2, r_3$.}
-        \label{fig:query}
-    \end{center}
-\end{figure}
-\end{example}
+Regardless of whether a query operation was carried out successfully or not, it does not modify the data repository in any way. Thus a query operation will return the queried data resource but it will remain in the data repository. 

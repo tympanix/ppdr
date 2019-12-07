@@ -1,11 +1,11 @@
 \section{Data Repository}\label{sec:data-repository}
 % How is the data repository modelled.
-When thinking of a what a data repository is, words like ``tuple spaces'', ``data bases'' or even ``comma separated files'' might spring to mind. However to utilise LTL formulae to specify properties about the data in the repository and verify if the properties are satisfied, it is necessary to carefully consider what data repository abstraction to use. 
+When thinking of what a data repository is, words like ``tuple spaces'', ``data bases'' or even ``comma separated files'' might spring to mind. However to utilise LTL formulae to specify properties about the data in the repository and to verify if the properties are satisfied, it is necessary to carefully consider what data repository abstraction to use. 
 
 % Paragraph:
 % - Make the connection to transition systems
-In the literature (Baier and Katoen, 2008)\cite{baier2008principles} use a Transition System (TS) without terminal states as a reactive system, for which they are checking LTL formulae against. Where they use the following definition of a TS:
-\begin{definition}[Transition System (TS){\cite[p.~20, def.~2.1]{baier2008principles}}]\label{def:ts}
+In the literature (Baier and Katoen, 2008)\cite{baier2008principles} use a Transition System (TS) without terminal states as a reactive system, for which they are checking LTL formulae against. The following definition of a TS is used:
+\begin{definition}[Transition System (TS){\cite[def.~2.1]{baier2008principles}}]\label{def:ts}
 A \emph{transition system} $TS$ is a tuple $\left(S, Act, \longrightarrow, I, AP, L \right)$, where
 \begin{itemize}
   \item $S$ is a set of data states
@@ -16,34 +16,31 @@ A \emph{transition system} $TS$ is a tuple $\left(S, Act, \longrightarrow, I, AP
   \item $L : S \rightarrow 2^{AP}$ is a labelling function
 \end{itemize}
 \end{definition}
-Some of the key elements of a TS are that it contains states and transitions between the states, furthermore that transitions are labelled with an action. 
+Some of the key elements of a TS are that it contains states, transitions between the states and that transitions are labelled with an action.
 
-% Paragraph:
-% - States == Data resources
-% - Transition == Dependency
-To model a data repository as a TS, one could consider data resources from the data repository as states in the TS and dependencies between data resources would be the transitions between states. Let $r_i$ and $r_j$ be data resources in the same data repository $DR$, and let $r_i$ be derived fully or partially from $r_j$, i.e. information from $r_j$ was used when creating $r_i$. Then there exists a dependency from $r_i$ to $r_j$. As an example consider a data repository of scientific papers, i.e. each paper is a data resource. Say the this paper is the data resource $r$ in the data repository. Then $r$ would have a dependency to each of the papers it references, as the information from those references were used when composing this paper. It could also be that a dependency exists to a resource that defines rules about the format of the paper. This is what is referred to as a policy and will be introduced in a later section. Modelling dependencies in this way inherently describes the past and if you were to follow the dependencies from a data resource they would paint a picture of how that resource got to be. This is contrary to transitions in a TS, which describes something about the future.
+To model a data repository as a TS, one could consider data resources from the data repository as states in the TS and dependencies between data resources as transitions between states. Let $r_i$ and $r_j$ be data resources in the same data repository $DR$, and let $r_i$ be derived fully or partially from $r_j$, i.e. information from $r_j$ was used when creating $r_i$. Then there exists a dependency from $r_i$ to $r_j$. As an example consider a data repository of scientific papers, i.e. each paper is a data resource. Say this paper is the data resource $r$ in the data repository. Then $r$ would have a dependency to each of the papers it references, as the information from those references were used when composing this paper. It could also be that a dependency exists to a resource that defines rules about the format of the paper. This is what is referred to as a policy and will be introduced in a later section. Modelling dependencies in this way inherently describes the past and if you were to follow the dependencies from a data resource they would paint a picture of how that resource got to be. This is contrary to transitions in a TS, which describes something about the future.
 
 % Paragraph: 
 % - No terminal states
-As mentioned (Baier and Katoen, 2008)\cite{baier2008principles} use a TS without any terminal states to ensure that all paths and traces in the TS are infinite. To achieve infinite paths and thereby traces in the data repository modelled as a TS, all data resources without any dependencies to other data resources have a dependency to itself, a so called \emph{self-dependency}. A self-dependency implies that the data resource was created independently from any other data resource. By introducing self-dependencies ensure that no terminal state can ever be reached or will even exists in the data repository and as a result all paths in the data repository are infinite.
+As mentioned (Baier and Katoen, 2008)\cite{baier2008principles} use a TS without any terminal states to ensure that all paths and traces in the TS are infinite. To achieve infinite paths and thereby infinite traces in the data repository modelled as a TS, all data resources without any dependencies to other data resources have a dependency to itself, a so called \emph{self-dependency}. A self-dependency implies that the data resource was created independently from any other data resource. By introducing self-dependencies one ensures that no terminal state can ever be reached or will even exist in the data repository, and as a result all paths in the data repository are infinite.
 
 % Paragraph:
 % - Actions
-In a TS transitions can have an action as a label, which describes what action was taken in order to make that transition from one state to another in the TS. As suggested placing some data resource in the data repository can gives rise to dependencies between resources and thus every dependency is a result of the same action. Therefore adding the same action as label to every dependency is considered redundant and they can be left empty. In other words dependencies between data resources merely specifies the relationship between them.
+In a TS transitions can have an action as a label, which describes what action was taken in order to make that transition from one state to another in the TS. Placing some data resource in the data repository can give rise to dependencies between resources, and thus every dependency is a result of the same action. Therefore adding the same action as label to every dependency is considered redundant and they can be left empty. In other words, dependencies between data resources merely specifies the relationship between them.
 
 % Paragraph: 
 % - AP
 % - Labelling function
-In a TS is a set of atomic propositions related to a state by the labelling function. On the other hand in a data repository is it desired to have attribute names and values being mapped to a data resource. Attribute names are simply names that map to a value that is given by a literal.
+In a TS a set of atomic propositions is related to a state by the labelling function. On the other hand, in a data repository it is desired to have attribute names and values being mapped to a data resource. Attribute names are simply names that map to a value that is given by a literal.
 
 % Paragraph: 
 % - Initial states
-According to Definition~\ref{def:ts} should the initial states of a TS be explicitly defined. However it is not desirable, that the data repository itself should restrict, which data resources can and can not be read. Therefore is there no need for the data repository to keep track of the initial data resources.
+According to \autoref{def:ts} the initial states of a TS should be explicitly defined. However it is not desirable that the data repository itself should restrict, which data resources can and can not be read, i.e. be the initial state in the data repository. Therefore there is no need for the data repository to keep track of the initial data resources.
 
 Whereas a TS does not store the LTL formulae themselves, it is desired to keep track of the policy formulae, which are introduced in \autoref{sec:grammar}, as well as being able to map a data resource to a policy formula.
 
 % Summarise the definition of a data repository
-Given all of the above descriptions it is possible to define a data repository as follows:
+Given all of the above descriptions we define a data repository as follows:
 \begin{definition}[Data Repository (DR)]
 A \emph{data repository} $DR$ is a tuple $\DR$, where
 \begin{itemize}
@@ -51,14 +48,14 @@ A \emph{data repository} $DR$ is a tuple $\DR$, where
   \item $\longrightarrow \subseteq R \times R$ is a dependency relation
   \item $A$ is a finite set of attribute names
   \item $L$ is a set of literals
-  \item $M : R \times A \rightarrow L$ is a mapping between data resources and attributes to literals
+  \item $M : R \times A \rightharpoonup L$ is a partial mapping between data resources and attributes to literals
   \item $F$ is a set of policy formulae
   \item $P : R \rightarrow F$ is a mapping between data resources and policy formulae
 \end{itemize}
 \end{definition}
 
 \begin{example}[Data repository]\label{ex:data-repo}
-Let us consider how a data repository $\DR$ with five data resources, that is $R = \left\{ r_1, r_2, r_3, r_4, r_4 \right\}$, could look like. \autoref{fig:data-repo} shows how the five data resources could depend on each other, i.e. how $\longrightarrow$ is defined. The data resource $r_5$ has dependencies to $r_3$ and $r_4$, $r_3$ has a dependency to $r_1$ and $r_4$ has a dependency to $r_2$. The data resources $r_1$ and $r_2$ was created completely independently and thus have no dependency to other resources, thus they have a \emph{self-dependency}.
+Let us consider how a data repository $\DR$ with five data resources, that is $R = \left\{ r_1, r_2, r_3, r_4, r_4 \right\}$, could look like. \autoref{fig:data-repo} shows how the five data resources could depend on each other, i.e. how $\longrightarrow$ is defined. The data resource $r_5$ has dependencies to $r_3$ and $r_4$, $r_3$ has a dependency to $r_1$ and $r_4$ has a dependency to $r_2$. The data resources $r_1$ and $r_2$ was created completely independently and have no dependency to other resources, thus they have a \emph{self-dependency}.
 \begin{figure}[!ht] 
     \begin{center}
         \input{figs/data-repository-example.tex}
@@ -71,11 +68,11 @@ The set of attribute names $A$ and the set of literals $L$ are defined as follow
     A &= \left\{ a_1, a_2, a_3, a_4, a_4 \right\} \\
     L &= \left\{ l_1, l_2, l_3, l_4, l_4 \right\}
 \end{align*}
-From \autoref{fig:data-repo} the mapping of a data resource and an attribute name to a literal can be seen, e.g. $M(r_1, a_1) = l_1$. As $M$ is a total function the omitted attribute names for each data resource implies that the corresponding literal is false, e.g. $M(r_1, a_2) = false$. Note the set of policy formulae $F$ and the mapping from data resources to policy formulae $P$ has been omitted in this example as it will be introduced in \autoref{sec:policies}.
+From \autoref{fig:data-repo} the mapping of a data resource and an attribute name to a literal can be seen, e.g. $M(r_1, a_1) = l_1$. Note the set of policy formulae $F$ and the mapping from data resources to policy formulae $P$ has been omitted in this example as it will be introduced later in \autoref{sec:policies}.
 \end{example}
 
 \subsection{Context}
-A context is introduced, where its main purpose of the context is to populate values that can be used in resolving policy formulae that follow the grammar in \autoref{sec:grammar}. The context is defined as follows:
+A context is introduced, where the main purpose of the context is to populate values that can be used in resolving policy formulae that follow the grammar in \autoref{sec:grammar}. The context is defined as follows:
 \begin{definition}[Context]
 A \emph{context} $c$ is a tuple $\CON$, where
 \begin{itemize}
@@ -85,7 +82,7 @@ A \emph{context} $c$ is a tuple $\CON$, where
     \item $N : I \rightarrow U$ is a mapping between user identities and user literals
 \end{itemize}
 \end{definition}
-The primary value of concern is that the current subject $s$ is set, i.e. the name of the user/person performing the operations. The implementation abstracts away from authenticating the user, i.e. ensuring that the user is who it claims to be. However it should be trivial to see that an authentication system could be placed as a layer on top of the data repository.
+The primary value of concern is that the current subject $s$ is set, i.e. the name of the user/person performing the operations. The implementation abstracts away from authenticating the user, i.e. ensuring that the user is who he/she claims to be. However it should be trivial to see that an authentication system could be placed as a layer on top of the data repository.
 
 In theory there is no limit to what the context could be extended with, e.g. the system that the operation is performed from, the name of the system etc.
 

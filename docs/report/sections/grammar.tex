@@ -3,77 +3,85 @@
 % - Only some propositional logic are directly implemented but the remaining can be used indirectly
 % - Explain that the grammar is abstract and somethings are not explicitly mentioned
 \subsection{Grammar}\label{sec:grammar}
-In this section a new type of formula is introduced named Policy Formula ($PF$) which is inspired by LTL (\autoref{sec:ltl}). This type of formula is used to formulate confidentiality and integrity policies in a data repository. We distinct between two types of representations of Policy Formulae, each defined by their own grammar, called User Policy Formulae ($UPF$) and Internal Policy Formulae ($IPF$). This abstraction is necessary to distinguish between the formulae as presented externally to the actor of the system and the internal representation which is exposed to the model checker. The grammar for $UPF$ can be seen in \autoref{tab:pf-grammar-user} and for $IPF$ in \autoref{tab:pf-grammar}.
-
-%In the following is a new type of formula introduced. The new formula type is named Policy Formula (\emph{PF}), which is an extension of the LTL formula previously discussed in \autoref{sec:ltl}. The grammar of PR can be seen in \autoref{tab:pf-grammar}.
+In this section a new type of formula is introduced named Policy Formula ($PF$) which is inspired by LTL, which was introduced in \autoref{sec:ltl}. This type of formula is used to formulate confidentiality and integrity policies in a data repository. We distinct between two types of representations of Policy Formulae, each defined by their own grammar, called User Policy Formulae ($UPF$) and Internal Policy Formulae ($IPF$). This abstraction is necessary to distinguish between the formulae as presented externally to the actor of the system and the internal representation which is exposed to the model checker. The grammar for $UPF$ can be seen in \autoref{tab:pf-grammar-user} and for $IPF$ in \autoref{tab:pf-grammar}.
 
 \input{tables/pf-user-grammar.tex}
 
-%To increase the ease of use of the policy formulae, can they be defined with derived operators. This includes the temporal operators \emph{eventually} and \emph{always}, any composite temporal operators, as well as the propositional logic operators; \emph{disjunction} and \emph{implication}. The grammar in \autoref{tab:pf-grammar} does omit atomic propositions from the LTL grammar and introduces \emph{attribute name} instead. To keep the extension, will the policy formulae still support atomic propositions but it will be represented as an attribute name instead. How this is done specifically will be explained later in this section.
-
-
 \input{tables/pf-internal-grammar.tex}
 
-We note that the resource literal ($rcs$) can be expressed equivalently with a data resource $r \in R$ of a data repository $\DR$. To couple the two types of Policy Formulae we define a translation from $UPF$ to $IPF$. This transformation replaces syntax from the grammar of $UPF$ with equivalent grammar of $IPF$ to produce a more concise representation. These replacements include \emph{syntactic sugar}, i.e. syntax which is exposed to the actor of the system but can be expressed with existing syntax without loss of semantics. Specifically for $IPF$ we introduce user literals ($usr$) and resource literals ($rcs$), which are not allowed in $UPF$ (i.e. manipulation and construction of these literals are only allowed in the internal representation). In $UPF$ one resolves to the $subject()$ function, which resolves the user literal for the current subject performing an action on the data repository.
+To couple the two types of Policy Formulae we define a translation from $UPF$ to $IPF$. This transformation replaces syntax from the grammar of $UPF$ with equivalent grammar of $IPF$ to produce a more concise representation. These replacements include \emph{syntactic sugar}, i.e. syntax which is exposed to the actor of the system but can be expressed with existing syntax without loss of semantics. Specifically for $IPF$ we introduce user literals ($usr$) and resource literals ($rcs$), which are not allowed in $UPF$, i.e. manipulation and construction of these literals are only allowed in the internal representation. It should be noted that the resource literal ($rcs$) can be expressed equivalently with a data resource $r \in R$ of a data repository $\DR$. In $UPF$ one resolves to the $subject()$ function, which resolves the user literal for the current subject performing an action on the data repository.
 
 \begin{definition}[Transformation from UPF to IPF]\label{def:pf-user-to-internal}
-Given a data resource $r$ and an execution context $\CON$ the UPD $\upf$ can be transformed to an IPF $\pf$ defined by the following:
+Given a data resource $r$ and an execution context $\CON$ the UPD $\upf$ can be transformed to an IPF $\pf$, denoted $\pf = [\pf_u]_{c,r}$ defined by the following:
 \begin{itemize}
-    \item $\upf[^{\lnot(\lnot \pf_1 \land \lnot \pf_2)} /_{\pf_1 \lor \pf_1}]$
-    \item $\upf[^{\lnot(\pf_1 \land \lnot \pf_2)} /_{\pf_1 \imply \pf_1}]$ 
-    \item $\upf[^{true \U \pf} /_{\F \pf}]$ \hfill(using \autoref{eq:eventually})
-    \item $\upf[^{\lnot (true \U \lnot \pf)} /_{\G \pf}]$ \hfill(using \autoref{eq:eventually} and \autoref{eq:always})
-    \item $\upf[^{atr = true} /_{ap}]$ where $atr = ap$
-    \item $\upf[^{self = rsc} /_{self}]$ where $rsc = r$
-    \item $\upf[^{N(str)} /_{user(str)}]$ iff $str \in I$ else $\pf_u[^{nil} /_{user(str)}]$
-    \item $\upf[^{usr} /_{subject()}]$ where $usr = s$
+    \item $[true]_{c,r} \eqdef true$
+    \item $[\pf_{u_1} \land \pf_{u_2}]_{c,r} \eqdef [\pf_{u_1}]_{c,r} \land [\pf_{u_2}]_{c,r}$
+    \item $[\pf_{u_1} \lor \pf_{u_2}]_{c,r} \eqdef \lnot(\lnot [\pf_{u_1}]_{c,r} \land \lnot [\pf_{u_1}]_{c,r})$
+    \item $[\pf_{u_1} \imply \pf_{u_2}]_{c,r} \eqdef \lnot([\pf_{u_1}]_{c,r} \land \lnot [\pf_{u_1}]_{c,r})$
+    \item $[\lnot \pf_{u}]_{c,r} \eqdef \lnot [\pf_{u}]_{c,r}$
+    \item $[\X \pf_{u}]_{c,r} \eqdef \X [\pf_{u}]_{c,r}$
+    \item $[\pf_{u_1} \U \pf_{u_2}]_{c,r} \eqdef [\pf_{u_1}]_{c,r} \U [\pf_{u_2}]_{c,r}$
+    \item $[\F \pf_{u}]_{c,r} \eqdef true \U [\pf_{u}]_{c,r}$ \hfill(using \autoref{eq:eventually})
+    \item $[\G \pf_{u}]_{c,r} \eqdef \lnot (true \U \lnot [\pf_{u}]_{c,r})$ \hfill(using \autoref{eq:eventually} and \autoref{eq:always})
+    \item $[e_1 \bowtie e_2]_{c,r} \eqdef [e_1]_{c,r} \bowtie [e_2]_{c,r}$
+    \item $[ap]_{c,r} \eqdef atr = true$ where $atr \eqdef ap$
+    \item $[self]_{c,r} \eqdef self = rsc$ where $rsc = r$
+    \item $[user(str)]_{c,r} \eqdef
+        \begin{cases*}
+            N(str)  & iff $str \in I$ \\
+            nil     & otherwise
+        \end{cases*}$
+    \item $[subject()]_{c,r} \eqdef usr$ where $usr = s$
+    \item $[atr]_{c,r} \eqdef atr$
+    \item $[l]_{c,r} \eqdef l$
 \end{itemize}
-where $\upf[^x / _y]$ denotes the replacement of $y$ by $x$ in $\upf$. For readability we denote this transformation $[\pf_u]_{c,r}$
 \end{definition}
 
-As can be seen from \autoref{def:pf-user-to-internal} the transformation is nothing more that a replacement of syntax using the context to resolve operators which are sensitive to the context. Notice that, contrary to LTL, $IPF$ represents atomic propositions as an equality with the boolean literal $true$. Furthermore the $self$ predicate, which has a special meaning in $UPF$, can in the same manner be represented as an equality in $IPF$. Since every predicate of an $IPF$ is of the form $\pfn$, i.e. expressed using some equality of the form $e_1 \bowtie e_2$, we define the satisfaction relation below for a data resource $r \in R$ belonging to $\DR$:
+As can be seen from \autoref{def:pf-user-to-internal} the transformation is nothing more than a recursive replacement of syntax using the context to resolve operators which are sensitive to the context. Notice that, contrary to LTL, $IPF$ represents atomic propositions as an equality with the boolean literal $true$. Furthermore the $self$ predicate, which has a special meaning in $UPF$, can in the same manner be represented as an equality in $IPF$. Since every predicate of an $IPF$ is of the form $\pfn$, i.e. expressed using some equality of the form $e_1 \bowtie e_2$, the satisfaction relation is defined below for a data resource $r \in R$ belonging to $\DR$:
 \begin{align*}
-    r &\models e_1 \bowtie e_2 &\text{iff }& eval(e_1, r) \bowtie eval(e_2, r)
+    r &\models e_1 \bowtie e_2 &\text{iff }& eval(e_1, r) [\![ \bowtie ]\!] eval(e_2, r)
 \end{align*}
-and the evaluation function, $eval : e \rightarrow l$, which is defined by the following:
+and the evaluation function, $eval : e \times r \rightarrow l$, which is defined by the following:
 \begin{align*}
     eval(e,r) =
     \begin{cases*}
-        M(r, a)   & if $e$ is type $atr$ (attribute name) \\
+        l   & if $e$ is type $atr$ and $\langle r,atr\rangle \mapsto l \in M$ \\
+        nil & if $e$ is type $atr$ and $\langle r,atr\rangle \mapsto l \not\in M$ \\
         e         & otherwise (literal)
     \end{cases*}
 \end{align*}
-By the evaluation of the symbol $e$ we simply distinguish between attribute names, which has be resolved by the mapping $M$ for a given data resource, and literals, which represent themselves. The attribute names are what allows the actor of the system to reason about any single data resource. Since the mapping $M$ maps to literals, the $\bowtie$ operator is limited to this domain. The semantics for $\bowtie$ is defined following the definitions below. Some types, i.e. numbers, booleans and strings, is defined following the partial ordering of their respective elements.
+By the evaluation of the symbol $e$ we simply distinguish between attribute names, which has be resolved by the mapping $M$ for a given data resource, and literals, which represent themselves. Attributes which are not found in $M$ is evaluated as the $nil$ literal. The attribute names are what allows the actor of the system to reason about any single data resource. Since the mapping $M$ maps to literals, the $\bowtie$ operator is limited to this domain. The semantics for $\bowtie$ is defined following the definitions below. Some types, i.e. numbers, booleans and strings, are defined following the partial ordering of their respective elements.
 \begin{align*}
-    e_1 \bowtie e_2 \imply& \enskip false \text{ iff } type(e_1) \neq type(e_2) \\
-    str \bowtie str' \imply& \enskip \text{lexicographical ordering of strings} \\
-    num \bowtie num' \imply& \enskip \text{ordering of numbers in } \mathbb{R} \\
-    bol \bowtie bol' \imply& \enskip \text{ordering of booleans in } \mathbb{B} \\
-    usr \bowtie usr' \imply&
+    e_1 [\![ \bowtie ]\!] e_2 \imply& \enskip false \text{ iff } type(e_1) \neq type(e_2) \\
+    str [\![ \bowtie ]\!] str' \imply& \enskip \text{lexicographical ordering of strings} \\
+    num [\![ \bowtie ]\!] num' \imply& \enskip \text{ordering of numbers in } \mathbb{R} \\
+    bol [\![ \bowtie ]\!] bol' \imply& \enskip \text{ordering of booleans in } \mathbb{B} \\
+    usr [\![ \bowtie ]\!] usr' \imply&
         \begin{cases*}
             usr = usr'      & if $\bowtie$ is type $=$ (equal) \\
             usr \neq usr'   & if $\bowtie$ is type $\neq$ (not equal) \\
             false       & otherwise
         \end{cases*} \\
-    rsc \bowtie rsc' \imply&
+    rsc [\![ \bowtie ]\!] rsc' \imply&
         \begin{cases*}
             rsc = rsc'      & if $\bowtie$ is type $=$ (equal) \\
             rsc \neq rsc'   & if $\bowtie$ is type $\neq$ (not equal) \\
             false       & otherwise
         \end{cases*} \\
-    nil \bowtie nil' \imply& false
+    nil [\![ \bowtie ]\!] nil' \imply& false
 \end{align*}
 
-This concludes the semantic definition of $UPF$ and $IPF$ and how they are evaluated. Lastly we introduce a final transformation from $IPF$ to $LTL$, which allows an $IPF$ formula to be translated and provided to well-known $LTL$ model checking algorithms (we explore these methods in \ref{sec:methods}). The approach is to substitute every occurrence of $e_1 \bowtie e_1$ with a new atomic proposition $ap_{e_1 \bowtie e_2}$, which represents the evaluation of the equality. This means that $ap_{e_1 \bowtie e_2}$ is only satisfied for $r \in R$ given $\DR$ iff $r \models e_1 \bowtie e_2$. The transformation from $IPF$ to $LTL$ formula $\phi$ is provided using the following definition:
-\begin{definition}[Transformation from PF to LTL]\label{def:pf-to-ltl}
-Given a data repository $\DR$, a data resource $r \in R$, a context $\CON$ and a policy formula $\pf$, the transformation into a LTL formula $\phi$ over the set of atomic propositions $AP_\phi$ and transformation table $\tau : AP_\phi \rightarrow \pfn$ is performed by the following. For each subformulae $\psi$ of $\pf$ perform the following substitution:
-\begin{itemize}
-    \item If $\psi$ is $\pfn$, then introduce atomic proposition $ap_\psi$, set $\tau(ap_\psi) = \psi$ and substitute with $ap_\psi$, i.e. $\psi = ap_\psi$
-    \item If $\psi$ is not $\pfn$, then substitute $\psi$ with itself, i.e. $\psi = \psi$
-\end{itemize}
+This concludes the semantic definition of $UPF$ and $IPF$ and how they are evaluated. Lastly we introduce a final transformation from $IPF$ to $LTL$, which allows an $IPF$ formula to be translated and provided to well-known $LTL$ model checking algorithms (these methods algorithms are explored in \autoref{sec:methods}). The approach is to substitute every occurrence of $e_1 \bowtie e_1$ with a new atomic proposition $ap_{e_1 \bowtie e_2}$, which represents the evaluation of the equality. This means that $ap_{e_1 \bowtie e_2}$ is only satisfied for $r \in R$ given $\DR$ iff $r \models e_1 \bowtie e_2$. The transformation from $IPF$ $\pf$ to $LTL$ formula $\phi$ is provided using the following definition:
+\begin{definition}[Transformation from $IPF$ to $LTL$]\label{def:pf-to-ltl}
+%Given a data repository $\DR$, a data resource $r \in R$ and an $IPF$ $\pf$, the transformation into a $LTL$ formula $\phi$ over the set of atomic propositions $AP_\phi$ and transformation table $\tau : AP_\phi \rightarrow e_1 \bowtie e_2$ is performed by the following. For each $e_1 \bowtie e_2$ in $\pf$ introduce the new atomic proposition and map the atomic proposition in $\tau$:
+Given an $IPF$ $\pf$, the transformation into a $LTL$ formula $\phi$ over the set of atomic propositions $AP_\phi$ and transformation table $\tau : AP_\phi \rightarrow e_1 \bowtie e_2$ is performed by the following. For each $e_1 \bowtie e_2$ in $\pf$ introduce the new atomic proposition and map the atomic proposition in $\tau$:
+\begin{align*}
+    AP_\phi = AP_\phi \cup \left\{ap_{e_1 \bowtie e_2}\right\} \enskip \text{and} \enskip 
+    \tau \cup \{ap_{e_1 \bowtie e_2} \mapsto e_1 \bowtie e_2\}
+\end{align*}
+Then perform the following substitution:
+\begin{align*}
+    \pf[^{ap_{e_1 \bowtie e_2}}/_{e_1 \bowtie e_2}]
+\end{align*}
 \end{definition}
 The purpose of $\tau$, as described in \autoref{def:pf-to-ltl}, is to provide a mapping from the newly introduced atomic propositions $ap_{e_1 \bowtie e_2}$ to the substituted subformula $e_1 \bowtie e_2$. One can then satisfy $ap_{e_1 \bowtie e_2}$ iff $r \models \tau(ap_{e_1 \bowtie e_2})$.
-
-% Content:
-% - Write about this if there something relevant
-\subsubsection{Limitations of grammar}
