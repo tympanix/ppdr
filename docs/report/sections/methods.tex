@@ -252,3 +252,4 @@ The problem of determining $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothi
 \end{algorithm}
 In \autoref{alg:ndfs} the algorithm for NDFS can be seen. The algorithm is structured as two recursive DFS algorithms, one for the outer and one for the inner DFS. The outer DFS will search recursively until no more successors can be recursed, then call the NDFS procedure on all acceptance states as the recursion unfolds. By postponing the inner DFS one can limit the number of states recursed by the inner DFS before finding a cycle, as the inner recursion searches until it hits the stack from the outer DFS, in which case a cycle has been found. 
 
+\input{figs/model-checker.tex}
