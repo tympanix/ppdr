@@ -1,0 +1,48 @@
+\begin{center}
+        \begin{tikzpicture}[node distance=2cm]
+        \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+        \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black,fill=white!20]
+        \tikzstyle{arrow} = [thick,->,>=stealth]
+        
+        \node[] (text) at (4,-3.7) {Model checker};
+        
+        % Left side
+        \node[startstop]    (start1)    at (0,0)        {Data repository DR};
+        \node[process]      (dr)        at (0,-2)       {Model of system DR};
+        \node[process]      (drtots)    at (0,-4)       {Transformation from DR to TS};
+        \node[process]      (ts)        at (0,-6)       {Transition system TS};
+        
+        % Right side
+        \node[startstop]    (start2)    at (8,0)        {Negation of property};
+        \node[process]      (ltl)       at (8,-2)       {LTL-formula $\lnot \phi$};
+        \node[process]      (gnba)      at (8,-4)       {Generalised Büchi automaton};
+        \node[process]      (nba)       at (8,-6)       {Büchi automaton $\mathcal{A}_{\lnot \phi}$};
+        
+        % Middle
+        \node[process]      (product)   at (4,-7)       {Product transition system $TS \otimes \mathcal{A}_{\lnot \phi}$};
+        \node[process]      (sat)       at (4,-8.5)      {$TS \otimes \mathcal{A} \models P_{pers(\mathcal{A})}$};
+        \node[startstop]    (yes)       at (0,-10)      {Yes};
+        \node[startstop]    (no)        at (8,-10)      {No};
+       
+        % Left side
+        \draw[arrow] (start1)      --    (dr);
+        \draw[arrow] (dr)          --    (drtots);
+        \draw[arrow] (drtots)      --    (ts);
+        \draw[arrow] (ts)          |-    (product);
+        
+        % Right side
+        \draw[arrow] (start2)      --    (ltl);
+        \draw[arrow] (ltl)         --    (gnba);
+        \draw[arrow] (gnba)        --    (nba);
+        \draw[arrow] (nba.south)   |-    (product.east);
+        
+        % Middle
+        \draw[arrow] (product)     --    (sat);
+        \draw[arrow] (sat.west)    -|    (yes.north);
+        \draw[arrow] (sat.east)    -|    (no.north);
+        
+        \begin{pgfonlayer}{background}
+            \filldraw [draw=black,fill=black!10](text.north -| gnba.east)+(0.2,0.2) rectangle ([shift={(-0.2,-0.2)}] sat.south -| drtots.west);
+        \end{pgfonlayer}
+    \end{tikzpicture}
+\end{center}
