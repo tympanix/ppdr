@@ -1,28 +1,31 @@
 \begin{center}
         \begin{tikzpicture}[node distance=2cm]
+        \tikzstyle{every node}=[font=\small]
         \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
-        \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black,fill=white!20]
+        \tikzstyle{process} = [rectangle, minimum width=4.1cm, minimum height=1cm, text centered, text width=4.1cm, draw=black,fill=white!20]
         \tikzstyle{arrow} = [thick,->,>=stealth]
         
-        \node[] (text) at (4,-3.7) {Model checker};
+        \node[] (text) at (0,3.7) {Model checker};
         
         % Left side
-        \node[startstop]    (start1)    at (0,0)        {Data repository DR};
-        \node[process]      (dr)        at (0,-2)       {Model of system DR};
-        \node[process]      (drtots)    at (0,-4)       {Transformation from DR to TS};
-        \node[process]      (ts)        at (0,-6)       {Transition system TS};
+        \node[startstop]    (start1)    at (-3.9,9.5)       {Data repository DR};
+        \node[process]      (dr)        at (-3.9,6.5)       {Model of system DR};
+        \node[process]      (drtots)    at (-3.9,5)       {Transformation from DR to TS \autoref{def:dr-to-ts}};
+        \node[process]      (ts)        at (-3.9,3.5)       {Transition system TS};
         
         % Right side
-        \node[startstop]    (start2)    at (8,0)        {Negation of property};
-        \node[process]      (ltl)       at (8,-2)       {LTL-formula $\lnot \phi$};
-        \node[process]      (gnba)      at (8,-4)       {Generalised Büchi automaton};
-        \node[process]      (nba)       at (8,-6)       {Büchi automaton $\mathcal{A}_{\lnot \phi}$};
+        \node[startstop]    (start2)    at (3.9,9.5)        {User policy formula $\upf$};
+        \node[process]      (upftoipf)  at (3.9,8)          {Transformation from UPF to IPF $\pf$, \autoref{def:pf-user-to-internal}};
+        \node[process]      (ipftoltl)  at (3.9,6.5)        {Transformation from IPF to LTL $\phi$, \autoref{def:pf-to-ltl}};
+        \node[process]      (ltl)       at (3.9,5)          {Negation of LTL-formula $\lnot \phi$};
+        \node[process]      (gnba)      at (3.9,3.5)        {Generalised Büchi automaton};
+        \node[process]      (nba)       at (3.9,1.5)        {Büchi automaton $\mathcal{A}_{\lnot \phi}$};
         
         % Middle
-        \node[process]      (product)   at (4,-7)       {Product transition system $TS \otimes \mathcal{A}_{\lnot \phi}$};
-        \node[process]      (sat)       at (4,-8.5)      {$TS \otimes \mathcal{A} \models P_{pers(\mathcal{A})}$};
-        \node[startstop]    (yes)       at (0,-10)      {Yes};
-        \node[startstop]    (no)        at (8,-10)      {No};
+        \node[process]      (product)   at (0,0)            {Product transition system $TS \otimes \mathcal{A}_{\lnot \phi}$};
+        \node[process]      (sat)       at (0,-1.5)         {$TS \otimes \mathcal{A} \models P_{pers(\mathcal{A}_{\lnot \phi})}$};
+        \node[startstop]    (yes)       at (-3.9,-3)        {Yes};
+        \node[startstop]    (no)        at (3.9,-3)         {No};
        
         % Left side
         \draw[arrow] (start1)      --    (dr);
@@ -31,7 +34,9 @@
         \draw[arrow] (ts)          |-    (product);
         
         % Right side
-        \draw[arrow] (start2)      --    (ltl);
+        \draw[arrow] (start2)      --    (upftoipf);
+        \draw[arrow] (upftoipf)    --    (ipftoltl);
+        \draw[arrow] (ipftoltl)    --    (ltl);
         \draw[arrow] (ltl)         --    (gnba);
         \draw[arrow] (gnba)        --    (nba);
         \draw[arrow] (nba.south)   |-    (product.east);
@@ -42,7 +47,7 @@
         \draw[arrow] (sat.east)    -|    (no.north);
         
         \begin{pgfonlayer}{background}
-            \filldraw [draw=black,fill=black!10](text.north -| gnba.east)+(0.2,0.2) rectangle ([shift={(-0.2,-0.2)}] sat.south -| drtots.west);
+            \filldraw [draw=black,fill=black!10](ts.north -| gnba.east)+(0.2,0.2) rectangle ([shift={(-0.2,-0.2)}] sat.south -| ts.west);
         \end{pgfonlayer}
     \end{tikzpicture}
 \end{center}

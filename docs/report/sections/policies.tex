@@ -116,12 +116,6 @@ When querying for $r_2$, the left side of the implication is true, so the right 
 When querying for $r_3$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_2$, as it is the direct dependency of $r_3$, $DR$ should satisfy $anonymised \U self$ given $r_2$. The \emph{self} predicate refers to $r_1$ and can not be satisfied in $r_2$, thus the left side of the \emph{until} should be true, which it is as $r_2$ has the atomic proposition $anonymised$. It was shown that $DR \models_{c,r_1} anonymised \U self$ and from this it follows that $DR \models_{c,r_2} anonymised \U self$, which finally means $DR \models_{c,r_3} \conf$.
 \end{example}
 
-\paragraph{Comparison with Alternatives}
-\begin{itemize}
-    \item Role-Based Access Control (RBAC)
-    \item Access-Control List (ACL)
-\end{itemize}
-
 % Content:
 % - What is meant by an integrity policy
 % - Continue running example
@@ -175,7 +169,7 @@ A data repository is naive in the sense that it does not take the trustworthines
 
 The first way is to take the blacklist approach, the same concept as was used in \autoref{ex:conf-reader-constraints}. Assuming that the user performing the query for a data resource does not trust the users \emph{Mallory} and \emph{Monroe} and thus does not trust any data resources they have placed in the data repository. The following integrity policy $\inte_1$ ensures that a data resource is not returned if it was created by those users or have a dependency to a resource that they created.
 \begin{align*}
-    \inte_1 \eqdef \G( author \neq user(Mallory) \lor author \neq user(Monroe)))
+    \inte_1 \eqdef \G( author \neq user(Mallory) \land author \neq user(Monroe)))
 \end{align*}
 
 Another way is the whitelist approach which was also introduced in \autoref{ex:conf-reader-constraints}. Assuming that the user performing the query only consider \emph{Alice} and \emph{Bob} for trustworthy authors of data resources and thus only wants to query a data resource if it and all its dependencies was created by one of them. This can be achieved by using the integrity policy $\inte_2$.

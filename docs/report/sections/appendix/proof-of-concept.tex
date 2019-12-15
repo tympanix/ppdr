@@ -1,3 +1,180 @@
 \section{Proof of Concept}\label{app:poc}
+A practical implementation has been implemented as a proof of concept to support the work of this paper carried out in the Go programming language. The implementation involves a parser/scanner for reading Policy Formulae and parsing them to abstract syntax trees, and model checker based on the approaches of \ref{sec:methods} and an implementation of a Data Repository. The decision-tree based approach of determining elementary sets from \ref{sec:method-elemesets} has also been implemented.
+
+The implementation focuses on correctness and thus leaves performance enhancements to future work. While the implementation has not been formerly proved, it has been evaluated by unit testing covering examples from this paper and other general purpose tests of the model checker, the parser/scanner and the elementary set algorithm.
+
 \subsection{Design}
+We present the design of the system for future reference and completeness. The implementation is divided into packages with non-cyclic dependencies of related functionality. In \autoref{fig:poc-packages} each package can be seen with a description.
+
+\begin{figure}[!ht]
+    \centering
+    \dirtree{%
+    .1 /\DTcomment{Top level package for entire implementation}. 
+    .2 ltl\DTcomment{LTL logical operators and AST}. 
+    .3 parser\DTcomment{Parser for LTL using recursive descent}. 
+    .3 scanner\DTcomment{Scanner for parsing string based LTL}.
+    .4 token\DTcomment{Token primitives for the scanner (enum)}. 
+    .2 systems\DTcomment{Top level package for automata}. 
+    .3 ts\DTcomment{Interface definition for TS}. 
+    .3 ba\DTcomment{Büchi automaton implementation}. 
+    .3 nba\DTcomment{NBA implementation}. 
+    .3 gnba\DTcomment{GNBA implementation}. 
+    .3 product\DTcomment{Implementation of $TS\otimes NBA$}. 
+    .2 repo\DTcomment{DR implementation (interfaces \texttt{ts} package)}.
+    .2 debug\DTcomment{Miscellaneous debugging primitives}.
+    }
+    \caption{Package hierarchy of the implementation}
+    \label{fig:poc-packages}
+\end{figure}
+
+The dependency graph between packages can be seen in \autoref{fig:poc-package-depend}. Each package encloses a well defined set of functions and data types which preserves low coupling of functionality and responsibility. Since the Go programming language is not an object oriented programming language (OOP) the design of the implementation is comprised of compositional data structures rather than inheritance of objects.
+
+\begin{figure}[!ht]
+    \centering
+    \input{figs/package-diagram.tex}
+    \caption{Package diagram}
+    \label{fig:poc-package-depend}
+\end{figure}
+
 \subsection{Implementation}
+The implementation section will cover the most essential types and functions of important packages in the implementation and link them to the theory. We will highlight differences from the implementation and the theory where necessary along the way.
+
+\subsubsection{Package \texttt{ltl}}
+The LTL package includes implementation of the nodes comprised in the abstract syntax tree (AST) of LTL formulae as well as convenience functions for computing subformulae, elementary sets and atomic propositions of formulae. Please mind that Policy Formulae and LTL are using the same underlying types, which means that the implementation does not distinguish between the two. In figure~\ref{fig:poc-ltl-package} an overview of the most important types can be seen.
+\begin{figure}
+    \dirtree{%
+    .1 <<ltl>>\DTcomment{ltl package}. 
+    .2 func Compile(phi Node) (n Node, tau RefTable, err error). 
+    .2 func Satisfied(phi Node, r Resolver) (sat bool, err error). 
+    .2 type AP. 
+    .2 type Node. 
+    .2 type BinaryNode. 
+    .2 type UnaryNode. 
+    .2 type Set. 
+        .3 func Closure(node Node) Set. 
+        .3 func FindAtomicPropositions(node Node) Set. 
+        .3 func FindElementarySets(phi Node) []Set. 
+        .3 func NewSet(nodes ...Node) Set. 
+        .3 func Subformulae(node Node) Set. 
+    .2 type Always. 
+    .2 type And. 
+    .2 type Eventually. 
+    .2 \textit{... (other LTL operators)}. 
+    }
+    \caption{Important construct in the \texttt{ltl} package}
+    \label{fig:poc-ltl-package}
+\end{figure}
+
+Most notably we have the \verb=Set= type, which is a set of the \verb=Node= type (i.e. LTL formulae). Working with the \verb=Set= type is key to this package, since many important functions will return sets of formulae (e.g. \verb=Closure=, \verb=FindAtomicPropostions=, \verb=Subformulae= and \verb=FindElementarySets=). Each LTL formula is made up of nodes (type \verb=Node=) and the following three interfaces:
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{Node} interface}, floatplacement=H]
+type Node interface {
+	SameAs(Node) bool
+	Normalize() Node
+	Compile(*RefTable) Node
+	Map(MapFunc) Node
+	Len() int
+	String() string
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{BinaryNode} interface}, floatplacement=H]
+type BinaryNode interface {
+	Node
+	LHSNode() Node
+	RHSNode() Node
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{UnaryNode} interface}, floatplacement=H]
+type UnaryNode interface {
+	Node
+	ChildNode() Node
+}
+\end{lstlisting}
+With the interfaces above one is able to construct every type of LTL operator. As such the always operator ($\G$) implements the \verb=UnaryNode= interface while the propositional conjunction ($\land$) implements the \verb=BinaryNode= interface.
+
+\subsubsection{Package \texttt{systems}}
+The systems package defines all types of automata used in the implementation as well as an interface definition of transition systems. In \autoref{fig:poc-systems-package} and overview of the package can be seen.
+\begin{figure}
+    \dirtree{%
+    .1 <<systems>>\DTcomment{systems package}. 
+    .2 <<ts>>\DTcomment{ts package}. 
+        .3 type State. 
+        .3 type TS. 
+    .2 <<ba>>\DTcomment{ba package}. 
+        .3 type State. 
+        .3 type Transition. 
+    .2 <<gnba>>\DTcomment{gnba package}. 
+        .3 type GNBA. 
+            .4 func GenerateGNBA(phi ltl.Node) *GNBA. 
+            .4 func NewGNBA(phi ltl.Node) *GNBA. 
+            .4 func (g *GNBA) Copy() *GNBA. 
+    .2 <<nba>>\DTcomment{nba package}. 
+        .3 type NBA. 
+            .4 func NewNBA(phi ltl.Node) *NBA. 
+            .4 func TransformGNBAtoNBA(g *gnba.GNBA) *NBA. 
+    .2 <<product>>\DTcomment{product package}. 
+        .3 type Context. 
+        .3 type Product. 
+            .4 func New(t ts.TS, n *nba.NBA, r ltl.RefTable) *Product. 
+            .4 func (p *Product) HasAcceptingCycle() (cycle *Context). 
+        .3 type State. 
+    }
+    \caption{Important construct in the \texttt{systems} package}
+    \label{fig:poc-systems-package}
+\end{figure}
+The \verb=ba= package has a general notion of states (type \verb=ba.State=) and transitions (type \verb=ba.Transitions=) which is the two common components for NBA (type \verb=nba.NBA=) and GNBA (type \verb=gnba.GNBA=). The two definitions can be seen in \autoref{lst:ba-state} and \autoref{lst:ba-trans}.
+
+
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{ba.State}}, label={lst:ba-state}, floatplacement=H]
+type State struct {
+    ElementarySet ltl.Set
+    Transitions   []Transition
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{ba.Transition}}, label={lst:ba-trans}, floatplacement=H]
+type Transition struct {
+    State *State
+    Label ltl.Set
+}
+\end{lstlisting}
+
+The product automaton (type \verb=product.Product=) has its own type of state (type \verb=product.State=) which can be seen in \autoref{lst:product-state}. The definition is as one would expect with a pointer to both a state in TS and a state in the NBA. One important difference from the theory is how the product is constructed, which is done lazily. To keep track of which nodes has been expanded during this process we utilise the \verb=IsExpanded= boolean. 
+
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{product.State}}, label={lst:product-state}, floatplacement=H]
+type State struct {
+    StateTS  ts.State
+    StateNBA *ba.State
+    Transitions StateSet
+    IsExpanded  bool
+}
+\end{lstlisting}
+
+Using the automata in the systems package one can, with a given formula, generate the GNBA with the function \verb=gnba.GenerateGNBA=, then convert said GNBA to NBA using \verb=nba.TransformGNBAtoNBA= and the finally construct the product $TS\otimes A$ with \verb=product.New=. After the product has been constructed the most essential operation is to call \verb=HasAcceptingCycle=, which is an implementation of the NDFS according to \autoref{sec:methods-ndfs}. The context (type \verb=product.Context=) returned from the NDFS contains information about the trace of the counterexample, or returns nil if no accepting cycle is found.
+
+\subsubsection{Package \texttt{repo}}
+The \verb=repo= package contains the implementation of the Data Repository and the operations of \emph{put} and \emph{query}. In \autoref{fig:poc-repo-package} and overview of the package contents can be seen.
+\begin{figure}
+    \dirtree{%
+    .1 <<repo>>\DTcomment{repo package}. 
+    .2 type Attrs. 
+    .2 type Identity. 
+        .3 func NewIdentity(name string) *Identity. 
+    .2 type Repo. 
+        .3 func NewRepo() *Repo. 
+        .3 func (r *Repo) Put(state *State) error. 
+        .3 func (r *Repo) Query(state *State, intr ltl.Node) (*State, error). 
+        .3 func (r *Repo) SetCurrentUser(user *Identity). 
+    .2 type State. 
+        .3 func NewState(vals ...interface{}) *State. 
+        .3 func (s *State) AddPolicy(n ltl.Node). 
+        .3 func (s *State) Dependencies() []ts.State. 
+        .3 func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set. 
+    }
+    \caption{Important construct in the \texttt{repo} package}
+    \label{fig:poc-repo-package}
+\end{figure}
+A key difference in the implementation from the theory is that the DR (type \verb=repo.Repo=) implements the \verb=ts.TS= interface directly, thus no transformation is needed, as the theory suggests in \autoref{def:dr-to-ts}. While this has no theoretical implications is does improve performance of the implementation. Some other noticeable differences are that the states (type \verb=repo.State=) contains the confidentiality policy and the dependencies themselves, while the theory suggest to store such information in a tuple $DR$. This makes the signature of the put operation more concise.
+
+To verify confidentiality and integrity policies, the put and query operation will utilise the \verb=systems= package to construct the product automaton and perform the NDFS check of acceptance cycles. An error is returned when such an operation is not allowed.

@@ -24,12 +24,14 @@
 \usepackage{siunitx}
 \usepackage{booktabs}
 \usepackage{syntax}
+\usepackage[super]{nth}
 \setlength{\grammarindent}{4em}
 \usepackage[ampersand]{easylist}
 %\usepackage[total={6.7in,10.2in}, % text area width and height
 %		    top=1in, left=1in, right=1in, bottom=1in,% top and left margin
 %		    includefoot]{geometry}
-\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+%\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \usepackage{cleveref}
 \usepackage[nottoc,numbib]{tocbibind}
 \usepackage{pgf}
@@ -40,10 +42,11 @@
 \usepackage{forest}
 \usepackage{algorithm2e}
 \usepackage{mdframed}
+\usepackage{dirtree}
 
 \RestyleAlgo{boxed}
 
-\usetikzlibrary{automata,arrows.meta,positioning,shapes.geometric,snakes,backgrounds,petri,calc}
+\usetikzlibrary{automata,arrows.meta,positioning,shapes.geometric,decorations,backgrounds,petri,calc}
 
 \tikzstyle{tikz-ts}=[every loop/.style={looseness=5}]
 
@@ -109,10 +112,10 @@ keepaspectratio]{./input/DTU.jpg}%
 \vfill
 }}}
 
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.85,0,0.85}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+%\definecolor{codegreen}{rgb}{0,0.6,0}
+%\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+%\definecolor{codepurple}{rgb}{0.85,0,0.85}
+%\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},
@@ -133,4 +136,7 @@ keepaspectratio]{./input/DTU.jpg}%
     tabsize=2
 }
 
-\lstset{style=mystyle}
+%\lstset{style=mystyle}
+
+\input{docs/report/sections/preamble/listings.tex}
+\input{docs/report/sections/preamble/listings-golang.tex}

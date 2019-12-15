@@ -25,13 +25,13 @@ Given a data resource $r$ and an execution context $\CON$ the UPD $\upf$ can be 
     \item $[\G \pf_{u}]_{c,r} \eqdef \lnot (true \U \lnot [\pf_{u}]_{c,r})$ \hfill(using \autoref{eq:eventually} and \autoref{eq:always})
     \item $[e_1 \bowtie e_2]_{c,r} \eqdef [e_1]_{c,r} \bowtie [e_2]_{c,r}$
     \item $[ap]_{c,r} \eqdef atr = true$ where $atr \eqdef ap$
-    \item $[self]_{c,r} \eqdef self = rsc$ where $rsc = r$
+    \item $[self]_{c,r} \eqdef self = r$
     \item $[user(str)]_{c,r} \eqdef
         \begin{cases*}
             N(str)  & iff $str \in I$ \\
             nil     & otherwise
         \end{cases*}$
-    \item $[subject()]_{c,r} \eqdef usr$ where $usr = s$
+    \item $[subject()]_{c,r} \eqdef s$
     \item $[atr]_{c,r} \eqdef atr$
     \item $[l]_{c,r} \eqdef l$
 \end{itemize}
@@ -51,37 +51,36 @@ and the evaluation function, $eval : e \times r \rightarrow l$, which is defined
     \end{cases*}
 \end{align*}
 By the evaluation of the symbol $e$ we simply distinguish between attribute names, which has be resolved by the mapping $M$ for a given data resource, and literals, which represent themselves. Attributes which are not found in $M$ is evaluated as the $nil$ literal. The attribute names are what allows the actor of the system to reason about any single data resource. Since the mapping $M$ maps to literals, the $\bowtie$ operator is limited to this domain. The semantics for $\bowtie$ is defined following the definitions below. Some types, i.e. numbers, booleans and strings, are defined following the partial ordering of their respective elements.
-\begin{align*}
-    e_1 [\![ \bowtie ]\!] e_2 \imply& \enskip false \text{ iff } type(e_1) \neq type(e_2) \\
-    str [\![ \bowtie ]\!] str' \imply& \enskip \text{lexicographical ordering of strings} \\
-    num [\![ \bowtie ]\!] num' \imply& \enskip \text{ordering of numbers in } \mathbb{R} \\
-    bol [\![ \bowtie ]\!] bol' \imply& \enskip \text{ordering of booleans in } \mathbb{B} \\
-    usr [\![ \bowtie ]\!] usr' \imply&
+\begin{itemize}
+    \item $e_1 [\![ \bowtie ]\!] e_2$ is false if and only if the type of $e_1$ is not the same as the type of $e_2$
+    \item $str [\![ \bowtie ]\!] str'$ is defined by the lexicographical ordering of strings
+    \item $num [\![ \bowtie ]\!] num'$ is defined by the ordering of numbers in $\mathbb{R}$
+    \item $bol [\![ \bowtie ]\!] bol'$ is defined by the ordering of booleans in $\mathbb{B}$
+    \item $usr [\![ \bowtie ]\!] usr' =
         \begin{cases*}
             usr = usr'      & if $\bowtie$ is type $=$ (equal) \\
             usr \neq usr'   & if $\bowtie$ is type $\neq$ (not equal) \\
             false       & otherwise
-        \end{cases*} \\
-    rsc [\![ \bowtie ]\!] rsc' \imply&
+        \end{cases*}$
+    \item $rsc [\![ \bowtie ]\!] rsc' =
         \begin{cases*}
             rsc = rsc'      & if $\bowtie$ is type $=$ (equal) \\
             rsc \neq rsc'   & if $\bowtie$ is type $\neq$ (not equal) \\
             false       & otherwise
-        \end{cases*} \\
-    nil [\![ \bowtie ]\!] nil' \imply& false
-\end{align*}
+        \end{cases*}$
+    \item $nil [\![ \bowtie ]\!] nil$ is false
+\end{itemize}
 
 This concludes the semantic definition of $UPF$ and $IPF$ and how they are evaluated. Lastly we introduce a final transformation from $IPF$ to $LTL$, which allows an $IPF$ formula to be translated and provided to well-known $LTL$ model checking algorithms (these methods algorithms are explored in \autoref{sec:methods}). The approach is to substitute every occurrence of $e_1 \bowtie e_1$ with a new atomic proposition $ap_{e_1 \bowtie e_2}$, which represents the evaluation of the equality. This means that $ap_{e_1 \bowtie e_2}$ is only satisfied for $r \in R$ given $\DR$ iff $r \models e_1 \bowtie e_2$. The transformation from $IPF$ $\pf$ to $LTL$ formula $\phi$ is provided using the following definition:
 \begin{definition}[Transformation from $IPF$ to $LTL$]\label{def:pf-to-ltl}
-%Given a data repository $\DR$, a data resource $r \in R$ and an $IPF$ $\pf$, the transformation into a $LTL$ formula $\phi$ over the set of atomic propositions $AP_\phi$ and transformation table $\tau : AP_\phi \rightarrow e_1 \bowtie e_2$ is performed by the following. For each $e_1 \bowtie e_2$ in $\pf$ introduce the new atomic proposition and map the atomic proposition in $\tau$:
-Given an $IPF$ $\pf$, the transformation into a $LTL$ formula $\phi$ over the set of atomic propositions $AP_\phi$ and transformation table $\tau : AP_\phi \rightarrow e_1 \bowtie e_2$ is performed by the following. For each $e_1 \bowtie e_2$ in $\pf$ introduce the new atomic proposition and map the atomic proposition in $\tau$:
-\begin{align*}
-    AP_\phi = AP_\phi \cup \left\{ap_{e_1 \bowtie e_2}\right\} \enskip \text{and} \enskip 
-    \tau \cup \{ap_{e_1 \bowtie e_2} \mapsto e_1 \bowtie e_2\}
-\end{align*}
-Then perform the following substitution:
-\begin{align*}
-    \pf[^{ap_{e_1 \bowtie e_2}}/_{e_1 \bowtie e_2}]
-\end{align*}
+Given an $IPF$ $\pf$, the transformation into a $LTL$ formula $\phi$ is denoted by $[\pf] : IPF \rightarrow LTL \times T$, where $IPF$ and $LTL$ is the set of internal policy formulae and linear temporal logic formulae respectively and $T$ is the set of transformation tables. A transformation table is $\tau : AP_\phi \rightarrow B$, where $AP_\phi$ is the set of atomic propositions over $\phi$ and $B$ is the set of expressions $\beta$ from \autoref{tab:pf-grammar}. The transformation is defined as follows:
+\begin{itemize}
+    \item $[true] = \langle true, \varnothing \rangle$
+    \item $[e_1 \bowtie e_2] = \langle ap_{e_1 \bowtie e_2}, \left\{ ap_{e_1 \bowtie e_2} \mapsto e_1 \bowtie e_2 \right\} \rangle$
+    \item $[\pf_1 \land \pf_2] = \langle \phi_1 \land \phi_2, \tau_1 \cup \tau_2 \rangle$ if $[\pf_1] = \langle \phi_1, \tau_1 \rangle \land [\pf_2] = \langle \phi_2, \tau_2 \rangle$
+    \item $[\lnot \pf] = \langle \lnot \phi, \tau \rangle$ if $[\pf] = \langle \phi, \tau \rangle$
+    \item $[\X \pf] = \langle \X \phi, \tau \rangle$ if $[\pf] = \langle \phi, \tau \rangle$
+    \item $[\pf_1 \U \pf_2] = \langle \phi_1 \U \phi_2, \tau_1 \cup \tau_2 \rangle$ if $[\pf_1] = \langle \phi_1, \tau_1 \rangle \land [\pf_2] = \langle \phi_2, \tau_2 \rangle$
+\end{itemize}
 \end{definition}
 The purpose of $\tau$, as described in \autoref{def:pf-to-ltl}, is to provide a mapping from the newly introduced atomic propositions $ap_{e_1 \bowtie e_2}$ to the substituted subformula $e_1 \bowtie e_2$. One can then satisfy $ap_{e_1 \bowtie e_2}$ iff $r \models \tau(ap_{e_1 \bowtie e_2})$.

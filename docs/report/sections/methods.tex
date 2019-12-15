@@ -1,5 +1,17 @@
-\section{Methods}
+\section{Architecture of Model-checker}
 \label{sec:methods}
+% ~\cite[Fig.~5.16]{baier2008principles}
+In this section we will explore the methods used for model checking confidentiality and integrity policies. In \ref{sec:data-repository} we introduced the notion of Policy Formulae, and a transformation from these formulae to LTL. This transformation to LTL allows formal, well-known model checking algorithms to be applied to said formulae. This section will present a model checking approach based on transforming the negated formula into a Büchi automaton. This is performed in two steps, first constructing the \emph{generalised non-deterministic Büchi automaton} (GNBA) and then transforming the GNBA into an equivalent non-generalised version (NBA). The product of the NBA and the transition system (the data repository) can then be checked for the persistence property by a nested depth-first search. In figure~\ref{fig:model-checker} an overview of the process is shown.
+
+\begin{figure}[!ht]
+    \centering
+    \input{figs/model-checker.tex}
+    \caption{Overview of PF model checking.}
+    \label{fig:model-checker}
+\end{figure}
+
+This section will also cover an optimised approach of finding elementary sets and a short introduction on how to parse Policy Formulae from a text based representation into an abstract syntax tree.
+
 
 \subsection{Parsing LTL formulae}
 % Include abstract syntax tree
@@ -137,6 +149,8 @@ After exploration of the decision tree one can find the elementary sets of $\phi
 \end{align*}
 \end{example}
 
+\paragraph{Performance comparison}
+
 \subsubsection{GNBA}
 The method of model checking the confidentiality and integrity policies involves constructing a generalised non-deterministic Büchi automaton (GNBA) over the formula $\lnot\phi$ (read; the negation of phi). The GNBA functions as a monitor for the transition system for which its accepting states serves to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for a LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalised as follows:
 \begin{definition}[Construction of GNBA from LTL{\cite[def.~5.33]{baier2008principles}}]
@@ -167,7 +181,7 @@ With the transition function $\delta : Q \times 2^{AP} \imply 2^Q$:
 \begin{example}
 We consider the confidentiality policy from Example~\ref{ex:mutual-exclusion} with the formula $\conf \eqdef \G(\lnot a \lor \lnot b)$ and the construction of the GNBA $\mathcal{G}_\phi$. First the formula is negated and then transformed.
 \begin{equation*}
-    \phi = \lnot \conf = \lnot \G(\lnot a \lor \lnot b) \quad\Longleftrightarrow\quad true \U (a \land b)
+    \phi \eqdef \lnot \conf \eqdef \lnot \G(\lnot a \lor \lnot b) \quad\Longleftrightarrow\quad true \U (a \land b)
 \end{equation*}
 We then determine the elementary sets of $\phi$:
 \begin{align*}
@@ -183,13 +197,13 @@ The GNBA can now be constructed following \autoref{def:ltl-to-gnba} which can be
 
 \begin{figure}[!ht]
     \centering
-    \input{docs/report/figs/gnba-example.tex}
+    \input{figs/gnba-example.tex}
     \caption{The GNBA for $\phi \eqdef true\U (a \land b)$}
     \label{fig:gnba-example1}
 \end{figure}
 \end{example}
 
-\subsubsection{NBA}
+\subsubsection{NBA}\label{sec:nba}
 The non-deterministic Büchi automaton (NBA) is derived from the GNBA by a well-defined transformation. The equivalent NBA accepts the same language as the GNBA but simplifies the model checking algorithm. We say that for a GNBA $\mathcal{G}$ there exists a NBA $\mathcal{A}$ such that $\mathcal{L}_\omega(\mathcal{G})=\mathcal{L}_\omega(\mathcal{A})$. The transformation for $\mathcal{G}=(Q,\Sigma,\delta,Q_0,\mathcal{F})$ and $\mathcal{F}=\{F_1,\ldots,F_k\}$ is constructed by creating $k$ copies of the GNBA. Then, for the $i$th copy, the acceptance states are connected to the equivalent states in the $(i+1)$th copy. Because a run can only move from the $i$th copy to the next through an acceptance state $q \in F_i$, the construction ensures that an accepting run visits an acceptance state in each copy infinitely often. The construction of the NBA $\mathcal{A}=(Q',\Sigma',\delta',Q_0',F')$ is formalised as follows:
 
 \begin{definition}[Construction of NBA from GNBA{\cite[thm.~5.37]{baier2008principles}}]
@@ -214,6 +228,7 @@ With the transition relation:
 The product automaton $TS \otimes A$ is constructed from the transition system $TS$ and the automaton $A$ over $\phi$ by constructing every possible pair of states from both systems with some relation function between states. This results in at most $|TS|\cdot |A|$ states. The intuitive understanding of the product is to combine all paths in $TS$ with all runs of $A$. The problem of checking $\phi$ is the reduced to checking whether $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothing$. We prove this by finding a path in the product for which an accepting state of $A$ is visited infinitely often. This path is then a counter example for $TS \not\models \phi$. If no counter example is found, then $\phi$ is proved to hold.
 
 \subsubsection{Nested Depth-First Search}
+\label{sec:methods-ndfs}
 % Maintain a set next to the stack for constant time lookup
 The problem of determining $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothing$, as described above, \autoref{sec:product-automaton}, results in checking whether a path exists in $TS \otimes A$ which visits an acceptance state infinitely often. Finding such a path is achieved with a nested depth-first search (NDFS). The algorithm is structured in an outer and inner depth-first search (DFS) for which the outer DFS searches to find an accepting state and the inner DFS searches to find a cycle. If such a cycle can be found one can conclude that the accepting state can be visited infinitely often, proving $TS \not\models \phi$. If the outer DFS manages to explore all accepting states with no accepting cycles in the inner DFS, then no counter example can be found, thus $TS \models \phi$ is proved.
 \begin{algorithm}[H]
@@ -250,6 +265,4 @@ The problem of determining $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothi
 \caption{Cycle detection algorithm using nested DFS}
 \label{alg:ndfs}
 \end{algorithm}
-In \autoref{alg:ndfs} the algorithm for NDFS can be seen. The algorithm is structured as two recursive DFS algorithms, one for the outer and one for the inner DFS. The outer DFS will search recursively until no more successors can be recursed, then call the NDFS procedure on all acceptance states as the recursion unfolds. By postponing the inner DFS one can limit the number of states recursed by the inner DFS before finding a cycle, as the inner recursion searches until it hits the stack from the outer DFS, in which case a cycle has been found. 
-
-\input{figs/model-checker.tex}
+In \autoref{alg:ndfs} the algorithm for NDFS can be seen. The algorithm is structured as two recursive DFS algorithms, one for the outer and one for the inner DFS. The outer DFS will search recursively until no more successors can be recursed, then call the NDFS procedure on all acceptance states as the recursion unfolds. By postponing the inner DFS one can limit the number of states recursed by the inner DFS before finding a cycle, as the inner recursion searches until it hits the stack from the outer DFS, in which case a cycle has been found.

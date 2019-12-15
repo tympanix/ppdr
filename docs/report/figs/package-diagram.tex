@@ -1,0 +1,55 @@
+\begin{center}
+        \begin{tikzpicture}[node distance=2cm]
+        \tikzstyle{every node}=[font=\small]
+        \tikzstyle{process} = [rectangle, minimum width=1.5cm, minimum height=0.8cm, text centered, text width=1.5cm, draw=black,fill=white!20]
+        \tikzstyle{arrow} = [thick,->,>=stealth]
+
+        % Nodes
+        \node[process]      (parser)    at (-4,0)       {parser};
+        \node[process]      (token)     at (-5.5,1.5)   {token};
+        \node[process]      (scanner)   at (-7,0)       {scanner};
+        \node[process]      (ltl)       at (0,0)        {ltl};
+        \node[process]      (repo)      at (0,-2)     {repo};
+        \node[process]      (ts)        at (-2.5,4)      {ts};
+        \node[process]      (systems)   at (0,4)     {systems};
+        \node[process]      (ba)        at (4,4)        {ba};
+        \node[process]      (gnba)      at (4,2)        {gnba};
+        \node[process]      (nba)       at (4,0)        {nba};
+        \node[process]      (product)   at (4,-2)       {product};
+
+        % Arrows
+        \draw[arrow] (parser.north)         |-  (token.east);
+        \draw[arrow] (parser)               --  (scanner);
+        \draw[arrow] (parser)               --  (ltl);
+        
+        \draw[arrow] (scanner.north)        |-  (token.west);
+        
+        \draw[arrow] (repo)                 --  (ltl);
+        \draw[arrow] (repo.east)            |- ($(repo.east) + (0.5,0mm)$) |- (gnba.south west);
+        \draw[arrow] (repo.east)            |- ($(repo.east) + (0.5,0mm)$) |- (nba.north west);
+        \draw[arrow] (repo.south)           |- ($(repo.south) + (0,-5mm)$) -| (product.south);
+        \draw[arrow] (repo)                 -|  (ts);
+        
+        \draw[arrow] (ts.south east)        |- (ltl);
+        
+        \draw[arrow] (systems)              --  (ltl);
+        \draw[arrow] (systems)              --  (ts);
+        \draw[arrow] (systems.north)        |- ($(systems.north) + (0,5mm)$) -| (ba.north);
+        \draw[arrow] (systems.east)         |- ($(systems.east) + (0.5,0mm)$) |- (gnba.south west);
+        \draw[arrow] (systems.east)         |- ($(systems.east) + (0.5,0mm)$) |- (nba.north west);
+            
+        \draw[arrow] (ba.west)              -| ($(ba.west) + (-0.5,-20mm)$) -| (ltl.north);
+        
+        \draw[arrow] (gnba.west)            -|  (ltl.north);
+        \draw[arrow] (gnba.east)            -| ($(gnba.east) + (0.5,0mm)$) |-(ba.east);
+            
+        \draw[arrow] (nba)                  --  (ltl);
+        \draw[arrow] (nba.east)             -| ($(nba.east) + (0.5,0mm)$) |-(ba.east);
+        \draw[arrow] (nba)                  --  (gnba);
+            
+        \draw[arrow] (product.west)         -| ($(product.west) + (-0.5,0mm)$) |-  (ltl.east);
+        \draw[arrow] (product.east)         -| ($(product.east) + (0.5,0mm)$) |- (ba.east);
+        \draw[arrow] (product.north)        -- (nba.south);
+
+    \end{tikzpicture}
+\end{center}
