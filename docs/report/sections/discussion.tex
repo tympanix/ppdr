@@ -1,38 +1,48 @@
 \section{Discussion}\label{sec:discussion}
 \subsection{Limitations of Policy Formulae}
-The grammar used to express confidentiality and integrity policies in DR is an extension of LTL which, although the grammar introduces helpful syntactic sugar and equality expressions, is inherently limited by the domain of properties expressible by LTL. If we consider the total set of all properties we can express about paths in a graph, this limitation results in only only subset of of these properties being able to be expressed in LTL and therefore consequently in PF.
+\paragraph{Trace equivalence}
+The grammar used to express confidentiality and integrity policies uses LTL as a basis which, although the grammar introduces helpful syntactic sugar and equality expressions, is inherently limited by the domain of properties expressible by LTL. A limitation of LTL is its incapability of expressing the structure of transition systems but are limited to the traces of transitions systems. Consider the the two transitions systems in \autoref{fig:trace-equiv}.
+\begin{figure}[!ht]
+    \centering
+    \input{figs/trace-equiv-all.tex}
+    \caption{Two transition systems that are structured differently but produce the same traces.}
+    \label{fig:trace-equiv}
+\end{figure}
+From the figure it is clear that the two transition systems are not equal in terms of their structure, however they do produce the same traces and thus can be said to be trace equivalent, denoted $TS_1 \equivt TS_2$. More formally two transitions systems, $TS_1$ and $TS_2$, are said to be trace equivalent given the following definition:
+\begin{align*}
+    TS_1 \equivt TS_2 \rightarrow \forall \phi \in LTL .\enskip TS_1 \models \phi \text{ iff } TS_2 \models \phi
+\end{align*}
 
-\begin{example}[Limitations of PF]
-    \label{ex:limitations-of-pf}
-    This examples shows how PF fails to express some properties of dependencies in DR. Observe the DR shown in figure \ref{fig:pf-limitations} and the following description of a property: ''\emph{The resource must depend on two resources produced independently by Alice and Bob},,. As a probable solution to this query, one might consider the integrity policy below:
-    \begin{equation*}
-        \inte \eqdef \F author = Alice \land \F author = Bob
-    \end{equation*}
-    This integrity policy does verify that the resource depends on resources from Alice and Bob. It however fails the depict the independence relationship of the two resources. Consider \autoref{fig:pf-limitations-counter}. We then observe that:
-    \begin{equation*}
-        DR \lnot \models_{c,r_1} \inte \enskip \text{and} \enskip DR' \models_{c,r_1'} \inte
-    \end{equation*}
-    Following the description of the policy above, we would expect that the policy is satisfied in $DR$ but not in $DR'$. However $\inte$ is satisfied because the path $r_1' \longrightarrow r_2' \longrightarrow r_3'$ in $DR'$ satisfies both $author = Alice$ and $author = Bob$.
-    \begin{figure}[!ht]
-    \begin{minipage}{.6\textwidth}
-        \centering
-        \input{figs/limitations-example.tex}
-        \caption{Independence example ($DR$)}
-        \label{fig:pf-limitations}
-    \end{minipage}%
-    \begin{minipage}{0.4\textwidth}
-        \centering
-        \input{figs/limitations-counter-example.tex}
-        \caption{Counter example ($DR'$)}
-        \label{fig:pf-limitations-counter}
-    \end{minipage}
-    \end{figure}
+\paragraph{Existential quantifier} If one considers the set of all properties that can be expressed about paths in a graph, then only a subset of all properties can be expressed in LTL and therefore consequently in PF. One property that can not be expressed in LTL is the existential quantifier $\exists$. Let us consider an example of how the lack of the existential quantifier affects policies created in PF.
+
+\begin{example}\label{ex:limitations-of-pf}
+Consider the case that a user of the system wants to query a data resource, that has a dependency to a data resource produced by \emph{Alice}. In PF that will produce the following integrity policy:
+\begin{align*}
+    \inte \eqdef \F author = Alice
+\end{align*}
+Observe the data repository shown in figure \ref{fig:pf-limitations} and integrity policy $\inte$.
+\begin{figure}[!ht]
+    \centering
+    \input{figs/limitations-example.tex}
+    \caption{Data repository containing five data resources $r_1,\ldots,r_5$.}
+    \label{fig:pf-limitations}
+\end{figure}
+Performing the operation $query(r_5, \inte)$, it will not return the data resource. This is expected behaviour as it fails to verify that $r_5$ depends on a data resource produced by \emph{Alice} for all paths starting from $r_5$, or more formally:
+\begin{equation*}
+    DR \not\models_{c,r_5} \inte
+\end{equation*}
 \end{example}
-
-As an alternative to LTL one might consider a formal language for confidentiality and integrity policies based on \emph{First-Order Logic} (FOL). The expressiveness of such a language would allow properties like the one presented in \autoref{ex:limitations-of-pf} to be formalised. Consider the following solution to \autoref{ex:limitations-of-pf} (written ad-hoc):
-\begin{gather*}
-    \exists x.\exists y. x \neq y \enskip\land\enskip author(x) = Alice \enskip\land\enskip author(y) = Bob \enskip\land\enskip\\ r \longrightarrow^\ast x \enskip\land\enskip r \longrightarrow^\ast y \enskip\land\enskip \lnot(x \longrightarrow^\ast y \enskip\lor\enskip y \longrightarrow^\ast x) 
-\end{gather*}
+Given the informal description of the property in \autoref{ex:limitations-of-pf}, one could argue that the property should produce a formula that express that the data resource has a dependency to a data resource produced by a user on \emph{some path} in the data repository. As an alternative to LTL one might consider a formal language for confidentiality and integrity policies based on \emph{First-Order Logic} (FOL). The expressiveness of such a language would allow the aforementioned property to be formalised. Consider the following solution to \autoref{ex:limitations-of-pf} (written ad-hoc):
+\begin{align*}
+    \exists x \land author(x) = Alice \land r \longrightarrow^\ast x
+\end{align*}
 While the FOL inspired policy formula is certainly expressive is also introduces complexity of model checking algorithms. Because we can formalise any graph problem with FOL, including even NP-complete problems, the complexity of the model checking may be very time consuming. Furthermore one could not guarantee termination of the model checking algorithm since no such system can be implemented for FOL\cite{church1936note}.
 
-\paragraph{Computational Tree Logic (CTL)}
+\paragraph{Express self-loops} Another limitation of the proposed grammar for PF is its inability to express self-loop, i.e. no dependencies, for an arbitrary data resources in a data repository. Consider the data repository shown in \autoref{fig:pf-limitations} (ignore the \emph{author} attribute names and values for $r_1$ and $r_2$). Say one wants to query $r_5$ with the informal description of an integrity policy ``The second data resource in the dependency chain should have a self-loop''. There is no PF to express that. Note that for a single data resource it is possible to generate a PF that express if the data resource itself is without dependencies, i.e. $\inte \eqdef \G self$ or $\inte \eqdef \X self$. To support the general case it could be implemented by adding a new attribute name called \emph{origin} to every data resource, which maps to a \emph{bol} literal corresponding to whether the data resource has dependencies or not. The attribute name and value should be added to a data resource during a \emph{put}, similar to how \emph{author} and \emph{self} are added. Moreover should the grammar for UPF in \autoref{tab:pf-grammar-user} be extended with a \emph{origin} predicate to allow for expressing formulae about self-loops.
+
+\subsection{Malicious behaviour}
+\paragraph{Reconstruction of data repository}
+Consider a malicious actor with access to the \emph{query} operation for some DR. With some effort the malicious actor might be able to partially reconstruct the data repository and thereby gaining unwanted information about the structure of the data resources it resides and their dependencies. However, because of the trace equivalence problem, mentioned in \autoref{sec:discussion}, two structurally different graphs may not be distinguishable using PF, e.g. see \autoref{fig:trace-equiv}. This makes it impossible for a malicious actor to completely reconstruct some graphs.
+
+\paragraph{Exploitation of dependencies} 
+As previously mentioned in \autoref{sec:put}, it is assumed that for a given \emph{put} operation, the dependencies provided with the data resources is trusted. In some instances this might be an oversimplification, because actors might not be honest. If a malicious actor decides to behave dishonestly when performing a \emph{put}, he/she might want to purposefully neglect certain dependencies, or declare dependencies which are incorrect. In case the actors of the system are not trusted, the \emph{put} operation proposed in \autoref{sec:put} should be considered an operation for internal use and as such a put operation for external use by the actors should be introduced. This external layer of the system should ensure trustworthiness of dependencies of data resources.

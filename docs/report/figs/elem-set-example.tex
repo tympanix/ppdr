@@ -1,10 +1,10 @@
 \begin{forest}
-for tree={circle, draw, s sep=14pt}
+for tree={circle, draw, s sep=14pt, square/.style={regular polygon,regular polygon sides=4}}
 [, 
     [,edge label={node[midway,left] {$a$}}  
       [,edge label={node[midway,left] {$b$}}
         [,edge label={node[midway,left] {$a \land b$}}
-            [,edge label={node[midway,left] {$\varphi$}}]
+            [,square,edge label={node[midway,left] {$\varphi$}}]
             [,cross out, edge label={node[midway,right] {$\lnot\varphi$}}]
         ]
         [,cross out, edge label={node[midway,right] {$\lnot (a \land b)$}}
@@ -18,8 +18,8 @@ for tree={circle, draw, s sep=14pt}
             [,draw=none,edge={draw=none}]
         ] 
         [, edge label={node[midway,right] {$\lnot (a \land b)$}}
-            [,edge label={node[midway,left] {$\varphi$}}]
-            [,edge label={node[midway,right] {$\lnot\varphi$}}]
+            [,square,edge label={node[midway,left] {$\varphi$}}]
+            [,square,edge label={node[midway,right] {$\lnot\varphi$}}]
         ] 
       ] 
     ]
@@ -31,7 +31,7 @@ for tree={circle, draw, s sep=14pt}
         ]
         [,edge label={node[midway,right] {$\lnot (a \land b)$}}
             [,cross out, edge label={node[midway,left] {$\varphi$}}]
-            [,edge label={node[midway,right] {$\lnot\varphi$}}]
+            [,square, edge label={node[midway,right] {$\lnot\varphi$}}]
         ] 
       ] 
       [,edge label={node[midway,right] {$\lnot b$}}
@@ -41,7 +41,7 @@ for tree={circle, draw, s sep=14pt}
         ]
         [,edge label={node[midway,right] {$\lnot (a \land b)$}}
             [,cross out, edge label={node[midway,left] {$\varphi$}}]
-            [,edge label={node[midway,right] {$\lnot\varphi$}}]
+            [,square,edge label={node[midway,right] {$\lnot\varphi$}}]
         ]
       ]  
   ] 

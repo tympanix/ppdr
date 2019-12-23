@@ -1,0 +1,13 @@
+\begin{forest}
+    for tree={circle, draw, s sep=75pt, grow=north,edge={->},  minimum size=4mm}
+    [$D$, name=D, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
+        [$C$, name=C1, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
+            [$B$, name=B, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}]
+        ]
+        [$C$, name=C2, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
+            [$A$, name=A, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east] {};}]
+        ] 
+    ]
+    \draw[->] (B) to [out=north west,in=north east,looseness=4] (B);
+    \draw[->] (A) to [out=north west,in=north east,looseness=4] (A);
+\end{forest}

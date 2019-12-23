@@ -1,0 +1,48 @@
+\begin{table}[!ht]
+    \centering
+    \makeatletter
+           \def\rulecolor#1#{\CT@arc{#1}}
+           \def\CT@arc#1#2{%
+           \ifdim\baselineskip=\z@\noalign\fi
+           {\gdef\CT@arc@{\color#1{#2}}}}
+           \let\CT@arc@\relax
+          \rulecolor{gray!50}
+        \makeatother
+    \begin{tabular}{@{}llll@{}}
+        \toprule
+        Formula $\phi$ & Naive & DT & Improvement \\ 
+        \cmidrule(r){1-1}\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(l){4-4}
+        $p \U q$                                                                                    & 2.27~µs    & 129~µs     & 17.5x \\
+        $p \U (q \U r)$                                                                             & 125~µs     & 33.6~µs    & 3.73x \\
+        $\lnot(p \U (q \U r))$                                                                      & 2.63~ms    & 174~µs     & 15.1x \\
+        $\G \F p \imply \G \F q$                                                                    & 46.7~ms    & 1.42~ms    & 32.9x \\
+        $\F  p \U \G q$                                                                             & 2.40~ms    & 190~µs     & 12.7x \\
+        \midrule
+        $\G  p \U q$                                                                                & 515~µs     & 78.6~µs    & 6.55x \\
+        $\lnot(\G \F p \imply \G \F q)$                                                             & 47.9~ms    & 1.76~ms    & 27.3x \\
+        $(\X (p) \U \X (q)) \lor \lnot \X (p \U q)$                                                 & 267~ms     & 1.70~ms    & 157x \\
+        $(\X (p) \U q) \lor \lnot \X (p \U (p \land q))$                                            & 307~ms     & 1.20~ms    & 255x \\
+        $\G  (p \imply \F  q) \land ((\X (p) \U q) \lor \lnot \X (p \U (p \land q)))$               & 214~s      & 25.0~ms    & 8529x \\
+        \midrule
+        $\G  (p \imply \F  q) \land ((\X (p) \U \X (q)) \lor \lnot \X (p \U q))$                    & 297~s      & 34.2~ms    & 8685x \\
+        $\G  (p \imply \F  q)$                                                                      & 2.80~ms    & 262~µs     & 10.7x \\
+        $\lnot (\G \F p \lor \F \G q)$                                                              & 47.9~ms    & 1.75~ms    & 27.3x \\
+        $\G  (\F  p \land \F  q)$                                                                   & 10.9~ms    & 404~µs     & 27.0x \\
+        $\F  p \land \F  \lnot p$                                                                   & 591~µs     & 83.3~µs    & 7.09x \\
+        \midrule
+        $(\G  (q \lor \G \F p) \land \G  (r \lor \G \F  \lnot p)) \lor \G  q \lor \G  r$            & N/A        & 1.62~s     & N/A \\
+        $(\G  (q \lor \F \G p) \land \G  (r \lor \F \G  \lnot p)) \lor \G  q \lor \G  r$            & N/A        & 1.62~s     & N/A \\
+        $\lnot ((\G  (q \lor \G \F p) \land \G  (r \lor \G \F  \lnot p)) \lor \G  q \lor \G  r)$    & N/A        & 2.01~s     & N/A \\
+        $\lnot ((\G  (q \lor \F \G p) \land \G  (r \lor \F \G  \lnot p)) \lor \G  q \lor \G  r)$    & N/A        & 2.05~s     & N/A \\
+        $\G  (q \lor \X \G p) \land \G  (r \lor \X \G  \lnot p)$                                    & 213~s      & 66.3~ms    & 3217x \\
+        \midrule
+        $\G  (q \lor (\X p \land \X  \lnot p))$                                                     & 60.0~ms    & 1.08~ms    & 55.3x \\
+        $(p \U p) \lor (q \U p)$                                                                    & 2.46~ms    & 107~µs     & 23.0x \\
+        \bottomrule
+        Total                                                                                       & 725~s      & 7.44~s     & 97.5x
+ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Comparison of the naive approach and the decision tree approach of determining elementary sets. For each formula the mean time of execution is given. Results are performed on a desktop computer with a Intel\textsuperscript{\textregistered} Core\texttrademark~i7-950 processor. Results shown as \emph{N/A} were infeasible to compute because of resource constraints.}
+    \label{tab:elem-test}
+\end{table}

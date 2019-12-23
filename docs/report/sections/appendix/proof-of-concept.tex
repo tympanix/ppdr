@@ -23,7 +23,7 @@ We present the design of the system for future reference and completeness. The i
     .2 repo\DTcomment{DR implementation (interfaces \texttt{ts} package)}.
     .2 debug\DTcomment{Miscellaneous debugging primitives}.
     }
-    \caption{Package hierarchy of the implementation}
+    \caption{Package hierarchy of the implementation.}
     \label{fig:poc-packages}
 \end{figure}
 
@@ -32,7 +32,7 @@ The dependency graph between packages can be seen in \autoref{fig:poc-package-de
 \begin{figure}[!ht]
     \centering
     \input{figs/package-diagram.tex}
-    \caption{Package diagram}
+    \caption{Package diagram.}
     \label{fig:poc-package-depend}
 \end{figure}
 
@@ -61,7 +61,7 @@ The LTL package includes implementation of the nodes comprised in the abstract s
     .2 type Eventually. 
     .2 \textit{... (other LTL operators)}. 
     }
-    \caption{Important construct in the \texttt{ltl} package}
+    \caption{Important construct in the \texttt{ltl} package.}
     \label{fig:poc-ltl-package}
 \end{figure}
 
@@ -77,7 +77,7 @@ type Node interface {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language=Golang, caption={Definition of \texttt{BinaryNode} interface}, floatplacement=H]
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{BinaryNode} interface.}, floatplacement=H]
 type BinaryNode interface {
 	Node
 	LHSNode() Node
@@ -85,7 +85,7 @@ type BinaryNode interface {
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language=Golang, caption={Definition of \texttt{UnaryNode} interface}, floatplacement=H]
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{UnaryNode} interface.}, floatplacement=H]
 type UnaryNode interface {
 	Node
 	ChildNode() Node
@@ -120,20 +120,20 @@ The systems package defines all types of automata used in the implementation as 
             .4 func (p *Product) HasAcceptingCycle() (cycle *Context). 
         .3 type State. 
     }
-    \caption{Important construct in the \texttt{systems} package}
+    \caption{Important construct in the \texttt{systems} package.}
     \label{fig:poc-systems-package}
 \end{figure}
 The \verb=ba= package has a general notion of states (type \verb=ba.State=) and transitions (type \verb=ba.Transitions=) which is the two common components for NBA (type \verb=nba.NBA=) and GNBA (type \verb=gnba.GNBA=). The two definitions can be seen in \autoref{lst:ba-state} and \autoref{lst:ba-trans}.
 
 
-\begin{lstlisting}[language=Golang, caption={Definition of \texttt{ba.State}}, label={lst:ba-state}, floatplacement=H]
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{ba.State}.}, label={lst:ba-state}, floatplacement=H]
 type State struct {
     ElementarySet ltl.Set
     Transitions   []Transition
 }
 \end{lstlisting}
 
-\begin{lstlisting}[language=Golang, caption={Definition of \texttt{ba.Transition}}, label={lst:ba-trans}, floatplacement=H]
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{ba.Transition}.}, label={lst:ba-trans}, floatplacement=H]
 type Transition struct {
     State *State
     Label ltl.Set
@@ -142,7 +142,7 @@ type Transition struct {
 
 The product automaton (type \verb=product.Product=) has its own type of state (type \verb=product.State=) which can be seen in \autoref{lst:product-state}. The definition is as one would expect with a pointer to both a state in TS and a state in the NBA. One important difference from the theory is how the product is constructed, which is done lazily. To keep track of which nodes has been expanded during this process we utilise the \verb=IsExpanded= boolean. 
 
-\begin{lstlisting}[language=Golang, caption={Definition of \texttt{product.State}}, label={lst:product-state}, floatplacement=H]
+\begin{lstlisting}[language=Golang, caption={Definition of \texttt{product.State}.}, label={lst:product-state}, floatplacement=H]
 type State struct {
     StateTS  ts.State
     StateNBA *ba.State
@@ -172,7 +172,7 @@ The \verb=repo= package contains the implementation of the Data Repository and t
         .3 func (s *State) Dependencies() []ts.State. 
         .3 func (s *State) Predicates(ap ltl.Set, t ltl.RefTable) ltl.Set. 
     }
-    \caption{Important construct in the \texttt{repo} package}
+    \caption{Important construct in the \texttt{repo} package.}
     \label{fig:poc-repo-package}
 \end{figure}
 A key difference in the implementation from the theory is that the DR (type \verb=repo.Repo=) implements the \verb=ts.TS= interface directly, thus no transformation is needed, as the theory suggests in \autoref{def:dr-to-ts}. While this has no theoretical implications is does improve performance of the implementation. Some other noticeable differences are that the states (type \verb=repo.State=) contains the confidentiality policy and the dependencies themselves, while the theory suggest to store such information in a tuple $DR$. This makes the signature of the put operation more concise.

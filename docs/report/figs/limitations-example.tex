@@ -1,11 +1,11 @@
 \begin{forest}
     for tree={circle, draw, s sep=75pt, grow=north,edge={->},  minimum size=8mm}
-    [$r_1$, name=r5, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
-        [$r_2$, name=r4, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
-            [$r_4$, name=r2, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$author:Alice$\}};}]
+    [$r_5$, name=r5, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
+        [$r_4$, name=r4, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
+            [$r_2$, name=r2, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$author:Alice$\}};}]
         ]
         [$r_3$, name=r3, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {};}
-            [$r_5$, name=r1, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east] {\{$author:Bob$\}};}]
+            [$r_1$, name=r1, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east] {\{$author:Bob$\}};}]
         ] 
     ]
     \draw[->] (r1) to [out=north west,in=north east,looseness=4] (r1);
