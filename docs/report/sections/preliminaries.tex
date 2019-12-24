@@ -56,7 +56,7 @@ The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi
     \phi &= true \U \left( a \land \X b \right) \\
     closure(\phi) &= \left\{ \phi, \lnot \phi, a \land \X b, \lnot \left( a \land \X b \right), \X b, \lnot \left( \X b \right), a, \lnot a, b, \lnot b, true \right\}
 \end{align*}
-For readability we omit from writing $\lnot true$ in $closure(\phi)$ as a set containing $\lnot true$ can not be elementary, as will be shown in the following section. The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi)| \in \mathcal{O}\left(|\phi|\right)$~\cite{baier2008principles}. The concept of closure is introduced for constructing the elementary sets of LTL formulae and thus is a crucial part of the automata-based model-checking method used.
+For readability we omit from writing $\lnot true$ in $closure(\phi)$ as a set containing $\lnot true$ can not be elementary, as will be shown in the following section. The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi)| \in \mathcal{O}\left(|\phi|\right)$~\cite{baier2008principles}. The concept of closure is introduced for constructing the elementary sets of LTL formulae and thus is a crucial part of the automata-based model checking method used.
 
 \subsection{Elementary Sets}\label{sec:elemesets}
 A set $B \subseteq closure(\phi)$ is said to be \emph{elementary} if it satisfies the following properties.

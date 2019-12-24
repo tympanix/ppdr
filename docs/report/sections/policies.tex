@@ -17,7 +17,7 @@ Given a data repository $\DR$ and a data resource $r \in R$ the inherited confid
 \begin{equation*}
     \iconf(DR, r) = P(r) \land \bigwedge\limits_{r \longrightarrow r' \mid r \neq r'} \iconf(DR, r')
 \end{equation*}
-The inherited confidentiality policy $\iconf(DR, r)$ is only well-defined if the data repository is acyclic. However, self-dependencies are ignored, i.e. relations of the form $r \longrightarrow r$. This guarantees that $\iconf(DR, r)$ is a finite policy formula.
+The inherited confidentiality policy $\iconf(DR, r)$ is only well-defined if the data repository is acyclic. However, self-loops are ignored, i.e. relations of the form $r \longrightarrow r$. This guarantees that $\iconf(DR, r)$ is a finite policy formula.
 \end{definition}
 
 Let us look at an example to visualise the inheritance.
@@ -30,7 +30,7 @@ Consider the data repository containing five data resources $r_1\ldots r_5$ illu
         \label{fig:policy-inher}
     \end{center}
 \end{figure}
-Given the data repository $DR$ in \autoref{fig:policy-inher}, the inherited confidentiality policies of $r_1$ and $r_2$ are $\iconf(DR, r_1) = \conf_1$ and $\iconf(DR, r_2) = \conf_2$. This is expected as they have no dependencies other than a self-dependency. Considering the resources $r_3$ and $r_4$ we get $\iconf(DR, r_3) = \conf_3 \land \conf_1$ and $\iconf(DR, r_4) = \conf_4 \land \conf_2$, which is expected as they have a dependency to $r_1$ and $r_2$ respectively. Finally $\iconf(DR, r_5) = \conf_5 \land \conf_4 \land \conf_3 \land \conf_2 \land \conf_1$ as every resource can be reached from $r_5$ through its dependencies.
+Given the data repository $DR$ in \autoref{fig:policy-inher}, the inherited confidentiality policies of $r_1$ and $r_2$ are $\iconf(DR, r_1) = \conf_1$ and $\iconf(DR, r_2) = \conf_2$. This is expected as they have no dependencies other than a self-loop. Considering the resources $r_3$ and $r_4$ we get $\iconf(DR, r_3) = \conf_3 \land \conf_1$ and $\iconf(DR, r_4) = \conf_4 \land \conf_2$, which is expected as they have a dependency to $r_1$ and $r_2$ respectively. Finally $\iconf(DR, r_5) = \conf_5 \land \conf_4 \land \conf_3 \land \conf_2 \land \conf_1$ as every resource can be reached from $r_5$ through its dependencies.
 \end{example}
 
 Now that it is clear how confidentiality policies are inherited, it is possible to consider how to create constraints. Creating constraints are achieved by utilising the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:pf-grammar-user}. In the following a set of examples will be given to illustrate how constraints can be created through confidentiality policies and to give an idea of what kinds of constraints are possible to create. The examples will use the simple data repository shown in \autoref{fig:conf-policy} as reference if needed.
@@ -68,7 +68,7 @@ A way of ensuring that the author and only the author can query a data resource 
 \begin{align*}
     \conf \eqdef subject() = author
 \end{align*}
-Then only author of the resource $r_1$ is allowed to query and read $r_1$. The author attribute is added to a data resource automatically during a put operation as will be further explained in \autoref{sec:put}. With the given policy $\conf$, $r_1$ can be considered a template and as a result of inheritance $r_2$ and $r_3$ in $DR$ can only be read by their authors, i.e. the person who performed the put operation to place them in the data repository.
+Then only author of the resource $r_1$ is allowed to query and read $r_1$. The author attribute is added to a data resource automatically during a \emph{put} as will be further explained in \autoref{sec:put}. With the given policy $\conf$, $r_1$ can be considered a template and as a result of inheritance $r_2$ and $r_3$ in $DR$ can only be read by their authors, i.e. the person who performed the \emph{put} to place them in the data repository.
 \end{example}
 
 \begin{example}[Anonymised data resources]
@@ -95,7 +95,7 @@ An integrity policy $\inte$ is an UPF $\upf$ where the formulae are constructed 
 \end{definition}
 It should be noted that like any other LTL formulae or confidentiality policies, multiple policies can be defined and concatenated with conjunction, to construct a single integrity policy.
 
-As already suggested an integrity policy is associated with a query operation, as opposed to a confidentiality policy which is associated to a data resource. This means that an integrity policy is not persistent in the data repository but its lifespan is as long as the query operation. This will be explained further in \autoref{sec:query}.
+As already suggested an integrity policy is associated with a \emph{query}, as opposed to a confidentiality policy which is associated to a data resource. This means that an integrity policy is not persistent in the data repository but its lifespan is as long as the \emph{query} operation. This will be explained further in \autoref{sec:query}.
 
 Let us now consider how integrity policies can be constructed by utilising the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:pf-grammar-user}. In the following a set of examples will be given to illustrate how constraints can be created through integrity policies and to give an idea of what kinds of constraints are possible to create.
 
@@ -153,6 +153,6 @@ A third way could be that the user performing the query is not too concerned if 
 
 Finally it could be that the user do not want data resources created by an distrusted author, unless it has been sanitised by a trusted author. Assuming \emph{Mallory} is an distrusted author and \emph{Alice} is a trusted author, the integrity policy $\inte_4$ impose that constraint.
 \begin{align*}
-    \inte_4 \eqdef \G author \neq user(Mallory) \lor author \neq user(Mallory) U author = user(Alice))
+    \inte_4 \eqdef \G author \neq user(Mallory) \lor author \neq user(Mallory) U author = user(Alice)
 \end{align*}
 \end{example}

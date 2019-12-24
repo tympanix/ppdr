@@ -1,5 +1,5 @@
 \section{Proof of Concept}\label{app:poc}
-A practical implementation has been implemented as a proof of concept to support the work of this paper carried out in the Go programming language. The implementation involves a parser/scanner for reading Policy Formulae and parsing them to abstract syntax trees, and model checker based on the approaches of \ref{sec:methods} and an implementation of a Data Repository. The decision-tree based approach of determining elementary sets from \ref{sec:method-elemesets} has also been implemented.
+A practical implementation has been implemented as a proof of concept to support the work of this paper carried out in the Go programming language. The implementation involves a parser/scanner for reading policy formulae and parsing them to abstract syntax trees, and model checker based on the approaches of \ref{sec:methods} and an implementation of a Data Repository. The decision-tree based approach of determining elementary sets from \ref{sec:method-elemesets} has also been implemented.
 
 The implementation focuses on correctness and thus leaves performance enhancements to future work. While the implementation has not been formerly proved, it has been evaluated by unit testing covering examples from this paper and other general purpose tests of the model checker, the parser/scanner and the elementary set algorithm.
 
@@ -40,7 +40,7 @@ The dependency graph between packages can be seen in \autoref{fig:poc-package-de
 The implementation section will cover the most essential types and functions of important packages in the implementation and link them to the theory. We will highlight differences from the implementation and the theory where necessary along the way.
 
 \subsubsection{Package \texttt{ltl}}
-The LTL package includes implementation of the nodes comprised in the abstract syntax tree (AST) of LTL formulae as well as convenience functions for computing subformulae, elementary sets and atomic propositions of formulae. Please mind that Policy Formulae and LTL are using the same underlying types, which means that the implementation does not distinguish between the two. In figure~\ref{fig:poc-ltl-package} an overview of the most important types can be seen.
+The LTL package includes implementation of the nodes comprised in the abstract syntax tree (AST) of LTL formulae as well as convenience functions for computing subformulae, elementary sets and atomic propositions of formulae. Please mind that policy formulae and LTL are using the same underlying types, which means that the implementation does not distinguish between the two. In figure~\ref{fig:poc-ltl-package} an overview of the most important types can be seen.
 \begin{figure}
     \dirtree{%
     .1 <<ltl>>\DTcomment{ltl package}. 
@@ -154,7 +154,7 @@ type State struct {
 Using the automata in the systems package one can, with a given formula, generate the GNBA with the function \verb=gnba.GenerateGNBA=, then convert said GNBA to NBA using \verb=nba.TransformGNBAtoNBA= and the finally construct the product $TS\otimes A$ with \verb=product.New=. After the product has been constructed the most essential operation is to call \verb=HasAcceptingCycle=, which is an implementation of the NDFS according to \autoref{sec:methods-ndfs}. The context (type \verb=product.Context=) returned from the NDFS contains information about the trace of the counterexample, or returns nil if no accepting cycle is found.
 
 \subsubsection{Package \texttt{repo}}
-The \verb=repo= package contains the implementation of the Data Repository and the operations of \emph{put} and \emph{query}. In \autoref{fig:poc-repo-package} and overview of the package contents can be seen.
+The \verb=repo= package contains the implementation of the data repository and the operations of \emph{put} and \emph{query}. In \autoref{fig:poc-repo-package} and overview of the package contents can be seen.
 \begin{figure}
     \dirtree{%
     .1 <<repo>>\DTcomment{repo package}. 
@@ -175,6 +175,6 @@ The \verb=repo= package contains the implementation of the Data Repository and t
     \caption{Important construct in the \texttt{repo} package.}
     \label{fig:poc-repo-package}
 \end{figure}
-A key difference in the implementation from the theory is that the DR (type \verb=repo.Repo=) implements the \verb=ts.TS= interface directly, thus no transformation is needed, as the theory suggests in \autoref{def:dr-to-ts}. While this has no theoretical implications is does improve performance of the implementation. Some other noticeable differences are that the states (type \verb=repo.State=) contains the confidentiality policy and the dependencies themselves, while the theory suggest to store such information in a tuple $DR$. This makes the signature of the put operation more concise.
+A key difference in the implementation from the theory is that the DR (type \verb=repo.Repo=) implements the \verb=ts.TS= interface directly, thus no transformation is needed, as the theory suggests in \autoref{def:dr-to-ts}. While this has no theoretical implications is does improve performance of the implementation. Some other noticeable differences are that the states (type \verb=repo.State=) contains the confidentiality policy and the dependencies themselves, while the theory suggest to store such information in a tuple $DR$. This makes the signature of the \emph{put} more concise.
 
-To verify confidentiality and integrity policies, the put and query operation will utilise the \verb=systems= package to construct the product automaton and perform the NDFS check of acceptance cycles. An error is returned when such an operation is not allowed.
+To verify confidentiality and integrity policies, the \emph{put} and \emph{query} will utilise the \verb=systems= package to construct the product automaton and perform the NDFS check of acceptance cycles. An error is returned when such an operation is not allowed.

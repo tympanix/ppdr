@@ -1,6 +1,6 @@
-\section{Architecture of Model-checker}
+\section{Architecture of model checker}
 \label{sec:methods}
-In this section we will explore the methods used for model-checking confidentiality and integrity policies. In \ref{sec:data-repository} we introduced the notion of Policy Formulae, and a transformation from these formulae to LTL. This transformation to LTL allows formal, well-known model checking algorithms to be applied to said formulae. This section will present a model checking approach based on transforming the negated formula into a Büchi automaton. This is performed in two steps, first constructing the \emph{generalised nondeterministic Büchi automaton} (GNBA) and then transforming the GNBA into an equivalent nondeterministic Büchi automaton (NBA). The product of the NBA and the transition system (the data repository) can then be checked for the persistence property by a nested depth-first search. In figure~\ref{fig:model-checker} an overview of the process is shown, where the figure is inspired from ~\cite[Fig.~5.16]{baier2008principles}.
+In this section we will explore the methods used for model checking confidentiality and integrity policies. In \ref{sec:data-repository} we introduced the notion of policy formulae, and a transformation from these formulae to LTL. This transformation to LTL allows formal, well-known model checking algorithms to be applied to said formulae. This section will present a model checking approach based on transforming the negated formula into a Büchi automaton. This is performed in two steps, first constructing the \emph{generalised nondeterministic Büchi automaton} (GNBA) and then transforming the GNBA into an equivalent nondeterministic Büchi automaton (NBA). The product of the NBA and the transition system (the data repository) can then be checked for the persistence property by a nested depth-first search. In figure~\ref{fig:model-checker} an overview of the process is shown, where the figure is inspired from ~\cite[Fig.~5.16]{baier2008principles}.
 
 \begin{figure}[!ht]
     \centering
@@ -9,7 +9,7 @@ In this section we will explore the methods used for model-checking confidential
     \label{fig:model-checker}
 \end{figure}
 
-This section will also cover an optimised approach of finding elementary sets and a short introduction on how to parse Policy Formulae from a text based representation into an abstract syntax tree.
+This section will also cover an optimised approach of finding elementary sets and a short introduction on how to parse policy formulae from a text based representation into an abstract syntax tree.
 
 
 \subsection{Parsing LTL formulae}
@@ -188,7 +188,7 @@ The formulae in \autoref{tab:elem-test} is a subset of the formulae used in \cit
 \input{tables/elem-test.tex}
 
 \subsection{GNBA}
-The method of model checking the confidentiality and integrity policies involves constructing a generalised nondeterministic Büchi automaton (GNBA) over the formula $\lnot\phi$ (read as ``the negation of phi''). The GNBA functions as a monitor for the transition system for which its accepting states serves to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for a LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalised as follows:
+The method of model checking the confidentiality and integrity policies involves constructing a generalised nondeterministic Büchi automaton (GNBA) over the formula $\lnot\phi$ (read as ``the negation of phi''). The GNBA functions as a monitor for the transition system for which its accepting states serves to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for an LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalised as follows:
 \begin{definition}[Construction of GNBA from LTL{\cite[Thm.~5.37]{baier2008principles}}]
 \label{def:ltl-to-gnba}
 Given an LTL formula $\phi$ over AP a GNBA $\mathcal{G}=(Q,2^{AP},\delta,Q_0,\mathcal{F})$ can be constructed in space and time $\mathcal{O}(2^{|\phi|})$ as follows:

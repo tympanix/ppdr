@@ -5,7 +5,7 @@ When thinking of what a data repository is, words like ``tuple spaces'', ``data 
 % Paragraph:
 % - Make the connection to transition systems
 In the literature (Baier and Katoen, 2008)\cite{baier2008principles} use a Transition System (TS) without terminal states as a reactive system, for which they are checking LTL formulae against. The following definition of a TS is used:
-\begin{definition}[Transition System (TS){\cite[def.~2.1]{baier2008principles}}]\label{def:ts}
+\begin{definition}[Transition System (TS){\cite[Def.~2.1]{baier2008principles}}]\label{def:ts}
 A \emph{transition system} $TS$ is a tuple $\left(S, \longrightarrow, I, AP, L \right)$, where
 \begin{itemize}
   \item $S$ is a set of data states
@@ -16,7 +16,6 @@ A \emph{transition system} $TS$ is a tuple $\left(S, \longrightarrow, I, AP, L \
 \end{itemize}
 Note that we have omitted the actions on transition labels as they are not relevant in this setting.
 \end{definition}
-Some of the key elements of a TS are that it contains states, transitions between the states and that transitions are labelled with an action.
 
 To model a data repository as a TS, one could consider data resources from the data repository as states in the TS and dependencies between data resources as transitions between states. Let $r_i$ and $r_j$ be data resources in the same data repository $DR$, and let $r_i$ be derived fully or partially from $r_j$, i.e. information from $r_j$ was used when creating $r_i$. Then there exists a dependency from $r_i$ to $r_j$. As an example consider a data repository of scientific papers, i.e. each paper is a data resource. Say this paper is the data resource $r$ in the data repository. Then $r$ would have a dependency to each of the papers it references, as the information from those references were used when composing this paper. It could also be that a dependency exists to a resource that defines rules about the format of the paper. This is what is referred to as a policy and will be introduced in a later section. Modelling dependencies in this way inherently describes the past and if you were to follow the dependencies from a data resource they would paint a picture of how that resource got to be. This is contrary to transitions in a TS, which describes something about the future.
 
@@ -26,7 +25,7 @@ As mentioned (Baier and Katoen, 2008)\cite{baier2008principles} use a TS without
 
 % Paragraph:
 % - Actions
-In a TS transitions can have an action as a label, which describes what action was taken in order to make that transition from one state to another in the TS. Placing some data resource in the data repository can give rise to dependencies between resources, and thus every dependency is a result of the same action. Therefore adding the same action as label to every dependency is considered redundant and they can be left empty. In other words, dependencies between data resources merely specifies the relationship between them.
+In a TS transitions can have an action as a label, which describes what action was taken in order to make that transition from one state to another in the TS. Placing some data resource in the data repository can give rise to dependencies between resources, and thus every dependency is a result of the same action. Therefore adding the same action as label to every dependency is considered redundant and as such the actions are not relevant in this setting. In other words, dependencies between data resources merely specifies the relationship between them.
 
 % Paragraph: 
 % - AP

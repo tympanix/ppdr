@@ -30,7 +30,7 @@ Then \emph{put} results in a new data repository $DR'=\left(R', \longrightarrow'
 \end{itemize}
 And the dependency relation $\longrightarrow'$ is:
 \begin{itemize}
-    \item if $D = \varnothing$, then $\longrightarrow' = \longrightarrow \cup \{r \longrightarrow r\}$ (self-dependency)
+    \item if $D = \varnothing$, then $\longrightarrow' = \longrightarrow \cup \{r \longrightarrow r\}$ (self-loop)
     \item if $D \neq \varnothing$, then $\longrightarrow' = \longrightarrow \cup \{r \longrightarrow r' \mid r' \in D \land r' \in R \}$
 \end{itemize}
 The \emph{put} is well-defined if $r$ did not exist in the data repository before the operation, and the inherited confidentiality policy is satisfied:

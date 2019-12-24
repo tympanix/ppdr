@@ -1,0 +1,13 @@
+\begin{forest}
+    for tree={circle, draw, s sep=100pt, grow=north,edge={->}}
+    [$r_5$, name=r5, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$author: Charlie$\}};}
+        [$r_4$, name=r4, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$author: Alice$\}};}
+            [$r_2$, name=r2, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$author: Bob$\}};}]
+        ]
+        [$r_3$, name=r3, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$author: Alice$\}};}
+            [$r_1$, name=r1, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east] {\{$author: Mallory$\}};}]
+        ] 
+    ]
+    \draw[->] (r1) to [out=north west,in=north east,looseness=4] (r1);
+    \draw[->] (r2) to [out=north west,in=north east,looseness=4] (r2);
+\end{forest}
