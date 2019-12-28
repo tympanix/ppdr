@@ -42,7 +42,7 @@ func TestParser(t *testing.T) {
 		"2 <= 5": ltl.LessEqual{ltl.LitNumber{2}, ltl.LitNumber{5}},
 
 		// Functions
-		"a = reader()":       ltl.Equals{ltl.AP{"a"}, ltl.Reader{}},
+		"a = subject()":      ltl.Equals{ltl.AP{"a"}, ltl.Subject{}},
 		"a = user(\"john\")": ltl.Equals{ltl.AP{"a"}, ltl.User{"john"}},
 
 		// Negations

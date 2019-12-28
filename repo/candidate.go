@@ -29,11 +29,11 @@ func (c candidate) satisfiesFormula(phi ltl.Node) bool {
 		return true
 	}
 
-	// Rename reader with current user
+	// Rename subject with current user
 	phi = phi.Map(func(n ltl.Node) ltl.Node {
-		if _, ok := n.(ltl.Reader); ok {
+		if _, ok := n.(ltl.Subject); ok {
 			return ltl.Ptr{
-				Attr:    "reader",
+				Attr:    "subject",
 				Pointer: unsafe.Pointer(c.Repo.currentUser),
 			}
 		}

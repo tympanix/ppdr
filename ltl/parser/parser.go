@@ -216,8 +216,8 @@ func (p *Parser) parseFunction() ltl.Node {
 	}
 	p.expect(token.RPAR)
 
-	if name == "reader" && l == nil {
-		return ltl.Reader{}
+	if name == "subject" && l == nil {
+		return ltl.Subject{}
 	} else if s, ok := l.(ltl.LitString); name == "user" && ok {
 		return ltl.User{s.Str}
 	}
