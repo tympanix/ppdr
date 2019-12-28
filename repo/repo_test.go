@@ -365,7 +365,7 @@ func TestRepo_five(t *testing.T) {
 //		author = john
 //		author = jane
 //		author = jack
-//		author = reader()
+//		author = subject()
 func TestRepo_six(t *testing.T) {
 
 	r := NewRepo()
@@ -386,24 +386,24 @@ func TestRepo_six(t *testing.T) {
 		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, OK},
 		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, ERR},
 		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
-		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}, ERR},
+		exe{query{s0, ltl.Equals{ltl.AP{"author"}, ltl.Subject{}}}, ERR},
 
 		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"john"}}}, ERR},
 		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jane"}}}, OK},
 		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.User{"jack"}}}, ERR},
-		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}, OK},
+		exe{query{s1, ltl.Equals{ltl.AP{"author"}, ltl.Subject{}}}, OK},
 	}
 
 	runTableTest(t, r, tests)
 }
 
-// Confidentiality: author = reader()
+// Confidentiality: author = subject()
 func TestRepo_seven(t *testing.T) {
 
 	r := NewRepo()
 
 	s0 := NewState()
-	s0.AddPolicy(ltl.Equals{ltl.AP{"author"}, ltl.Reader{}})
+	s0.AddPolicy(ltl.Equals{ltl.AP{"author"}, ltl.Subject{}})
 	s1 := NewState()
 	s2 := NewState()
 
@@ -436,12 +436,12 @@ func TestRepo_seven(t *testing.T) {
 	runTableTest(t, r, tests)
 }
 
-// Confidentiality: self -> author == reader()
+// Confidentiality: self -> author == subject()
 func TestRepo_eight(t *testing.T) {
 
 	r := NewRepo()
 
-	phi := ltl.Impl{ltl.Self{}, ltl.Equals{ltl.AP{"author"}, ltl.Reader{}}}
+	phi := ltl.Impl{ltl.Self{}, ltl.Equals{ltl.AP{"author"}, ltl.Subject{}}}
 	s0 := NewState()
 	s0.AddPolicy(phi)
 	s1 := NewState()
@@ -500,16 +500,16 @@ func TestRepo_nine(t *testing.T) {
 	runTableTest(t, r, tests)
 }
 
-// Confidentiality: reader() = user("jane")
+// Confidentiality: subject() = user("jane")
 func TestRepo_ten(t *testing.T) {
 
 	r := NewRepo()
 
-	phi0 := ltl.Equals{ltl.Reader{}, ltl.User{"jane"}}
+	phi0 := ltl.Equals{ltl.Subject{}, ltl.User{"jane"}}
 	s0 := NewState()
 	s0.AddPolicy(phi0)
 
-	phi1 := ltl.Equals{ltl.Reader{}, ltl.User{"john"}}
+	phi1 := ltl.Equals{ltl.Subject{}, ltl.User{"john"}}
 	s1 := NewState()
 	s1.AddPolicy(phi1)
 
