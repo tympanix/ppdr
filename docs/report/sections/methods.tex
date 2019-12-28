@@ -1,5 +1,5 @@
 \section{Architecture of model checker}\label{sec:methods}
-In this section we will explore the methods used for model checking confidentiality and integrity policies. In \autoref{sec:data-repository} the notion of policy formulae and a transformation from these formulae to LTL were introduced. This transformation to LTL allows formal, well-known model checking algorithms to be applied to said formulae. This section will present a model checking approach based on transforming the negated formula into a Büchi automaton. This is performed in two steps, first constructing the Generalised Nondeterministic Büchi Automaton (GNBA) and then transforming the GNBA into an equivalent Nondeterministic Büchi Automaton (NBA). The product of the NBA and the transition system (the data repository) can then be checked for the persistence property by a nested depth-first search. In \autoref{fig:model-checker} an overview of the process is shown, where the figure is inspired by~\cite[Fig.~5.16]{baier2008principles}.
+In this section, we will explore the methods used for model checking confidentiality and integrity policies. In \autoref{sec:data-repository} the notion of policy formulae and a transformation from these formulae to LTL were introduced. This transformation to LTL allows formal, well-known model checking algorithms to be applied to said formulae. This section will present a model checking approach based on transforming the negated formula into a Büchi automaton. This is performed in two steps, first constructing the Generalised Nondeterministic Büchi Automaton (GNBA) and then transforming the GNBA into an equivalent Nondeterministic Büchi Automaton (NBA). The product of the NBA and the transition system (the data repository) can then be checked for the persistence property by a nested depth-first search. In \autoref{fig:model-checker} an overview of the process is shown, where the figure is inspired by~\cite[Fig.~5.16]{baier2008principles}.
 
 \begin{figure}[!ht]
     \centering
@@ -8,10 +8,10 @@ In this section we will explore the methods used for model checking confidential
     \label{fig:model-checker}
 \end{figure}
 
-This section will also cover an optimised approach of finding elementary sets and a short introduction on how to parse policy formulae from a text based representation into an abstract syntax tree.
+This section will also cover an optimized approach of finding elementary sets and a short introduction on how to parse policy formulae from a text-based representation into an abstract syntax tree.
 
 \subsection{Parsing LTL formulae}
-Parsing an LTL formula from a text based representation into an abstract syntax tree (AST) is performed using a top-down parser with the recursive decent algorithm. The recursive descent algorithm follows the structure of the context-free grammar closely by having a mutually exclusive procedure for each non-terminal production rule in the grammar. Care has to be taken to uphold the left- and right-associative rules for each of the operators. In \autoref{alg:recursive-descent} the overall structure of the recursive descent algorithm can be seen for the $i$'th production rule.
+Parsing an LTL formula from a text-based representation into an abstract syntax tree (AST) is performed using a top-down parser with the recursive descent algorithm. The recursive descent algorithm follows the structure of the context-free grammar closely by having a mutually exclusive procedure for each non-terminal production rule in the grammar. Care has to be taken to uphold the left- and right-associative rules for each of the operators. In \autoref{alg:recursive-descent} the overall structure of the recursive descent algorithm can be seen for the $i$'th production rule.
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -27,7 +27,7 @@ Parsing an LTL formula from a text based representation into an abstract syntax 
 \caption{The recursive descent algorithm for the $i$'th production rule.}
 \label{alg:recursive-descent}
 \end{algorithm}
-A procedure for the $i'th$ production rule generally parses its left-hand side with the production rule following itself, i.e. the production rules with higher associativity. The procedure then recurses on the right hand side, as long as the operator matching the current production rule can be found in the input stream. Recursing on the right-hand side makes the parsing right-associative. 
+A procedure for the $i'th$ production rule generally parses its left-hand side with the production rule immediately following itself, i.e. the production rule with immediate higher associativity. The procedure then recurses on the right-hand side, as long as the operator matching the current production rule can be found in the input stream. Recursing on the right-hand side makes the parsing right-associative. 
 
 \begin{example}
 We consider the AST for the formula $\phi \eqdef a \U b \land c$ which can be seen in \autoref{fig:ast-exampl1}. The precedence rule of the until operator ($\U$) is stronger than that of the conjunction ($\land$), which is explicitly shown in the AST.
@@ -70,10 +70,10 @@ We consider the AST for the formula $\phi \eqdef a \U b \U c$ which can be seen 
 
 \subsection{Determining Elementary Sets}
 \label{sec:method-elemesets}
-The problem of finding elementary sets is essential in model checking of LTL formulae. In this paper two methods are presented for determining the elementary sets of an LTL formula, the first being a naive approach and the second being an optimised decision tree based approach.
+The problem of finding elementary sets is essential in model checking of LTL formulae. In this paper two methods are presented for determining the elementary sets of an LTL formula, the first being a naive approach and the second being an optimized decision tree-based approach.
 
 \subsubsection{Naive approach}
-In the naive approach for finding elementary sets all subsets of the closure of $\phi$ is considered to be elementary or not. Since all subsets of $closure(\phi)$ are considered, the naive approach does not exclude any sets which are trivially not elementary, i.e. sets which are not maximal. Since $|closure(\phi)|$ is $\mathcal{O}(|\phi|)$ the number of possible elementary sets which is considered by the naive approach is $\mathcal{O}(2^{|\phi|})$. Checking whether a set is elementary or not takes $\mathcal{O}(|\phi|)$ time which results in a total time complexity of $\mathcal{O}(2^{|\phi|} \cdot |\phi|)$. The algorithm is correct since all sets are considered.
+In the naive approach for finding elementary sets all subsets of the closure of $\phi$ are considered to be elementary or not. Since all subsets of $closure(\phi)$ are considered, the naive approach does not exclude any sets which are trivially not elementary, i.e. sets which are not maximal. Since $|closure(\phi)|$ is $\mathcal{O}(|\phi|)$ the number of possible elementary sets which is considered by the naive approach is $\mathcal{O}(2^{|\phi|})$. Checking whether a set is elementary or not takes $\mathcal{O}(|\phi|)$ time which results in a total time complexity of $\mathcal{O}(2^{|\phi|} \cdot |\phi|)$. The algorithm is correct since all sets are considered.
 
 \subsubsection{Decision tree approach}\label{sec:methods-dt}
 The decision tree based approach exploits the property of elementary sets being maximal, i.e. for all $\psi \in closure(\phi)$:
@@ -82,9 +82,9 @@ The decision tree based approach exploits the property of elementary sets being 
 \end{equation*}
 This very fundamental property leads to a binary relationship for each subformula, where either the negated or the non-negated subformula must be present in the elementary set. The algorithm considers all subformulae $\psi$ of $\phi$ in ascending order of their formula length $|\psi|$. This results in the smallest subformulae being considered prior to any other subformula.
 
-The algorithm recursively explores a decision tree where a node at depth $i$ will have one edge exploring the $i$'th subformula of $\phi$ and another edge exploring the negation of that subformula. A node is marked inconsistent if the path $\pi$ from the root node to the node itself (corresponding to a set of subformulae) is inconsistent with respect to the properties for elementary sets. An inconsistent node halts further exploration, as an inconsistent node can not reach a state where the path becomes consistent again. The decision tree is complete when all subformulae of $\phi$ has been considered. The definition for constructing a decision tree is provided in the following:
+The algorithm recursively explores a decision tree where a node at depth $i$ will have one edge exploring the $i$'th subformula of $\phi$ and another edge exploring the negation of that subformula. A node is marked inconsistent if the path $\pi$ from the root node to the node itself (corresponding to a set of subformulae) is inconsistent with respect to the properties for elementary sets. An inconsistent node halts further exploration, as an inconsistent node can not reach a state where the path becomes consistent again. The decision tree is complete when all subformulae of $\phi$ have been considered. The definition for constructing a decision tree is provided in the following:
 \begin{definition}[Decision Tree Algorithm for Elementary Sets (DT)]
-Let $\phi$ be an LTL formula and $\vec{f}$ be the partial order of subformulae $\psi$ of $\phi$ sorted according to $|\psi|$. Let $DT: F^\ast, 2^F \rightarrow T$ be the definition for the decision tree algorithm where $F$ is the set of all possible LTL formulae and $T$ all possible decisions trees. The tree is constructed from three types of nodes, given the following definition:
+Let $\phi$ be an LTL formula and $\vec{f}$ be the partial order of subformulae $\psi$ of $\phi$ sorted according to $|\psi|$. Let $DT: F^\ast, 2^F \rightarrow T$ be the definition for the decision tree algorithm where $F$ is the set of all possible LTL formulae and $T$ all possible decision trees. The tree is constructed from three types of nodes, given the following definition:
 \begin{align*}
     \input{figs/dt-circle.tex} &\text{ is a root or intermediate node} \\
     \input{figs/dt-cross.tex}  &\text{ is an inconsistent node} \\
@@ -115,7 +115,7 @@ We note here that $closure(\lambda)$ denotes set set of all formulae in $\lambda
 For readability we denote the decision tree of $\phi$ as $DT_\phi$.
 \end{definition}
 
-Since the height of the decision tree is $\mathcal{O}(|\phi|)$ and the tree is binary, the time complexity for exploring the decision tree is $\mathcal{O}(2^{|\phi|})$. Although the time complexity is still exponential with respect to $|\phi|$, like the naive approach, in practice the algorithm shows vast improvements because of the early elimination of inconsistent nodes, as shown later in this section. For completeness, we provide the following proof for the correctness of the DT algorithm. First, we introduce some essential properties of $DT_\phi$ which are required for the proof.
+Since the height of the decision tree is $\mathcal{O}(|\phi|)$ and the tree is binary, the time complexity for exploring the decision tree is $\mathcal{O}(2^{|\phi|})$. Although the time complexity is still exponential with respect to $|\phi|$, as the naive approach, in practice the algorithm shows vast improvements because of the early elimination of inconsistent nodes, as shown later in this section. For completeness, we provide the following proof for the correctness of the DT algorithm. First, we introduce some essential properties of $DT_\phi$ which are required for the proof.
 
 \begin{definition}[Properties of paths of $DT_\phi$]
 \label{def:dt-props}
@@ -153,7 +153,7 @@ It now remains to show that \autoref{eq:elem1.2} and \autoref{eq:elem3.1} holds 
 \end{equation*}
 Then $\psi$ and $\lnot \psi$ must belong to some edge $\pi_i \in \pi$ and $\pi_j \in \pi$. Since $\psi$ and $\lnot\psi$ must be an edge on the same depth in the decision tree, i.e. $i=j$, $\psi$ and $\lnot \psi$ must be in two different subtrees, thus $\pi$ can not contain both. More formally this is proven using \autoref{def:dt-props} which states that $\psi \in B \oplus \lnot\psi \in B$. This contradicts our assumption.
 
-For the case of maximality we again consider the following contradiction. Assume that the rule of maximality, \autoref{eq:elem3.1}, does not hold, meaning:
+For the case of maximality, we again consider the following contradiction. Assume that the rule of maximality, \autoref{eq:elem3.1}, does not hold, meaning:
 \begin{equation*}
     \psi \notin B \land \lnot \psi \notin B \tag{contradiction of \ref{eq:elem3.1}}
 \end{equation*}
@@ -173,7 +173,7 @@ We now consider the decision tree $DT_\phi$ for $\phi \eqdef a \cup (a \land b)$
 \end{center}
 \end{figure}
 
-After exploration of the decision tree one can find the elementary sets of $\phi$ as all paths in $DT_\phi$ from the root reaching a terminal node. This results in the following elementary sets:
+After the exploration of the decision tree, one can find the elementary sets of $\phi$ as all paths in $DT_\phi$ from the root reaching a terminal node. This results in the following elementary sets:
 \begin{align*}
     B_1 &= \{a,         b,         a\land b,           \phi\} \\
     B_2 &= \{a,         \lnot b,    \lnot (a\land b),   \phi\} \\
@@ -184,14 +184,14 @@ After exploration of the decision tree one can find the elementary sets of $\phi
 \end{example}
 
 \paragraph{Performance comparison}
-The formulae in \autoref{tab:elem-test} is a subset of the formulae used in \cite[Tab.~1]{somenzi2000efficient} for testing their algorithm for creating Büchi automaton from LTL formulae. In the table the mean time of execution is shown for each formula, i.e. the mean time it takes to produce the elementary set.
+The formulae in \autoref{tab:elem-test} is a subset of the formulae used in \cite[Tab.~1]{somenzi2000efficient} for testing their algorithm for creating Büchi automaton from LTL formulae. In the table, the mean time of execution is shown for each formula, i.e. the mean time it takes to produce the elementary set.
 
 \input{tables/elem-test.tex}
 
-In most cases the decision tree based approach delivers significantly faster results compared to the naive approach. Only in one of the tested cases, the naive outperforms the decision tree approach. The formula tested in this case only had length 1, so there are only a few sets to consider if they are elementary or not. In other cases the naive approach is not able to terminate, because the system is out of memory or exceeds the time limitation of 10 minutes. Furthermore in three cases the naive approach uses more than 200 seconds, which is significantly more than the remaining formulae it was able to solve. The reason is most likely that it all system memory were saturated before it solved them, thus forcing it to use swap. In general the tendency is that the longer the formula, the more is gained by using the decision tree approach, furthermore due to the lower memory usage of the decision tree approach, it is able to solve longer and more complex formulae.
+In most cases, the decision tree-based approach delivers significantly faster results compared to the naive approach. Only in one of the tested cases, the naive outperforms the decision tree approach. The formula tested in this case only had length 1, so there are only a few sets to consider if they are elementary or not. In other cases, the naive approach is not able to terminate, because the system is out of memory or exceeds the time limitation of 10 minutes. Furthermore, in three cases the naive approach uses more than 200 seconds, which is significantly more than the remaining formulae it was able to solve. The reason is most likely that all system memory was saturated before it solved them, thus forcing it to use swap. In general the tendency is that the longer the formula, the more is gained by using the decision tree approach, furthermore due to the lower memory usage of the decision tree approach, it is able to solve longer and more complex formulae.
 
 \subsection{GNBA}
-The method of model checking the confidentiality and integrity policies involves constructing a GNBA over the formula $\lnot\phi$. The GNBA functions as a monitor for the transition system for which its accepting states serves to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for an LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalized as follows:
+The method of model checking the confidentiality and integrity policies involves constructing a GNBA over the formula $\lnot\phi$. The GNBA functions as a monitor for the transition system for which its accepting states serve to disprove the formula $\phi$. If the formula can not be disproved, hence no counterexample of $\phi$ can be found, it is said to be valid. The states of the GNBA is comprised of the elementary sets of $\phi$ of which we have discussed in \autoref{sec:method-elemesets}. The GNBA has at most $2^{|\phi|}$ states where the number of acceptance state sets equals the number of until formulae in $\phi$. We say that for an LTL formula $\phi$ there exists a GNBA $\mathcal{G_\phi}$ where $Words(\phi)=\mathcal{L}_\omega(\mathcal{G_\phi})$. The construction of the GNBA is formalized as follows:
 \begin{definition}[Construction of GNBA from LTL~{\cite[Thm.~5.37]{baier2008principles}}]
 \label{def:ltl-to-gnba}
 Given an LTL formula $\phi$ over $AP$ a GNBA $\mathcal{G}=(Q,2^{AP},\delta,Q_0,\mathcal{F})$ can be constructed in space and time $\mathcal{O}(2^{|\phi|})$ as follows:
@@ -286,10 +286,10 @@ Furthermore, let $P_{pers(\mathcal{A}}$ be the persistence property over $AP' = 
 where $\lnot F$ denotes the propositional formula $\bigwedge\limits_{q \in Q} \lnot q$ over $AP' = Q$.
 \end{definition}
 
-The problem of checking $\phi$ is the reduced to checking whether $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothing$. We prove this by finding a path in the product for which an accepting state of $A$ is visited infinitely often. This path is then a counter example for $TS \not\models \phi$. If no counter example is found, then $\phi$ is proved to hold.
+The problem of checking $\phi$ is the reduced to checking whether $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothing$. We prove this by finding a path in the product for which an accepting state of $A$ is visited infinitely often. This path is then a counterexample for $TS \not\models \phi$. If no counterexample is found, then $\phi$ is proved to hold.
 
 \subsection{Nested Depth-First Search}\label{sec:methods-ndfs}
-The problem of determining $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothing$, as described above in \autoref{sec:product-automaton}, results in checking whether a path exists in $TS \otimes A$ which visits an acceptance state infinitely often. Finding such a path is achieved with a nested depth-first search (NDFS). The algorithm is structured as an outer and inner depth-first search (DFS) for which the outer DFS searches to find an accepting state and the inner DFS searches to find a cycle. If such a cycle can be found one can conclude that the accepting state can be visited infinitely often, proving $TS \not\models \phi$. If the outer DFS manages to explore all accepting states with no accepting cycles in the inner DFS, then no counter example can be found, thus $TS \models \phi$ is proved.
+The problem of determining $Traces(TS) \cap \mathcal{L_\omega}(A) \neq \varnothing$, as described above in \autoref{sec:product-automaton}, results in checking whether a path exists in $TS \otimes A$ which visits an acceptance state infinitely often. Finding such a path is achieved with a nested depth-first search (NDFS). The algorithm is structured as an outer and inner depth-first search (DFS) for which the outer DFS searches to find an accepting state and the inner DFS searches to find a cycle. If such a cycle can be found one can conclude that the accepting state can be visited infinitely often, proving $TS \not\models \phi$. If the outer DFS manages to explore all accepting states with no accepting cycles in the inner DFS, then no counterexample can be found, thus $TS \models \phi$ is proved.
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
