@@ -1,17 +1,16 @@
 \section{Preliminaries}\label{sec:preliminaries}
-
-\subsection{Temporal Logic}
-Temporal Logics (TL) are a convenient way to specify and verify properties of the infinite behaviour of reactive systems, like a transition system. TL extends either propositional or predicate logic with modalities, where the modalities are said to be \emph{time-abstract}, as they allow one to specify the order in which state labels occur during a system execution. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
+\subsection{Temporal Logics}
+Temporal Logics (TL) are a straightforward way to specify and verify properties of infinite behaviour of reactive systems, e.g. a transition system. TL extend either propositional or predicate logic with modalities, where the modalities are said to be \emph{time-abstract}, as they allow one to specify the order in which state labels occur during an execution of a system~\cite{baier2008principles}. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
 \begin{align*}
     &\F \quad \text{``eventually'' (some time in the future)}\\
     &\G \quad \text{``always'' (now and forever in the future)}
 \end{align*}
 \emph{Eventually} and \emph{always} will be explained more in-depth during this section. 
 
-The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is Linear Temporal Logic (LTL). In the remaining of this paper the focus will be on LTL that extends propositional logic, as the information flow policy language introduced in \autoref{sec:grammar} is based on that extension.
+The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is Linear Temporal Logic (LTL)~\cite{baier2008principles}. In the remaining of this paper the focus will be on LTL that extends propositional logic, as the information flow policy language introduced in \autoref{sec:grammar} is based on that extension.
 
 \subsubsection{Linear Temporal Logic}\label{sec:ltl}
-As mentioned LTL is a temporal logic, that is based on a linear-time perspective and can be used to specify properties of paths. These property specifications are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of an LTL formula $\phi$ is described by the grammar:
+Property specifications in the linear-time perspective are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of an LTL formula $\phi$ is described by the grammar:
 
 \input{tables/ltl-grammar.tex}
 
@@ -23,7 +22,7 @@ where $a \in AP$ and $AP$ is a set of atomic propositions. It should be noted th
 
 In the given grammar the operator precedence is that unary operators bind stronger than the binary ones. \emph{Until} (binary) binds stronger than the binary operators from propositional logic ($\land$, $\lor$ and $\imply$). Furthermore the \emph{until} operator is right-associative, i.e. $\phi_1 \U \phi_2 \U \phi_3 \equiv \phi_1 \U \left(\phi_2 \U \phi_3\right)$~\cite{baier2008principles}.
 
-The length of an LTL formula $\phi$ is denoted by $| \phi |$ and is determined by the number of operators in $\phi$, being both propositional and temporal operators~\cite{baier2008principles}. For instance, let $\phi= true$ or $\phi= a$ then $| \phi | = 0$. Let $\phi= true \U \left( \lnot a \land \X b \right)$ then $| \phi | = 4$. The length of formulae are used, amongst others, for proving our algorithm for determining elementary sets in \autoref{sec:methods-dt}.
+The length of an LTL formula $\phi$ is denoted by $| \phi |$ and is determined by the number of operators in $\phi$, being both propositional and temporal operators~\cite{baier2008principles}. For instance, let $\phi= true$ or $\phi= a$ then $| \phi | = 0$. Let $\phi= true \U \left( \lnot a \land \X b \right)$ then $| \phi | = 4$. The length of formulae is used for proving our algorithm for determining elementary sets in \autoref{sec:methods-dt}.
 
 LTL formulae are said to either hold under a path or not. To determine whether an LTL formula $\phi$ holds under a path or not the formula is defined as a language $\mathit{Words}(\phi)$ which is all infinite words over $2^{AP}$ that satisfies $\phi$. $\mathit{Words}(\phi)$ can be described more formally as~\cite[Def.~5.6]{baier2008principles}
 \begin{align*}
@@ -41,25 +40,23 @@ For a word $\sigma = A_0 A_1 A_2 \ldots \in \left( 2^{AP} \right)^\omega$ the su
     \sigma &\models \G \phi             &\text{iff }& \forall i \geq 0.\enskip \sigma\left[i\ldots\right] \models \phi \label{eq:sem-always}
 \end{align}
 
-More informally the above semantics can be described as follows. \emph{true} holds under every word. An atomic proposition $a$ holds under a word if and only if the first symbol of the words satisfies $a$. A conjunction $\phi_1 \land \phi_2$ holds under a word if and only if both subformulae $\phi_1$ and $\phi_2$ hold under the word. $\lnot \phi$ holds under a word if and only if $\phi$ does not hold under the word. $\X\phi$ holds under a word if and only if $\phi$ holds under the suffix starting at the next symbol of the word. $\phi_1 \U \phi_2$ holds under a word if and only if $\phi_2$ holds under some symbol of the word and $\phi_1$ holds under every symbol of the prefix of the word up until the point where $\phi_2$ holds. $\F \phi$ holds under a word if and only if $\phi$ holds under some suffix of the word. Finally $\G \phi$ holds under a word if and only if $\phi$ holds under every suffix of the word.
-
 As the grammar of LTL formulae might suggest, see \autoref{tab:ltl-grammar}, it is possible to create composite operators like
 \begin{align*}
     &\G\F\phi \quad \text{``always eventually'' or ``infinitely often''}\\
     &\F\G\phi \quad \text{``eventually always'' or ``eventually forever''}
 \end{align*}
-The informal semantics of $\G\F\phi$ is that it holds under a word if and only if every suffix of the word contains a symbol for which $\phi$ holds under. Furthermore $\F\G\phi$ holds under a word if and only if there exists a suffix for which $\phi$ holds under every suffix of the suffix. The formal semantics can be derived from \autoref{eq:sem-eventually} and \autoref{eq:sem-always}.
+The informal semantics of $\G\F\phi$ is that it holds under a word if and only if every suffix of the word contains a symbol for which $\phi$ holds under. Furthermore $\F\G\phi$ holds under a word if and only if there exists a suffix for which $\phi$ holds under every suffix of the suffix~\cite{baier2008principles}. The formal semantics can be derived from \autoref{eq:sem-eventually} and \autoref{eq:sem-always}.
 
 \subsection{Closure of $\phi$}
 The closure of an LTL formula $\phi$ is the set containing all subformulae $\psi$ of $\phi$ and their negation $\lnot \psi$ together with the formula itself and its negation~\cite[Def.~5.34]{baier2008principles}. Consider the following example
 \begin{align*}
     \phi &= true \U \left( a \land \X b \right) \\
-    closure(\phi) &= \left\{ \phi, \lnot \phi, a \land \X b, \lnot \left( a \land \X b \right), \X b, \lnot \left( \X b \right), a, \lnot a, b, \lnot b, true \right\}
+    closure(\phi) &= \left\{ \phi, \lnot \phi, a \land \X b, \lnot \left( a \land \X b \right), \X b, \lnot \X b, a, \lnot a, b, \lnot b, true \right\}
 \end{align*}
-For readability we omit from writing $\lnot true$ in $closure(\phi)$ as a set containing $\lnot true$ can not be elementary, as will be shown in the following section. The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi)| \in \mathcal{O}\left(|\phi|\right)$~\cite{baier2008principles}. The concept of closure is introduced for constructing the elementary sets of LTL formulae and thus is a crucial part of the automata-based model checking method used.
+For readability we omit to write $\lnot true$ in $closure(\phi)$ as a set containing $\lnot true$ can not be elementary, as will be shown in the following section. The length of $closure(\phi)$ is denoted by $|closure(\phi)|$ and $|closure(\phi)| \in \mathcal{O}\left(|\phi|\right)$~\cite{baier2008principles}. The concept of closure is introduced for constructing the elementary sets of LTL formulae and thus is a crucial part of the automata-based model checking method used.
 
 \subsection{Elementary Sets}\label{sec:elemesets}
-A set $B \subseteq closure(\phi)$ is said to be \emph{elementary} if it satisfies the following properties.
+A set $B \subseteq closure(\phi)$ is said to be \emph{elementary} if it satisfies the following properties:
 
 The first set of properties guarantee that the set $B$ is \emph{consistent} with respect to propositional logic. That is for all conjunctions $\phi_1 \land \phi_2 \in closure(\phi)$ and subformulae $\psi \in closure(\phi)$ the following properties should be satisfied~\cite[Fig.~5.20]{baier2008principles}:
 \begin{align}
@@ -79,15 +76,15 @@ The third and final set of properties is that the set $B$ is \emph{maximal}, i.e
     \psi \notin B \imply \lnot \psi \in B \label{eq:elem3.1}
 \end{align}
 
-Elementary sets is a fundamental part of the verification of LTL properties or, more explicitly, in the conversion from LTL formulae to generalised non-deterministic Büchi automata. Finally let us consider a concrete example:
+Elementary sets is a fundamental part of the verification of LTL properties or, more explicitly, in the conversion from LTL formulae to generalised nondeterministic Büchi automata. Finally let us consider a concrete example:
 
 \begin{example}
 Consider the following LTL formula and its closure:
 \begin{align*}
-    \phi &= a \U \left( a \land b \right) \\
+    \phi &\eqdef a \U \left( a \land b \right) \\
     closure(\phi) &= \left\{ a \U \left( a \land b \right), \lnot \left( a \U \left( a \land b \right) \right), a \land b, \lnot \left( a \land b \right), a, \lnot a, b, \lnot b \right\}
 \end{align*}
-Below are all sets $B \subseteq closure(\phi)$ listed that satisfy property (\ref{eq:elem3.1}). Each set is marked whether or not it is elementary. In case a set is not marked as elementary, the property that was violated by the set will be identified. Only maximal subsets are considered as it is trivial to see that non-maximal subsets can not be elementary according to property~(\ref{eq:elem3.1}).
+Below all sets $B \subseteq closure(\phi)$ are listed that satisfy property (\ref{eq:elem3.1}). Each set is marked whether or not it is elementary. In case a set is not marked as elementary, the property that was violated by the set will be identified. Only maximal subsets are considered as it is trivial to see that non-maximal subsets can not be elementary according to property~(\ref{eq:elem3.1}).
 \begin{align*}
     B_1    &= \left\{ a,       b,       a\land b,         \phi       \right\} &\text{Elementary} \\
     B_2    &= \left\{ \lnot a, b,       a\land b,         \phi       \right\} &\text{Violates property (\ref{eq:elem1.1})} \\
@@ -106,5 +103,5 @@ Below are all sets $B \subseteq closure(\phi)$ listed that satisfy property (\re
     B_{15} &= \left\{ a,       \lnot b, \lnot (a\land b), \lnot \phi \right\} &\text{Elementary} \\
     B_{16} &= \left\{ \lnot a, \lnot b, \lnot (a\land b), \lnot \phi \right\} &\text{Elementary} 
 \end{align*}
-Thus are the sets $B_1$, $B_7$, $B_{14}$, $B_{15}$ and $B_{16}$ elementary.
+Thus the sets $B_1$, $B_7$, $B_{14}$, $B_{15}$ and $B_{16}$ are elementary.
 \end{example}

@@ -1,11 +1,11 @@
 \begin{forest}
-    for tree={circle, draw, s sep=50pt, grow=north,edge={->}}
-    [$r_5$, name=r5, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$\conf_5$\}};}
-        [$r_4$, name=r4, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$\conf_4$\}};}
-            [$r_2$, name=r2, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$\conf_2$\}};}]
+    for tree={circle, draw, s sep=75pt, grow=north,edge={->}}
+    [$r_5$, name=r5, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {$P(r_5)=\conf_5$};}
+        [$r_4$, name=r4, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {$P(r_4)=\conf_4$};}
+            [$r_2$, name=r2, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {$P(r_2)=\conf_2$};}]
         ]
-        [$r_3$, name=r3, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {\{$\conf_3$\}};}
-            [$r_1$, name=r1, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east] {\{$\conf_1$\}};}]
+        [$r_3$, name=r3, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east]  {$P(r_3)=\conf_3$};}
+            [$r_1$, name=r1, tikz={\node[draw=none, inner sep=0pt, right=2pt of .east] {$P(r_1)=\conf_1$};}]
         ] 
     ]
     \draw[->] (r1) to [out=north west,in=north east,looseness=4] (r1);
