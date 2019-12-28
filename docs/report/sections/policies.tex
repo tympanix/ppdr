@@ -1,5 +1,5 @@
 \subsection{Policies}\label{sec:policies}
-The language of PF introduced in \autoref{sec:grammar} allows one to express properties of paths in a data repository. In the following sections two new concepts for information flow policies will be introduced, namely confidentiality and integrity polices.
+The language of PF introduced in \autoref{sec:grammar} allows one to express properties of paths in a data repository. In the following sections, two new concepts for information flow policies will be introduced, namely, confidentiality and integrity policies.
 
 \subsubsection{Confidentiality Policies}
 The concept of confidentiality polices is introduced to allow the user of the system to control how information flows in the future. A confidentiality policy is defined as:
@@ -8,10 +8,10 @@ A confidentiality policy $\conf$ is an UPF $\upf$ where the formulae is construc
 \end{definition}
 It should be noted that like any other LTL formulae, multiple policies can be defined and concatenated with conjunction. As shown later in \autoref{sec:put} a data resource is associated with a confidentiality policy once the resource is placed in the data repository. 
 
-There are no restrictions on who can depend on a data resource, however a confidentiality policy will impose constraints on who can read the data resource through a query operation. One might wonder why it makes sense to have one data resource depend on another if the confidentiality policy restricts one from querying it. However this does open up for the possibility to have a data resource with a corresponding confidentiality policy defined, where the policy can be used as a template for dependant resources through inheritance.
+There are no restrictions on who can depend on a data resource, however, a confidentiality policy will impose constraints on who can read the data resource through a query operation. One might wonder why it makes sense to have one data resource depend on another if the confidentiality policy restricts one from querying it. However, this does open up for the possibility to have a data resource with a corresponding confidentiality policy defined, where the policy can be used as a template for dependant resources through inheritance.
 
 % - Inheritance of policies
-Before looking into how one can create these constraints and take advantage of them, it is necessary to explain how confidentiality policies are inherited. The dependencies of a data resource imply that it inherits the dependencies' confidentiality policy, which are inherited policies themselves. The inherited policies are concatenated with conjunction to form one composite policy. As the concatenation is done with conjunction, it means that all inherited policies and the policy that is directly associated to the data resource must be satisfied. Furthermore this results in that the inherited confidentiality policy will always be as or more restrictive, compared to its individual policies. More formally the confidentiality policy inheritance can be defined as:
+Before looking into how one can create these constraints and take advantage of them, it is necessary to explain how confidentiality policies are inherited. The dependencies of a data resource imply that it inherits the dependencies' confidentiality policy, which are inherited policies themselves. The inherited policies are concatenated with conjunction to form one composite policy. As the concatenation is done with conjunction, it means that all inherited policies and the policy that is directly associated with the data resource must be satisfied. Furthermore, this results in that the inherited confidentiality policy will always be as or more restrictive, compared to its individual policies. More formally the confidentiality policy inheritance can be defined as:
 \begin{definition}[Confidentiality policy inheritance]\label{def:cpi}
 Given a data repository $\DR$ and a data resource $r \in R$ the inherited confidentiality policy $\iconf(DR, r)$ is recursively defined as:
 \begin{equation*}
@@ -33,7 +33,7 @@ Consider the data repository containing five data resources $r_1\ldots r_5$ illu
 Given the data repository $DR$ in \autoref{fig:policy-inher}, the inherited confidentiality policies of $r_1$ and $r_2$ are $\iconf(DR, r_1) = \conf_1$ and $\iconf(DR, r_2) = \conf_2$. This is expected as they have no dependencies other than a self-loop. Considering the resources $r_3$ and $r_4$ we get $\iconf(DR, r_3) = \conf_3 \land \conf_1$ and $\iconf(DR, r_4) = \conf_4 \land \conf_2$, which is expected as they have a dependency to $r_1$ and $r_2$ respectively. Finally $\iconf(DR, r_5) = \conf_5 \land \conf_4 \land \conf_3 \land \conf_2 \land \conf_1$ as every resource can be reached from $r_5$ through its dependencies.
 \end{example}
 
-Now that it is clear how confidentiality policies are inherited, it is possible to consider how to create constraints. Creating constraints are achieved by utilising the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:pf-grammar-user}. In the following a set of examples will be given to illustrate how constraints can be created through confidentiality policies and the versatility of the language. The examples will use the simple data repository shown in \autoref{fig:conf-policy} as reference if needed.
+Now that it is clear how confidentiality policies are inherited, it is possible to consider how to create constraints. Creating constraints is achieved by utilizing the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:pf-grammar-user}. In the following, a set of examples will be given to illustrate how constraints can be created through confidentiality policies and the versatility of the language. The examples will use the simple data repository shown in \autoref{fig:conf-policy} as reference if needed.
 
 \begin{figure}[!ht]
     \begin{center}
@@ -48,7 +48,7 @@ Let us start by looking at how one could introduce constraints about who can use
 \begin{align*}
     \conf_{black} \eqdef subject() \neq user(Mallory) \land subject() \neq user(Monroe)
 \end{align*}
-However with $\conf_{black}$ every other user is allowed to query the resources, which might not be a desired outcome. Instead one could take an approach that is commonly used when defining IP tables, blacklist every IP address by default and explicitly define the allowed ones, i.e. whitelist trusted IP addresses. Taking such an approach and assume that \emph{Alice} would allow herself and \emph{Bob} to query $r_1$, results in the confidentiality policy:
+However, with $\conf_{black}$ every other user is allowed to query the resources, which might not be the desired outcome. Instead, one could take an approach that is commonly used when defining IP tables, blacklist every IP address by default and explicitly define the allowed ones, i.e. whitelist trusted IP addresses. Taking such an approach and assume that \emph{Alice} would allow herself and \emph{Bob} to query $r_1$, results in the confidentiality policy:
 \begin{align*}
     \conf_{white} \eqdef subject() = user(Alice) \lor subject() = user(Bob)
 \end{align*}
@@ -56,7 +56,7 @@ Note that the equalities in $\conf_{black}$ are concatenated with conjunction wh
 \end{example}
 
 \begin{example}[Avoid inheritance]\label{ex:avoid}
-Let us start off by clarifying that inheritance can not be avoided, however it is possible to create a confidentiality policy such that it is relevant in the data resource to which it was added but irrelevant when inherited. To achieve this it will be necessary to utilise the $self$ predicate and implication. For a revisit of the $self$ predicate we point to \autoref{def:pf-user-to-internal}. With this the following confidentiality policy can be created where $\conf_1$ is an arbitrary policy:
+Let us start off by clarifying that inheritance can not be avoided, however, it is possible to create a confidentiality policy such that it is relevant in the data resource to which it was added but irrelevant when inherited. To achieve this it will be necessary to utilize the $self$ predicate and implication. For a revisit of the $self$ predicate, we point to \autoref{def:pf-user-to-internal}. With this the following confidentiality policy can be created where $\conf_1$ is an arbitrary policy:
 \begin{align*}
     \conf \eqdef self \imply \conf_1
 \end{align*}
@@ -64,11 +64,11 @@ Say $r_1$ was placed in $DR$, shown in \autoref{fig:conf-policy}, with $\conf$. 
 \end{example}
 
 \begin{example}[Author is only reader]\label{ex:conf-reader-author}
-A way of ensuring that the author and only the author can query a data resource in a data repository, can be achieved by using the \emph{author} attribute name and \emph{subject} function, where the subject can be considered as the reader. Say that $r_1$ is placed in $DR$ as shown in \autoref{fig:conf-policy} with the confidentiality policy:
+A way of ensuring that the author and only the author can query a data resource in a data repository can be achieved by using the \emph{author} attribute name and \emph{subject} function, where the subject can be considered as the reader. Say that $r_1$ is placed in $DR$ as shown in \autoref{fig:conf-policy} with the confidentiality policy:
 \begin{align*}
     \conf \eqdef subject() = author
 \end{align*}
-Then only author of $r_1$ is allowed to query and read it. The author attribute is added to a data resource automatically during a \emph{put} operation as will be further explained in \autoref{sec:put}. With the given policy $\conf$, $r_1$ can be considered a template and as a result of inheritance, $r_2$ and $r_3$ in $DR$ can only be read by their authors, i.e. the person who performed the \emph{put} to place them in the data repository.
+Then only the author of $r_1$ is allowed to query and read it. The author attribute is added to a data resource automatically during a \emph{put} operation as will be further explained in \autoref{sec:put}. With the given policy $\conf$, $r_1$ can be considered a template and as a result of inheritance, $r_2$ and $r_3$ in $DR$ can only be read by their authors, i.e. the person who performed the \emph{put} to place them in the data repository.
 \end{example}
 
 \begin{example}[Anonymised data resources]
@@ -76,7 +76,7 @@ Now consider the case of constructing a confidentiality policy that ensures that
 \begin{align*}
     \conf \eqdef \lnot self \imply \X \left( anonymised \U self \right)
 \end{align*}
-Let us break it down and justify the construction of it by investigating the behaviour when querying $r_1$, $r_2$ and $r_3$. This is under the assumption that a context $c$ is given.
+Let us break it down and justify the construction of it by investigating the behavior when querying $r_1$, $r_2$ and $r_3$. This is under the assumption that a context $c$ is given.
 
 When querying for $r_1$, the left side of the implication is false and the implication is trivially true, thus $DR \models_{c,r_1} \conf$. 
 
@@ -94,10 +94,10 @@ It should be noted that like any other LTL formulae or confidentiality policies,
 
 As already suggested an integrity policy is associated with a \emph{query}, as opposed to a confidentiality policy which is associated to a data resource. This means that an integrity policy is not persistent in the data repository but its lifespan is as long as the \emph{query} operation. This will be explained further in \autoref{sec:query}.
 
-Let us now consider how integrity policies can be constructed by utilising the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:pf-grammar-user}. In the following a set of examples will be given to illustrate how constraints can express properties of provenance through the domain of integrity policies.
+Let us now consider how integrity policies can be constructed by utilizing the temporal and propositional logic operators as well as the newly introduced functions and predicates to the grammar in \autoref{tab:pf-grammar-user}. In the following, a set of examples will be given to illustrate how constraints can express properties of provenance through the domain of integrity policies.
 
 \begin{example}[]\label{ex:mutual-exclusion}
-Let us start by considering how one could formulate an integrity policy that ensures that the data resource and its dependencies does not have two given atomic propositions at the same time. Say that it desired to query a data resource if it or any of its dependencies does not contain the atomic proposition $a$ and $b$ at the same time. The following integrity policy $\inte$ specifies exactly that utilising the temporal operator \emph{always}:
+Let us start by considering how one could formulate an integrity policy that ensures that the data resource and its dependencies do not have two given atomic propositions at the same time. Say that it desired to query a data resource if it or any of its dependencies does not contain the atomic proposition $a$ and $b$ at the same time. The following integrity policy $\inte$ specifies exactly that utilizing the temporal operator \emph{always}:
 \begin{align*}
     \inte \eqdef  \G \left( \lnot a \lor \lnot b \right)
 \end{align*}
@@ -113,7 +113,7 @@ Given the data repository $DR$, some context $c$ and the integrity policy $\inte
 \end{example}
 
 \begin{example}[No distrusted author until trusted author]
-It could very well be that it is desired to query a data resource with some restrictions on the author of the dependencies. Say that when querying for a data resource $r_i$, one wants the resource to have a dependency to some other resource $r_j$ which was created by the user \emph{Bob}, where no resource in between $r_i$ and $r_j$ was created by the user \emph{Mallory}. Utilising the \emph{author} attribute name and the \emph{until} operator an integrity policy can be formulated that specifies this:
+It could very well be that it is desired to query a data resource with some restrictions on the author of the dependencies. Say that when querying for a data resource $r_i$, one wants the resource to have a dependency to some other resource $r_j$ which was created by the user \emph{Bob}, where no resource in between $r_i$ and $r_j$ was created by the user \emph{Mallory}. Utilizing the \emph{author} attribute name and the \emph{until} operator an integrity policy can be formulated that specifies this:
 \begin{align*}
     \inte \eqdef author \neq user(Mallory) \U author = user(Bob)
 \end{align*}
@@ -133,12 +133,12 @@ Now consider if $\inte$ holds under $DR$ when querying for $r_6$. As the direct 
 \begin{example}[Trusted authors]
 A data repository is naive in the sense that it does not take the trustworthiness of the authors into consideration, that is up the user performing the query to specify the users that it trust or does not trust. This can be done in a few different ways, all of which has its advantages and disadvantages.
 
-The first way is to take the blacklist approach, the same concept as was used in \autoref{ex:conf-reader-constraints}. Assuming that the user performing the query for a data resource does not trust the users \emph{Mallory} and \emph{Monroe} and thus does not trust any data resources they have placed in the data repository. The following integrity policy $\inte_1$ ensures that a data resource is not returned if it was created by those users or have a dependency to a resource that they created.
+The first way is to take the blacklist approach, the same concept as was used in \autoref{ex:conf-reader-constraints}. Assuming that the user performing the query for a data resource does not trust the users \emph{Mallory} and \emph{Monroe} and thus do not trust any data resources they have placed in the data repository. The following integrity policy $\inte_1$ ensures that a data resource is not returned if it was created by those users or has a dependency to a resource that they created.
 \begin{align*}
     \inte_1 \eqdef \G( author \neq user(Mallory) \land author \neq user(Monroe))
 \end{align*}
 
-Another way is the whitelist approach which was also introduced in \autoref{ex:conf-reader-constraints}. Assuming that the user performing the query only consider \emph{Alice} and \emph{Bob} for trustworthy authors of data resources and thus only wants to query a data resource if it and all its dependencies was created by one of them. This can be achieved by using the integrity policy $\inte_2$:
+Another way is the whitelist approach which was also introduced in \autoref{ex:conf-reader-constraints}. Assuming that the user performing the query only consider \emph{Alice} and \emph{Bob} for trustworthy authors of data resources and thus only wants to query a data resource if it and all its dependencies were created by one of them. This can be achieved by using the integrity policy $\inte_2$:
 \begin{align*}
     \inte_2 \eqdef \G(author = user(Alice) \lor author = user(Bob))
 \end{align*}
@@ -148,7 +148,7 @@ A third way could be that the user performing the query is not too concerned if 
     \inte_3 \eqdef \F(author = user(Alice) \lor author = user(Bob))
 \end{align*}
 
-Finally it could be that the user do not want data resources created by an distrusted author, unless it has been sanitised by a trusted author. Assuming \emph{Mallory} is an distrusted author and \emph{Alice} is a trusted author, the integrity policy $\inte_4$ impose that constraint:
+Finally, it could be that the user does not want data resources created by a distrusted author unless it has been sanitized by a trusted author. Assuming \emph{Mallory} is a distrusted author and \emph{Alice} is a trusted author, the integrity policy $\inte_4$ impose that constraint:
 \begin{align*}
     \inte_4 \eqdef \G author \neq user(Mallory) \lor author \neq user(Mallory) \U author = user(Alice)
 \end{align*}
