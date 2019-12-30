@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/ltl/scanner"
-	"github.com/tympanix/master-2019/ltl/scanner/token"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/ltl/scanner"
+	"github.com/tympanix/ppdr/ltl/scanner/token"
 )
 
 // Parser parses the input program from a scanner

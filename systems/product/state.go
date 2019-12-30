@@ -3,8 +3,8 @@ package product
 import (
 	"fmt"
 
-	"github.com/tympanix/master-2019/systems/ba"
-	"github.com/tympanix/master-2019/systems/ts"
+	"github.com/tympanix/ppdr/systems/ba"
+	"github.com/tympanix/ppdr/systems/ts"
 )
 
 // StateTuple is a tuple of states from the product transition system of TS and A

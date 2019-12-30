@@ -3,7 +3,7 @@ package ba
 import (
 	"fmt"
 
-	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/ppdr/ltl"
 )
 
 // State is a node in a GNBA

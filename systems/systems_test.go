@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/ba"
-	"github.com/tympanix/master-2019/systems/gnba"
-	"github.com/tympanix/master-2019/systems/mock/ts"
-	"github.com/tympanix/master-2019/systems/nba"
-	"github.com/tympanix/master-2019/systems/product"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/ba"
+	"github.com/tympanix/ppdr/systems/gnba"
+	"github.com/tympanix/ppdr/systems/mock/ts"
+	"github.com/tympanix/ppdr/systems/nba"
+	"github.com/tympanix/ppdr/systems/product"
 )
 
 // An example of a simple traffix light which transitions between red and green

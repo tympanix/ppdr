@@ -1,7 +1,7 @@
 package ts
 
 import (
-	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/ppdr/ltl"
 )
 
 // TS is an interface for the transition system itself

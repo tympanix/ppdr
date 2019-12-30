@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/ba"
-	"github.com/tympanix/master-2019/systems/nba"
-	"github.com/tympanix/master-2019/systems/ts"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/ba"
+	"github.com/tympanix/ppdr/systems/nba"
+	"github.com/tympanix/ppdr/systems/ts"
 )
 
 // Product is a product of a transition system and a NBA

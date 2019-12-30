@@ -5,7 +5,7 @@ import (
 	"errors"
 	"unsafe"
 
-	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/ppdr/ltl"
 )
 
 // Identity is the identity of a user

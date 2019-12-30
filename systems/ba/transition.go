@@ -1,7 +1,7 @@
 package ba
 
 import (
-	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/ppdr/ltl"
 )
 
 // RenameTable is a translation table from one set of nodes to others

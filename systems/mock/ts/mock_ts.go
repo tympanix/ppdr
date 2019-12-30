@@ -3,8 +3,8 @@ package ts
 import (
 	"fmt"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/ts"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/ts"
 )
 
 // State is a node in the transition system

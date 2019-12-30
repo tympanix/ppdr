@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/ts"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/ts"
 )
 
 // Attrs is a map containing attributes for the state

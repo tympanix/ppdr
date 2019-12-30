@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/ltl/scanner"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/ltl/scanner"
 )
 
 func TestParser(t *testing.T) {

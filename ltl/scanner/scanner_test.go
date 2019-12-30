@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/tympanix/master-2019/ltl/scanner/token"
+	"github.com/tympanix/ppdr/ltl/scanner/token"
 )
 
 func compareTokens(t *testing.T, s *Scanner, test scannerTest) {

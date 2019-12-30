@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/ba"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/ba"
 )
 
 // GNBA is a structure of a generalized non-deterministic Büchi automaton

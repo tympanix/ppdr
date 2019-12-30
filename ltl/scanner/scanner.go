@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/tympanix/master-2019/ltl/scanner/token"
+	"github.com/tympanix/ppdr/ltl/scanner/token"
 )
 
 var (

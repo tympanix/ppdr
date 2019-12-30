@@ -1,9 +1,9 @@
 package gnba
 
 import (
-	"github.com/tympanix/master-2019/debug"
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/ba"
+	"github.com/tympanix/ppdr/debug"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/ba"
 )
 
 // GenerateGNBA generates an GNBA from an LTL formula phi

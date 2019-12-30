@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/tympanix/master-2019/debug"
-	"github.com/tympanix/master-2019/ltl"
-	"github.com/tympanix/master-2019/systems/gnba"
-	"github.com/tympanix/master-2019/systems/nba"
+	"github.com/tympanix/ppdr/debug"
+	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/systems/gnba"
+	"github.com/tympanix/ppdr/systems/nba"
 )
 
 func main() {

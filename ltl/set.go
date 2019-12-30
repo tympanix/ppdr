@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/tympanix/master-2019/debug"
+	"github.com/tympanix/ppdr/debug"
 )
 
 // Set is a set of formulas in LTL.

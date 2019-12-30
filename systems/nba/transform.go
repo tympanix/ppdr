@@ -1,9 +1,9 @@
 package nba
 
 import (
-	"github.com/tympanix/master-2019/debug"
-	"github.com/tympanix/master-2019/systems/ba"
-	"github.com/tympanix/master-2019/systems/gnba"
+	"github.com/tympanix/ppdr/debug"
+	"github.com/tympanix/ppdr/systems/ba"
+	"github.com/tympanix/ppdr/systems/gnba"
 )
 
 // TransformGNBAtoNBA takes a GNBA and transforms it into an NBA

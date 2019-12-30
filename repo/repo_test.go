@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/tympanix/master-2019/ltl"
+	"github.com/tympanix/ppdr/ltl"
 )
 
 type result int
