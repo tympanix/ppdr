@@ -1,0 +1,31 @@
+%Insert preamble with all the necessary packages.
+\input{sections/preamble}
+\begin{document}
+
+%Insert frontpage
+\input{sections/frontpage}
+
+\pagebreak
+
+%Insert table of contents followed by a pagebreak.
+\tableofcontents
+\pagebreak
+
+\input{sections/abstract.tex}
+\input{sections/introduction.tex}
+\input{sections/related-works.tex}
+\input{sections/preliminaries.tex}
+\input{sections/data-repository.tex}
+\input{sections/methods.tex}
+\input{sections/discussion.tex}
+\input{sections/future-work.tex}
+\input{sections/conclusion.tex}
+\pagebreak
+\bibliographystyle{plain}
+\bibliography{sections/bibliography}
+\pagebreak
+\begin{appendices}
+    \input{sections/appendix.tex}
+\end{appendices}
+
+\end{document}
