@@ -20,7 +20,7 @@ Given a data repository $\DR$ and a data resource $r \in R$ the inherited confid
 The inherited confidentiality policy $\iconf(DR, r)$ is only well-defined if the data repository is acyclic. However, self-loops are ignored, i.e. relations of the form $r \longrightarrow r$. This guarantees that $\iconf(DR, r)$ is a finite policy formula.
 \end{definition}
 
-Let us look at an example to visualise the inheritance.
+Let us look at an example to visualize the inheritance.
 \begin{example}[Confidentiality policy inheritance]
 Consider the data repository containing five data resources $r_1\ldots r_5$ illustrated in \autoref{fig:policy-inher}. The data resources $r_1$ and $r_2$ do not have any dependencies, $r_3$ has a dependency to $r_1$, $r_4$ has one to $r_2$ and finally $r_5$ has a dependency to both $r_3$ and $r_4$. Each data resource $r_i$ was placed in the data repository with a corresponding confidentiality policy $\conf_i$.
 \begin{figure}[!ht]
@@ -71,18 +71,18 @@ A way of ensuring that the author and only the author can query a data resource 
 Then only the author of $r_1$ is allowed to query and read it. The author attribute is added to a data resource automatically during a \emph{put} operation as will be further explained in \autoref{sec:put}. With the given policy $\conf$, $r_1$ can be considered a template and as a result of inheritance, $r_2$ and $r_3$ in $DR$ can only be read by their authors, i.e. the person who performed the \emph{put} to place them in the data repository.
 \end{example}
 
-\begin{example}[Anonymised data resources]
-Now consider the case of constructing a confidentiality policy that ensures that some property between two data resources holds in $DR$. Say the confidentiality policy $\conf$ is associated to $r_1$, and when querying for $r_3$ it is desired that $\conf$ should ensure that $r_2$ is anonymised. This can be achieved by using the \emph{self} predicate, implication as well as the temporal operators \emph{next} and \emph{until}. Defining the policy as and assuming that $r_2$ has an atomic proposition \emph{anonymised}, it is possible to achieve exactly that:
+\begin{example}[Anonymized data resources]
+Now consider the case of constructing a confidentiality policy that ensures that some property between two data resources holds in $DR$. Say the confidentiality policy $\conf$ is associated to $r_1$, and when querying for $r_3$ it is desired that $\conf$ should ensure that $r_2$ is anonymized. This can be achieved by using the \emph{self} predicate, implication as well as the temporal operators \emph{next} and \emph{until}. Defining the policy as and assuming that $r_2$ has an atomic proposition \emph{anonymized}, it is possible to achieve exactly that:
 \begin{align*}
-    \conf \eqdef \lnot self \imply \X \left( anonymised \U self \right)
+    \conf \eqdef \lnot self \imply \X \left( anonymized \U self \right)
 \end{align*}
 Let us break it down and justify the construction of it by investigating the behavior when querying $r_1$, $r_2$ and $r_3$. This is under the assumption that a context $c$ is given.
 
 When querying for $r_1$, the left side of the implication is false and the implication is trivially true, thus $DR \models_{c,r_1} \conf$. 
 
-When querying for $r_2$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_1$, as it is the direct dependency of $r_2$, $DR$ should satisfy $anonymised \U self$ given $r_1$. As \emph{self} is a reference to $r_1$ it follows that $DR \models_{c,r_1} anonymised \U self$ and thus $DR \models_{c,r_2} \conf$.
+When querying for $r_2$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_1$, as it is the direct dependency of $r_2$, $DR$ should satisfy $anonymized \U self$ given $r_1$. As \emph{self} is a reference to $r_1$ it follows that $DR \models_{c,r_1} anonymized \U self$ and thus $DR \models_{c,r_2} \conf$.
 
-When querying for $r_3$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_2$, as it is the direct dependency of $r_3$, $DR$ should satisfy $anonymised \U self$ given $r_2$. The \emph{self} predicate refers to $r_1$ and can not be satisfied in $r_2$, thus the left side of the \emph{until} should be true, which it is as $r_2$ has the atomic proposition $anonymised$. It was shown that $DR \models_{c,r_1} anonymised \U self$ and from this it follows that $DR \models_{c,r_2} anonymised \U self$, which finally means $DR \models_{c,r_3} \conf$.
+When querying for $r_3$, the left side of the implication is true, so the right side has to be true as well, for the implication to be true. Given that the \emph{next} operator refers to $r_2$, as it is the direct dependency of $r_3$, $DR$ should satisfy $anonymized \U self$ given $r_2$. The \emph{self} predicate refers to $r_1$ and can not be satisfied in $r_2$, thus the left side of the \emph{until} should be true, which it is as $r_2$ has the atomic proposition $anonymized$. It was shown that $DR \models_{c,r_1} anonymized \U self$ and from this it follows that $DR \models_{c,r_2} anonymized \U self$, which finally means $DR \models_{c,r_3} \conf$.
 \end{example}
 
 \subsubsection{Integrity Policies}

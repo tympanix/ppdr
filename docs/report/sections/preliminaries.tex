@@ -1,20 +1,20 @@
 \section{Preliminaries}\label{sec:preliminaries}
 \subsection{Temporal Logics}
-Temporal Logics (TL) are a straightforward way to specify and verify properties of infinite behaviour of reactive systems, e.g. a transition system. TL extend either propositional or predicate logic with modalities, where the modalities are said to be \emph{time-abstract}, as they allow one to specify the order in which state labels occur during an execution of a system~\cite{baier2008principles}. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
+Temporal Logics (TL) are a straightforward way to specify and verify properties of infinite behavior of reactive systems, e.g. a transition system. TL extend either propositional or predicate logic with modalities, where the modalities are said to be \emph{time-abstract}, as they allow one to specify the order in which state labels occur during an execution of a system~\cite{baier2008principles}. Furthermore one can specify if some state labels will \emph{eventually} or \emph{always} occur during an execution. The following two elementary temporal modalities are included in most TL~\cite{baier2008principles}:
 \begin{align*}
     &\F \quad \text{``eventually'' (some time in the future)}\\
     &\G \quad \text{``always'' (now and forever in the future)}
 \end{align*}
 \emph{Eventually} and \emph{always} will be explained more in-depth during this section. 
 
-The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is Linear Temporal Logic (LTL)~\cite{baier2008principles}. In the remaining of this paper the focus will be on LTL that extends propositional logic, as the information flow policy language introduced in \autoref{sec:grammar} is based on that extension.
+The time in TL can be either \emph{linear} or \emph{branching}, where in the linear view at each moment there is a single successor and in branching view time may split into multiple branches. A TL that is based on the branching view is the Computation Tree Logic (CTL) and one that is based on the linear view is LTL~\cite{baier2008principles}. In the remaining of this paper the focus will be on LTL that extends propositional logic, as the information flow policy language introduced in \autoref{sec:grammar} is based on that extension.
 
 \subsubsection{Linear Temporal Logic}\label{sec:ltl}
 Property specifications in the linear-time perspective are called LTL formulae and are usually denoted by $\phi$. LTL formulae are constructed from atomic propositions $a$, the boolean connectors conjunction ($\land$) and negation ($\lnot$), and the temporal modalities \emph{next} (denoted by $\X$) and \emph{until} (denoted by $\U$). The syntax of an LTL formula $\phi$ is described by the grammar:
 
 \input{tables/ltl-grammar.tex}
 
-where $a \in AP$ and $AP$ is a set of atomic propositions. It should be noted that the grammar in \autoref{tab:ltl-grammar} is not in Backus Naur Form but is rather an \emph{abstract} syntax~\cite{baier2008principles}. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly the temporal operators \emph{eventually} and \emph{always} are omitted as they can be derived from the \emph{until} operator using the following rules~\cite[pp.~232]{baier2008principles}:
+where $a \in AP$ and $AP$ is a set of atomic propositions. It should be noted that the grammar in \autoref{tab:ltl-grammar} is not in Backus-Naur form but is rather an \emph{abstract} syntax~\cite{baier2008principles}. The remaining propositional operators not present in the grammar are omitted as they can be derived from conjunction and negation. Similarly the temporal operators \emph{eventually} and \emph{always} are omitted as they can be derived from the \emph{until} operator using the following rules~\cite[pp.~232]{baier2008principles}:
 \begin{align}
     &\F \phi = true \U \phi \label{eq:eventually} \\
     &\G \phi = \lnot \F \lnot \phi \label{eq:always}
@@ -76,7 +76,7 @@ The third and final set of properties is that the set $B$ is \emph{maximal}, i.e
     \psi \notin B \imply \lnot \psi \in B \label{eq:elem3.1}
 \end{align}
 
-Elementary sets is a fundamental part of the verification of LTL properties or, more explicitly, in the conversion from LTL formulae to generalised nondeterministic Büchi automata. Finally let us consider a concrete example:
+Elementary sets is a fundamental part of the verification of LTL properties or, more explicitly, in the conversion from LTL formulae to generalized nondeterministic Büchi automata. Finally let us consider a concrete example:
 
 \begin{example}
 Consider the following LTL formula and its closure:

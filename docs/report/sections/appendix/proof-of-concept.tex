@@ -1,7 +1,7 @@
 \section{Proof of Concept}\label{app:poc}
-A practical implementation has been implemented as a proof of concept to support the work of this paper carried out in the Go programming language. The implementation involves a parser/scanner for reading policy formulae and parsing them to abstract syntax trees, and model checker based on the approaches of \ref{sec:methods} and an implementation of a Data Repository. The decision-tree based approach of determining elementary sets from \ref{sec:method-elemesets} has also been implemented.
+A practical implementation has been implemented as a proof of concept to support the work of this paper carried out in the Go programming language. The implementation involves a parser/scanner for reading policy formulae and parsing them to abstract syntax trees, and model checker based on the approaches of \autoref{sec:methods} and an implementation of a data repository. The decision-tree based approach of determining elementary sets from \autoref{sec:method-elemesets} has also been implemented.
 
-The implementation focuses on correctness and thus leaves performance enhancements to future work. While the implementation has not been formerly proved, it has been evaluated by unit testing covering examples from this paper and other general purpose tests of the model checker, the parser/scanner and the elementary set algorithm.
+The implementation focuses on correctness and thus leaves performance enhancements to future work. While the implementation has not been formally proved, it has been evaluated by unit testing covering examples from this paper and other general-purpose tests of the model checker, the parser/scanner and the elementary set algorithm.
 
 \subsection{Design}
 We present the design of the system for future reference and completeness. The implementation is divided into packages with non-cyclic dependencies of related functionality. In \autoref{fig:poc-packages} each package can be seen with a description.
@@ -27,7 +27,7 @@ We present the design of the system for future reference and completeness. The i
     \label{fig:poc-packages}
 \end{figure}
 
-The dependency graph between packages can be seen in \autoref{fig:poc-package-depend}. Each package encloses a well defined set of functions and data types which preserves low coupling of functionality and responsibility. Since the Go programming language is not an object oriented programming language (OOP) the design of the implementation is comprised of compositional data structures rather than inheritance of objects.
+The dependency graph between packages can be seen in \autoref{fig:poc-package-depend}. Each package encloses a well-defined set of functions and data types that preserves low coupling of functionality and responsibility. Since the Go programming language is not an object-oriented programming language (OOP) the design of the implementation is comprised of compositional data structures rather than inheritance of objects.
 
 \begin{figure}[!ht]
     \centering
@@ -40,8 +40,8 @@ The dependency graph between packages can be seen in \autoref{fig:poc-package-de
 The implementation section will cover the most essential types and functions of important packages in the implementation and link them to the theory. We will highlight differences from the implementation and the theory where necessary along the way.
 
 \subsubsection{Package \texttt{ltl}}
-The LTL package includes implementation of the nodes comprised in the abstract syntax tree (AST) of LTL formulae as well as convenience functions for computing subformulae, elementary sets and atomic propositions of formulae. Please mind that policy formulae and LTL are using the same underlying types, which means that the implementation does not distinguish between the two. In figure~\ref{fig:poc-ltl-package} an overview of the most important types can be seen.
-\begin{figure}
+The \texttt{ltl} package includes implementation of the nodes comprised in the AST of LTL formulae as well as convenience functions for computing subformulae, elementary sets and atomic propositions of formulae. Please mind that policy formulae and LTL are using the same underlying types, which means that the implementation does not distinguish between the two. In figure~\ref{fig:poc-ltl-package} an overview of the most important types can be seen.
+\begin{figure}[!ht]
     \dirtree{%
     .1 <<ltl>>\DTcomment{ltl package}. 
     .2 func Compile(phi Node) (n Node, tau RefTable, err error). 
@@ -94,7 +94,7 @@ type UnaryNode interface {
 With the interfaces above one is able to construct every type of LTL operator. As such the always operator ($\G$) implements the \verb=UnaryNode= interface while the propositional conjunction ($\land$) implements the \verb=BinaryNode= interface.
 
 \subsubsection{Package \texttt{systems}}
-The systems package defines all types of automata used in the implementation as well as an interface definition of transition systems. In \autoref{fig:poc-systems-package} and overview of the package can be seen.
+The \verb=systems= package defines all types of automata used in the implementation as well as an interface definition of transition systems. In \autoref{fig:poc-systems-package} and overview of the package can be seen.
 \begin{figure}
     \dirtree{%
     .1 <<systems>>\DTcomment{systems package}. 
@@ -140,7 +140,7 @@ type Transition struct {
 }
 \end{lstlisting}
 
-The product automaton (type \verb=product.Product=) has its own type of state (type \verb=product.State=) which can be seen in \autoref{lst:product-state}. The definition is as one would expect with a pointer to both a state in TS and a state in the NBA. One important difference from the theory is how the product is constructed, which is done lazily. To keep track of which nodes has been expanded during this process we utilise the \verb=IsExpanded= boolean. 
+The product automaton (type \verb=product.Product=) has its own type of state (type \verb=product.State=) which can be seen in \autoref{lst:product-state}. The definition is as one would expect with a pointer to both a state in TS and a state in the NBA. One important difference from the theory is how the product is constructed, which is done lazily. To keep track of which nodes have been expanded during this process we utilize the \verb=IsExpanded= boolean. 
 
 \begin{lstlisting}[language=Golang, caption={Definition of \texttt{product.State}.}, label={lst:product-state}, floatplacement=H]
 type State struct {
@@ -151,10 +151,10 @@ type State struct {
 }
 \end{lstlisting}
 
-Using the automata in the systems package one can, with a given formula, generate the GNBA with the function \verb=gnba.GenerateGNBA=, then convert said GNBA to NBA using \verb=nba.TransformGNBAtoNBA= and the finally construct the product $TS\otimes A$ with \verb=product.New=. After the product has been constructed the most essential operation is to call \verb=HasAcceptingCycle=, which is an implementation of the NDFS according to \autoref{sec:methods-ndfs}. The context (type \verb=product.Context=) returned from the NDFS contains information about the trace of the counterexample, or returns nil if no accepting cycle is found.
+Using the automata in the systems package one can, with a given formula, generate the GNBA with the function \verb=gnba.GenerateGNBA=, then convert said GNBA to NBA using \verb=nba.TransformGNBAtoNBA= and the finally construct the product $TS\otimes A$ with \verb=product.New=. After the product has been constructed the most essential operation is to call \verb=HasAcceptingCycle=, which is an implementation of the NDFS according to \autoref{sec:methods-ndfs}. The context (type \verb=product.Context=) returned from the NDFS contains information about the trace of the counterexample or returns nil if no accepting cycle is found.
 
 \subsubsection{Package \texttt{repo}}
-The \verb=repo= package contains the implementation of the data repository and the operations of \emph{put} and \emph{query}. In \autoref{fig:poc-repo-package} and overview of the package contents can be seen.
+The \verb=repo= package contains the implementation of the data repository and the operations of \emph{put} and \emph{query}. In \autoref{fig:poc-repo-package} and overview of the package content can be seen.
 \begin{figure}
     \dirtree{%
     .1 <<repo>>\DTcomment{repo package}. 
@@ -175,6 +175,6 @@ The \verb=repo= package contains the implementation of the data repository and t
     \caption{Important construct in the \texttt{repo} package.}
     \label{fig:poc-repo-package}
 \end{figure}
-A key difference in the implementation from the theory is that the DR (type \verb=repo.Repo=) implements the \verb=ts.TS= interface directly, thus no transformation is needed, as the theory suggests in \autoref{def:dr-to-ts}. While this has no theoretical implications is does improve performance of the implementation. Some other noticeable differences are that the states (type \verb=repo.State=) contains the confidentiality policy and the dependencies themselves, while the theory suggest to store such information in a tuple $DR$. This makes the signature of the \emph{put} more concise.
+A key difference in the implementation from the theory is that the data repository (type \verb=repo.Repo=) implements the \verb=ts.TS= interface directly, thus no transformation is needed, as the theory suggests in \autoref{def:dr-to-ts}. While this has no theoretical implications it does improve performance of the implementation. Some other noticeable differences are that the states (type \verb=repo.State=) contain the confidentiality policy and the dependencies themselves, while the theory suggest to store such information in a tuple $DR$. This makes the signature of the \emph{put} more concise.
 
-To verify confidentiality and integrity policies, the \emph{put} and \emph{query} will utilise the \verb=systems= package to construct the product automaton and perform the NDFS check of acceptance cycles. An error is returned when such an operation is not allowed.
+To verify confidentiality and integrity policies, the \emph{put} and \emph{query} will utilize the \verb=systems= package to construct the product automaton and perform the NDFS check of acceptance cycles. An error is returned when such an operation is not allowed.
