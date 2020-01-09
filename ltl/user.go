@@ -32,5 +32,5 @@ func (u User) Map(fn MapFunc) Node {
 }
 
 func (u User) Satisfied(r Resolver) bool {
-	panic("user can not be checked for satisfyability")
+	panic("user can not be checked for satisfiability")
 }

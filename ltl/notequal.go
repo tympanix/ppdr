@@ -84,8 +84,11 @@ func (e NotEqual) Satisfied(r Resolver) bool {
 	}
 
 	if e, ok := lhs.(Comparable); ok {
-		if d, err := e.Compare(rhs); err == nil {
+		d, err := e.Compare(rhs)
+		if err == nil {
 			return d != 0
+		} else if err == ErrNotComparable {
+			return true
 		}
 	}
 	return false

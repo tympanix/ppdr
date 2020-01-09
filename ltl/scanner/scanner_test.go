@@ -56,6 +56,7 @@ func TestScanner_1(t *testing.T) {
 		"true":                    {[]token.Kind{token.TRUE, token.EOF}, []string{}},
 		"a = b":                   {[]token.Kind{token.AP, token.EQUALS, token.AP, token.EOF}, []string{"a", "b"}},
 		"\"ok\"":                  {[]token.Kind{token.LITSTRING, token.EOF}, []string{}},
+		"'ok'":                    {[]token.Kind{token.LITSTRING, token.EOF}, []string{}},
 	}
 
 	var i int

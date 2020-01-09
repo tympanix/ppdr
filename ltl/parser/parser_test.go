@@ -69,6 +69,11 @@ func TestParser(t *testing.T) {
 		"a -> b = c":                ltl.Impl{ltl.AP{"a"}, ltl.Equals{ltl.AP{"b"}, ltl.AP{"c"}}},
 		"[]a = b":                   ltl.Always{ltl.Equals{ltl.AP{"a"}, ltl.AP{"b"}}},
 		"[]a = b and c":             ltl.And{ltl.Always{ltl.Equals{ltl.AP{"a"}, ltl.AP{"b"}}}, ltl.AP{"c"}},
+
+		// Introduction
+		"author != user(\"Mallory\") U author = user(\"Alice\")":                                  ltl.Until{ltl.NotEqual{ltl.AP{"author"}, ltl.User{"Mallory"}}, ltl.Equals{ltl.AP{"author"}, ltl.User{"Alice"}}},
+		"author = user(\"Alice\") & [] author != user(\"Mallory\")":                               ltl.And{ltl.Equals{ltl.AP{"author"}, ltl.User{"Alice"}}, ltl.Always{ltl.NotEqual{ltl.AP{"author"}, ltl.User{"Mallory"}}}},
+		"[] author != user(\"Mallory\") | author != user(\"Mallory\") U author = user(\"Alice\")": ltl.Or{ltl.Always{ltl.NotEqual{ltl.AP{"author"}, ltl.User{"Mallory"}}}, ltl.Until{ltl.NotEqual{ltl.AP{"author"}, ltl.User{"Mallory"}}, ltl.Equals{ltl.AP{"author"}, ltl.User{"Alice"}}}},
 	}
 
 	var i int
