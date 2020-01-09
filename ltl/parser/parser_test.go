@@ -42,8 +42,10 @@ func TestParser(t *testing.T) {
 		"2 <= 5": ltl.LessEqual{ltl.LitNumber{2}, ltl.LitNumber{5}},
 
 		// Functions
-		"a = subject()":      ltl.Equals{ltl.AP{"a"}, ltl.Subject{}},
+		"a = subject()": ltl.Equals{ltl.AP{"a"}, ltl.Subject{}},
+		"subject() = a":      ltl.Equals{ltl.Subject{}, ltl.AP{"a"}},
 		"a = user(\"john\")": ltl.Equals{ltl.AP{"a"}, ltl.User{"john"}},
+		"user(\"john\") = a": ltl.Equals{ltl.User{"john"}, ltl.AP{"a"}},
 
 		// Negations
 		"!Oa":        ltl.Not{ltl.Next{ltl.AP{"a"}}},

@@ -59,3 +59,59 @@ func TestExamIntroduction(t *testing.T) {
 		}
 	}
 }
+
+func TestExamConfidentiality(t *testing.T) {
+
+	usrAlice := NewIdentity("Alice")
+	usrBob := NewIdentity("Bob")
+
+	dr := NewRepo()
+
+	r1 := NewState()
+	r2 := NewState()
+	r3 := NewState()
+
+	conf1 := "subject() = user('Alice')"
+	conf2 := "self ->" + conf1
+
+	r1.AddPolicyString(conf1)
+	r2.AddPolicyString(conf2)
+
+	r3.addDependency(r1)
+	r3.addDependency(r2)
+
+	dr.SetCurrentUser(usrAlice)
+	dr.Put(r1)
+	dr.Put(r2)
+	dr.Put(r3)
+
+	// As Bob
+	dr.SetCurrentUser(usrBob)
+
+	// Create new state to add, expected to fail due to violated inherited confidentiality policy
+	r := NewState()
+	r.addDependency(r1)
+	err := dr.Put(r)
+	t.Logf("Error: %v", err)
+
+	// Create new state to add, expected to succeed
+	r = NewState()
+	r.addDependency(r2)
+	err = dr.Put(r)
+	t.Logf("Error: %v", err)
+
+	// As Alice
+	dr.SetCurrentUser(usrAlice)
+
+	// Create new state to add, expected to fail due to violated inherited confidentiality policy
+	r = NewState()
+	r.addDependency(r1)
+	err = dr.Put(r)
+	t.Logf("Error: %v", err)
+
+	// Create new state to add, expected to succeed
+	r = NewState()
+	r.addDependency(r2)
+	err = dr.Put(r)
+	t.Logf("Error: %v", err)
+}

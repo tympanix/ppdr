@@ -15,7 +15,8 @@ type Parser struct {
 	s      *scanner.Scanner
 	tokens []*token.Token
 	prev   *token.Token
-	i      int
+	pos    int
+	savedPositions   []int
 }
 
 // New return a new parser
@@ -23,8 +24,18 @@ func New(s *scanner.Scanner) *Parser {
 	return &Parser{s: s}
 }
 
+func (p *Parser) savePosition() {
+	p.savedPositions = append(p.savedPositions, p.pos)
+}
+
+func (p *Parser) restorePosition() {
+	recover()
+	p.pos = p.savedPositions[len(p.savedPositions)-1]
+	p.savedPositions = p.savedPositions[0 : len(p.savedPositions)-1]
+}
+
 func (p *Parser) pump(n int) {
-	for len(p.tokens) < n {
+	for len(p.tokens) < p.pos+n {
 		next := p.s.NextToken()
 		p.tokens = append(p.tokens, next)
 	}
@@ -32,20 +43,24 @@ func (p *Parser) pump(n int) {
 
 func (p *Parser) current() *token.Token {
 	p.pump(1)
-	return p.tokens[0]
+	return p.tokens[p.pos]
 }
 
 func (p *Parser) pop() {
-	if len(p.tokens) > 0 {
-		p.prev = p.tokens[0]
-		p.tokens = p.tokens[1:]
-	}
 	p.pump(1)
+	if len(p.savedPositions) != 0 {
+		p.pos++
+		return
+	}
+	if len(p.tokens) > 0 {
+		p.prev = p.tokens[p.pos]
+		p.tokens = p.tokens[p.pos+1:]
+	}
 }
 
 func (p *Parser) peek(n int) *token.Token {
-	p.pump(n + 1)
-	return p.tokens[n]
+	p.pump(p.pos + n + 1)
+	return p.tokens[p.pos+n]
 }
 
 func (p *Parser) have(t token.Kind) bool {
@@ -71,6 +86,9 @@ func (p *Parser) expect(t token.Kind) *token.Token {
 }
 
 func (p *Parser) last() *token.Token {
+	if p.pos > 0 {
+		return p.tokens[p.pos-1]
+	}
 	return p.prev
 }
 
@@ -134,11 +152,13 @@ func (p *Parser) parseUntil() ltl.Node {
 }
 
 func (p *Parser) seeExpression() bool {
-	if p.seeLiteral() || p.seeFunction() || p.see(token.AP) {
-		switch p.peek(1).Kind() {
-		case token.EQUALS, token.NEQ, token.GT, token.GTEQ, token.LT, token.LTEQ:
-			return true
-		}
+	p.savePosition()
+	defer p.restorePosition()
+
+	p.parseExpressionArg()
+	switch p.current().Kind() {
+	case token.EQUALS, token.NEQ, token.GT, token.GTEQ, token.LT, token.LTEQ:
+		return true
 	}
 
 	return false
@@ -200,10 +220,10 @@ func (p *Parser) parseAtomic() ltl.Node {
 }
 
 func (p *Parser) seeFunction() bool {
-	if p.peek(0).Kind() == token.AP && p.peek(1).Kind() == token.LPAR {
-		return true
-	}
-	return false
+	p.savePosition()
+	defer p.restorePosition()
+	p.parseFunction()
+	return true
 }
 
 func (p *Parser) parseFunction() ltl.Node {

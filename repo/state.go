@@ -5,6 +5,8 @@ import (
 	"unsafe"
 
 	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/ltl/parser"
+	"github.com/tympanix/ppdr/ltl/scanner"
 	"github.com/tympanix/ppdr/systems/ts"
 )
 
@@ -133,6 +135,19 @@ func (s *State) Dependencies() []ts.State {
 
 func (s *State) addConfPolicy(set ltl.Set) {
 	s.confPolicies.AddSet(set)
+}
+
+func (s *State) AddPolicyString(conf string) error {
+	sc := scanner.NewFromString(conf)
+	p := parser.New(sc)
+
+	pf, err := p.Parse()
+
+	if err != nil {
+		panic(err)
+	}
+	s.AddPolicy(pf)
+	return nil
 }
 
 func (s *State) AddPolicy(n ltl.Node) {
