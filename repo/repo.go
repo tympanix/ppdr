@@ -6,6 +6,8 @@ import (
 	"unsafe"
 
 	"github.com/tympanix/ppdr/ltl"
+	"github.com/tympanix/ppdr/ltl/parser"
+	"github.com/tympanix/ppdr/ltl/scanner"
 )
 
 // Identity is the identity of a user
@@ -79,6 +81,21 @@ func (r *Repo) getUserPredicate() ltl.Ptr {
 		Attr:    "user",
 		Pointer: unsafe.Pointer(r.currentUser),
 	}
+}
+
+// QueryString performs a lookup in the data repository with a integrity policy given as a string
+func (r *Repo) QueryString(state *State, intr string) (*State, error) {
+
+	s := scanner.NewFromString(intr)
+	p := parser.New(s)
+
+	phi, err := p.Parse()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Query(state, phi)
 }
 
 // Query performs a lookup in the data repository with a integrity policy

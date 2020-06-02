@@ -29,7 +29,7 @@ func (l LitNumber) Compare(n Node) (int, error) {
 		}
 		return 0, nil
 	}
-	return 0, ErrNotComparable
+	return 0, ErrDifferentType
 }
 
 func (l LitNumber) Map(fn MapFunc) Node {

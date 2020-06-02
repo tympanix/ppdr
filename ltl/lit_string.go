@@ -26,7 +26,7 @@ func (l LitString) Compare(n Node) (int, error) {
 	if l2, ok := n.(LitString); ok {
 		return strings.Compare(l.Str, l2.Str), nil
 	}
-	return 0, ErrNotComparable
+	return 0, ErrDifferentType
 }
 
 func (l LitString) Map(fn MapFunc) Node {

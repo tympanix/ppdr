@@ -202,12 +202,16 @@ func (s *Scanner) NextToken() *token.Token {
 				return s.newToken(token.NEQ)
 			}
 			return s.newToken(token.NOT)
-		} else if s.see('"') {
+		} else if s.see('"') || s.see('\'') {
 			s.discard()
 			for s.hasLetter() || s.hasDigit() {
 				// noop
 			}
-			s.expect('"')
+			if s.see('"') {
+				s.expect('"')
+			} else {
+				s.expect('\'')
+			}
 			return s.newToken(token.LITSTRING)
 		} else if s.hasDigit() {
 			for s.hasDigit() {

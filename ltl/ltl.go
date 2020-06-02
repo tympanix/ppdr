@@ -17,8 +17,11 @@ var ErrNotPropositional = errors.New("not propositional logic")
 // ErrCompile is an error for when compilations has failed
 var ErrCompile = errors.New("compile error")
 
+// ErrDifferentType is an error for when literals are of different types
+var ErrDifferentType = errors.New("literals not the same types")
+
 // ErrNotComparable is an error for when literals can not be compared
-var ErrNotComparable = errors.New("literal not comparable")
+var ErrNotComparable = errors.New("literals not comparable")
 
 // Node is any node of an LTL formula
 type Node interface {

@@ -28,7 +28,7 @@ func (l LitBool) Compare(n Node) (int, error) {
 		}
 		return -1, nil
 	}
-	return 0, ErrNotComparable
+	return 0, ErrDifferentType
 }
 
 func (l LitBool) SameAs(n Node) bool {
